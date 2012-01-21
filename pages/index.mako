@@ -1,3 +1,3 @@
-<%include file="header.mako" args="title='Index Page'"/>
+<%include file="/support/header.mako" args="title='Index Page'"/>
 <p>Earwig!</p>
-<%include file="footer.mako"/>
+<%include file="/support/footer.mako"/>

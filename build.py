@@ -15,7 +15,7 @@ from mako.lookup import TemplateLookup
 
 def myapp(environ, start_response):
     start_response("200 OK", [("Content-Type", "text/html")])
-    lookup = TemplateLookup(directories=["{{support_dir}}"])
+    lookup = TemplateLookup(directories=["{{pages_dir}}"])
     template = Template(filename="{{src}}", module_directory="{{temp_dir}}",
                         lookup=lookup)
     return [template.render(environ=environ).encode("utf8")]
@@ -37,7 +37,7 @@ class Builder(object):
         self.build_dir = "www"
         self.static_dir = "static"
         self.pages_dir = "pages"
-        self.support_dir = "support"
+        self.support_dir = "pages/support"
         self.temp_dir = "temp"
         self.rs_file = "rewrite.script"
 
@@ -63,7 +63,7 @@ class Builder(object):
 
         logger.debug("build {0} -> {1}".format(src, dest))
         content = page_src.replace("{{src}}", src)
-        content = content.replace("{{support_dir}}", self.support_dir)
+        content = content.replace("{{pages_dir}}", self.pages_dir)
         content = content.replace("{{temp_dir}}", self.temp_dir)
         with open(dest, "w") as fp:
             fp.write(content)
@@ -94,6 +94,8 @@ class Builder(object):
         logger = self.root.getChild("pages")
         pages = os.listdir(self.pages_dir)
         for page in pages:
+            if not os.path.isfile(os.path.join(self.pages_dir, page)):
+                continue
             self._gen_page(page, logger)
 
     def gen_zws(self):

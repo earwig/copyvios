@@ -1,5 +1,5 @@
-match URL into $ with ^/~earwig/copyvio(\?.*?)?$
+match URL into $ with ^/~earwig/hello(\?.*?)?$
 if matched then
-    set URL = /~earwig/rewrite/copyvio.fcgi$1
+    set URL = /~earwig/rewrite/hello.fcgi$1
     goto END
 endif

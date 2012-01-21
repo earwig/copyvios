@@ -3,3 +3,8 @@ if matched then
     set URL = /~earwig/rewrite/hello.fcgi$1
     goto END
 endif
+match URL into $ with ^/~earwig/index(\?.*?)?$
+if matched then
+    set URL = /~earwig/rewrite/index.fcgi$1
+    goto END
+endif

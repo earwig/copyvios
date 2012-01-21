@@ -4,6 +4,7 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <title>${title} - earwig@toolserver</title>
+        <link rel="stylesheet" href="/~earwig/rewrite/static/main.css" type="text/css" />
     </head>
     <body>
         <div id="container">

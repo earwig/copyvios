@@ -1,0 +1,5 @@
+match URL into $ with ^/~earwig/copyvio(\?.*?)?$
+if matched then
+    set URL = /~earwig/rewrite/copyvio.fcgi$1
+    goto END
+endif

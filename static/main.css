@@ -13,6 +13,10 @@ div#container {
     background-color: #FFF;
 }
 
+div#content {
+    padding: 2px 15px 2px 15px;
+}
+
 div#footer {
     font-size: 11px;
     text-align: center;

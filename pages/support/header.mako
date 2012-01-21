@@ -6,3 +6,4 @@
         <title>${title} - earwig@toolserver</title>
     </head>
     <body>
+        <div id="container">

@@ -1,0 +1,26 @@
+body {
+    font-family: helvetica, arial, clean, sans-serif;
+    font-size: 14px;
+    color: #000;
+    background-color: #E0E0E0;
+}
+
+div#container {
+    width: 800px;
+    margin: 20px auto 32px auto;
+    border: 1px solid #999;
+    border-radius: 10px;
+    background-color: #FFF;
+}
+
+div#footer {
+    font-size: 11px;
+    text-align: center;
+    padding: 9px 4px 12px 4px;
+    color: #222;
+}
+
+a:link { color: #373; text-decoration: none; }
+a:visited { color: #373; text-decoration: none; }
+a:hover { color: #040; text-decoration: underline; }
+a:active { color: #404; text-decoration: underline; }

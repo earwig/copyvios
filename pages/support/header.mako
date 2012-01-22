@@ -8,7 +8,7 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <title>${title} - earwig@toolserver</title>
-        <link rel="stylesheet" href="${root}/static/main.css" type="text/css" />
+        <link rel="stylesheet" href="${root}/static/css/main.css" type="text/css" />
     </head>
     <body>
         <div id="container">

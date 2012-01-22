@@ -2,12 +2,12 @@ body {
     font-family: helvetica, arial, clean, sans-serif;
     font-size: 14px;
     color: #000;
-    background-color: #E0E0E0;
+    background-color: #EEE;
 }
 
 div#container {
     width: 800px;
-    margin: 20px auto 32px auto;
+    margin: 20px auto 65px auto;
     border: 1px solid #999;
     border-radius: 10px;
     background-color: #FFF;
@@ -18,10 +18,21 @@ div#content {
 }
 
 div#footer {
-    font-size: 11px;
+    position: fixed;
+    width: 100%;
+    height: 45px;
+    bottom: 0;
+    font-size: 12px;
     text-align: center;
-    padding: 9px 4px 12px 4px;
-    color: #222;
+    background-color: #EEE;
+}
+
+div#foot-divider {
+    border-bottom: 1px solid #999;
+}
+
+table#footer {
+    width: 100%;
 }
 
 a:link { color: #373; text-decoration: none; }

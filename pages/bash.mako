@@ -5,7 +5,7 @@
         "I make tools and tool accessories."
     ]
 %>\
-<%def name="bash()">${choice(bashes)}</%def>\
+<%def name="get_bash()">${choice(bashes)}</%def>\
 <%include file="/support/header.mako" args="environ=environ, title='Bash'"/>
             <ol>
             % for bash in bashes:

@@ -17,7 +17,7 @@ def myapp(environ, start_response):
     start_response("200 OK", [("Content-Type", "text/html")])
     lookup = TemplateLookup(directories=["{{pages_dir}}"])
     template = Template(filename="{{src}}", module_directory="{{temp_dir}}",
-                        lookup=lookup)
+                        lookup=lookup, format_exceptions=True)
     return [template.render(environ=environ).encode("utf8")]
 
 if __name__ == "__main__":

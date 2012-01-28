@@ -2,7 +2,8 @@ body {
     font-family: helvetica, arial, clean, sans-serif;
     font-size: 14px;
     color: #000;
-    background-color: #E0E0E0;
+    /*background-color: #E0E0E0;*/
+    background-color: #000;
 }
 
 ul, ol {
@@ -12,7 +13,7 @@ ul, ol {
 div#header {
     margin: 20px;
     padding: 2px 15px 2px 15px;
-    border: 1px solid #999;
+    border: 1px solid #777;
     background-color: #FFF;
 }
 
@@ -20,7 +21,7 @@ div#container {
     line-height: 1.5;
     margin: 0 20px 90px 20px;
     padding: 2px 15px 2px 15px;
-    border: 1px solid #999;
+    border: 1px solid #777;
     background-color: #FFF;
 }
 
@@ -43,17 +44,19 @@ div#footer {
 }
 
 div#foot-divider {
-    border-bottom: 1px solid #999;
+    border-bottom: 1px solid #777;
 }
 
-h1#head {
+p#heading {
     font-size: 3em;
+    font-weight: bold;
     margin: 15px 0 12px 0;
 }
 
-h2#links {
-    font-size: 1.75em;
-    margin: 8px 0 8px 0;
+p#links {
+    font-size: 1.65em;
+    font-weight: bold;
+    margin: 8px 0 14px 0;
 }
 
 table#footer-box {
@@ -61,16 +64,39 @@ table#footer-box {
     height: 100%;
 }
 
-span.light { color: #CCC; }
+div.toolbox {
+    margin: 15px 0 15px 0;
+    padding: 0 6px 0 6px;
+    border: 1px solid #999;
+    background-color: #F5F5F5;
+}
+
+p.toolname {
+    font-size: 18px;
+    margin: 6px 0 6px 0;
+    background-color: #E7E7E7;
+}
+
+p.tooldesc {
+    margin: 6px 0 6px 0;
+}
+
+span.light  { color: #CCC; }
+span.medium { color: #AAA; }
 
 a:link    { color: #373; text-decoration: none; }
 a:visited { color: #373; text-decoration: none; }
 a:hover   { color: #040; text-decoration: underline; }
 a:active  { color: #404; text-decoration: underline; }
 
+a.black:link    { color: #000; }
+a.black:visited { color: #000; }
+a.black:hover   { color: #000; }
+a.black:active  { color: #000; }
+
 a.dark:link    { color: #777; }
 a.dark:visited { color: #777; }
-a.dark:hover   { color: #555; }
+a.dark:hover   { color: #777; }
 a.dark:active  { color: #333; }
 
 a.mid:link    { color: #AAA; }

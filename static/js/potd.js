@@ -65,6 +65,9 @@ function parse_file_url(data, filename) {
     if (imgwidth/imgheight > winwidth/winheight) {
         width = Math.round((imgwidth/imgheight) * winheight);
     }
+    if (width > imgwidth) {
+        width = imgwidth;
+    }
     url += "/" + width + "px-" + filename;
 
     document.body.style.backgroundImage="url('" + url + "')";

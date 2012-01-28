@@ -2,8 +2,8 @@ body {
     font-family: helvetica, arial, clean, sans-serif;
     font-size: 14px;
     color: #000;
-    /*background-color: #E0E0E0;*/
     background-color: #000;
+    margin: 0;
 }
 
 ul, ol {
@@ -11,7 +11,7 @@ ul, ol {
 }
 
 div#header {
-    margin: 20px;
+    margin: 30px 60px 30px 60px;
     padding: 2px 15px 2px 15px;
     border: 1px solid #777;
     background-color: #FFF;
@@ -19,7 +19,7 @@ div#header {
 
 div#container {
     line-height: 1.5;
-    margin: 0 20px 90px 20px;
+    margin: 0 60px 100px 60px;
     padding: 2px 15px 2px 15px;
     border: 1px solid #777;
     background-color: #FFF;
@@ -79,6 +79,16 @@ p.toolname {
 
 p.tooldesc {
     margin: 6px 0 6px 0;
+}
+
+span.offline {
+    color: #900;
+    font-weight: bold;
+}
+
+span.online {
+    color: #090;
+    font-weight: bold;
 }
 
 span.light  { color: #CCC; }

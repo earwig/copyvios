@@ -43,13 +43,13 @@
 %>\
 <%def name="get_status()" filter="trim">
     <% status, since, uptime, host = collect_status_info() %>
-    <span class="${status}">${status}</span>
+    ${"has been" if status == "online" else "is"} <span class="${status}">${status}</span>
     % if status == "online":
         since ${since} (${uptime} uptime) on <tt>${host}</tt>
     % endif
 </%def>\
 <%include file="/support/header.mako" args="environ=environ, title='EarwigBot Status'"/>
             <h1>EarwigBot Status</h1>
-            <p>EarwigBot is ${get_status()}.</p>
+            <p>EarwigBot ${get_status()}.</p>
             <p>Additional information: <a href="http://status.toolserver.org/">status.toolserver.org</a></p>
 <%include file="/support/footer.mako" args="environ=environ"/>

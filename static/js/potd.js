@@ -56,7 +56,6 @@ function parse_file_url(data, filename) {
         imgheight = r["height"];
     }
 
-    url = url.replace(/\/commons\//, "/commons/thumb/");
     var s = get_window_size();
     var winwidth = s[0];
     var winheight = s[1];
@@ -65,12 +64,15 @@ function parse_file_url(data, filename) {
     if (imgwidth/imgheight > winwidth/winheight) {
         width = Math.round((imgwidth/imgheight) * winheight);
     }
-    if (width > imgwidth) {
-        width = imgwidth;
+    if (width >= imgwidth) {
+        document.body.style.backgroundImage = "url('" + url + "')";
+        if (width > imgwidth) {
+            document.body.style.setProperty("background-size", "cover");
+        }
+    } else {
+        url = url.replace(/\/commons\//, "/commons/thumb/") + "/" + width + "px-" + filename;
+        document.body.style.backgroundImage = "url('" + url + "')";
     }
-    url += "/" + width + "px-" + filename;
-
-    document.body.style.backgroundImage="url('" + url + "')";
     document.getElementById("bg_image_link").href = descurl;
 }
 

@@ -1,4 +1,5 @@
 *.pyc
 temp/
 www/
+config.ts-earwigbot.json
 rewrite.script

@@ -4,7 +4,7 @@
 
     tools = [
         ("Home", "home", "index", True, None),
-        ("Copyvio Detector", "copyvios", "copyvios", False, "Blah"),
+        ("Copyvio Detector", "copyvios", "copyvios", True, "Blah"),
         ("EarwigBot Status", "earwigbot", "earwigbot", True, "Blah"),
         ("File Extension Checker", "extensions", "extensions", False, "Blah"),
         ("Contribution Surveyor", "surveyor", "surveyor", False, "Blah"),

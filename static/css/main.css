@@ -7,7 +7,7 @@ body {
 }
 
 ul, ol {
-    line-height: 1.75;
+    line-height: 1.5;
 }
 
 div#header {
@@ -18,9 +18,9 @@ div#header {
 }
 
 div#container {
-    line-height: 1.5;
+    line-height: 1.25;
     margin: 0 60px 100px 60px;
-    padding: 2px 15px 10px 15px;
+    padding: 5px 15px 10px 15px;
     border: 1px solid #777;
     background-color: #FFF;
 }
@@ -64,16 +64,17 @@ table#footer-box {
     height: 100%;
 }
 
-fieldset#result {
-    margin: 25px 5px 5px 5px;
-    border: 2px solid #676;
-}
-
 div.toolbox {
     margin: 15px 0 15px 0;
     padding: 0 6px 0 6px;
     border: 1px solid #999;
     background-color: #F5F5F5;
+}
+
+div.divider {
+    border-bottom: 1px solid #AAA;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 p.toolname {

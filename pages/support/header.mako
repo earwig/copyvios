@@ -1,4 +1,4 @@
-<%page args="environ, title, slug=None"/>\
+<%page args="environ, title, slug=None, add_css=(), add_js=()"/>\
 <%namespace name="index" file="/index.mako" import="get_tools"/>\
 <%!
     from itertools import count
@@ -20,7 +20,13 @@
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <title>${title} - earwig@toolserver</title>
         <link rel="stylesheet" href="${root}/static/css/main.css" type="text/css" />
+        % for filename in add_css:
+            <link rel="stylesheet" href="${root}/static/css/${filename}" type="text/css" />
+        % endfor
         <script src="${root}/static/js/potd.js" type="text/javascript"></script>
+        % for filename in add_js:
+            <script src="${root}/static/js/${filename}" type="text/javascript"></script>
+        % endfor
     </head>
     <body onload="potd_set_background()">
         <div id="header">

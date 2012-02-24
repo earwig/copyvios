@@ -9,7 +9,7 @@
 
     def format_date(d):
         start = datetime.strptime(d, "%a %b %d %H:%M:%S %Y")
-        since = start.strftime("%b %d, %Y at %H:%M:%S UTC")
+        since = start.strftime("%b %d, %Y %H:%M:%S UTC")
         diff = (datetime.utcnow() - start)
         if diff.days:
             uptime = "{0} days".format(diff.days)
@@ -36,7 +36,7 @@
         lines = result.splitlines()[1:]
         re_key = "^(.*?):\s"
         re_val = ":\s*(.*?)$"
-        data = dict((re.search(re_key, line).group(1), re.search(re_val, line).group(1)) for line in lines)
+        data = dict((re.search(re_key, line).group(1), re.search(re_val, line).group(1)) for line in lines if re.search(re_key, line) and re.search(re_val, line))
         since, uptime = format_date(data["submission_time"])
         host = data["sge_o_host"]
         return ["online", since, uptime, host]

@@ -2,7 +2,7 @@ function potd_set_background() {
     var d = new Date();
     var callback = "like_a_boss";
     var date = (d.getUTCFullYear()) + "-" + zero_pad(d.getUTCMonth() + 1, 2) + "-" + zero_pad(d.getUTCDate(), 2);
-    var base = "http://commons.wikimedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=Template:Potd/";
+    var base = "//commons.wikimedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=Template:Potd/";
     var url = base + date + "&callback=" + callback;
 
     var script = document.createElement("script");
@@ -26,7 +26,7 @@ function parse_file_name(data) {
     var filename = /\{\{Potd filename\|(1=)?(.*?)\|.*?\}\}/.exec(content)[2];
 
     var callback = "like_a_faust";
-    var base = "http://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url|size&format=json&titles=File:";
+    var base = "//commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url|size&format=json&titles=File:";
     var url = base + escape(filename) + "&callback=" + callback;
 
     var script = document.createElement("script");

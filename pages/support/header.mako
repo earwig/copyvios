@@ -30,7 +30,7 @@
     </head>
     <body onload="potd_set_background()">
         <div id="header">
-            <p id="heading"><a class="dark" href="${pretty}">earwig</a><span class="light">@</span><a class="mid" href="http://wiki.toolserver.org/">toolserver</a><span class="light">:</span><a class="dark" href="${this}">${slug}</a></p>
+            <p id="heading"><a class="dark" href="${pretty}">earwig</a><span class="light">@</span><a class="mid" href="https://wiki.toolserver.org/">toolserver</a><span class="light">:</span><a class="dark" href="${this}">${slug}</a></p>
             <p id="links"><span class="light">&gt;</span>    
                 % for (name, tool, link, complete, desc), num in zip(tools, count(1)):
                     <abbr title="${name}${' (incomplete)' if not complete else ''}"><a class="${'dark' if complete else 'mid'}" href="${pretty}/${link}">${tool}</a></abbr>

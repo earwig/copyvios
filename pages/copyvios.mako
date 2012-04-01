@@ -155,6 +155,8 @@
     def urlstrip(url):
         if url.startswith("http://"):
             url = url[7:]
+        if url.startswith("https://"):
+            url = url[8:]
         if url.startswith("www."):
             url = url[4:]
         if url.endswith("/"):
@@ -174,7 +176,7 @@
 %>\
 <%include file="/support/header.mako" args="environ=environ, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>
             <h1>Copyvio Detector</h1>
-            <p>This tool attempts to detect <a href="http://en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in Wikipedia articles.</p>
+            <p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in Wikipedia articles.</p>
             <form action="${environ['PATH_INFO']}" method="get">
                 <table>
                     <tr>

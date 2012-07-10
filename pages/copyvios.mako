@@ -9,29 +9,35 @@
     from time import time
     from urlparse import parse_qs
 
+    from earwigbot import bot, exceptions
     import oursql
 
-    path.insert(0, "../earwigbot")
-
-    import earwigbot
-
     def get_results(lang, project, title, query):
-        earwigbot.config.config.load("config.ts-earwigbot.json")
+        bot = bot.Bot(".earwigbot")
         try:
-            site = earwigbot.wiki.get_site(lang=lang, project=project)
-        except earwigbot.wiki.SiteNotFoundError:
-            return None, None
+            site = bot.wiki.get_site(lang=lang, project=project)
+        except exceptions.SiteNotFoundError:
+            try:
+                site = bot.wiki.add_site(lang=lang, project=project)
+            except exceptions.APIError:
+                return None, None
+
         page = site.get_page(title)
-        conn = open_sql_connection()
+        conn = open_sql_connection(bot)
         if not query.get("nocache"):
             result = get_cached_results(page, conn)
         if query.get("nocache") or not result:
             result = get_fresh_results(page, conn)
         return page, result
 
-    def open_sql_connection():
-        conn_args = earwigbot.config.config.wiki["_toolserverSQLCache"]
-        conn_args["read_default_file"] = expanduser("~/.my.cnf")
+    def open_sql_connection(bot):
+        conn_args = bot.config.wiki["_toolserverSQLCache"]
+        if "read_default_file" not in conn_args and "user" not in conn_args and "passwd" not in conn_args:
+            conn_args["read_default_file"] = expanduser("~/.my.cnf")
+        if "autoping" not in conn_args:
+            conn_args["autoping"] = True
+        if "autoreconnect" not in conn_args:
+            conn_args["autoreconnect"] = True
         return oursql.connect(**conn_args)
 
     def get_cached_results(page, conn):
@@ -49,7 +55,7 @@
                 return None
 
         url, cache_time, num_queries, original_tdiff = results[0]
-        result = page.copyvio_compare(url, min_confidence=0.5)        
+        result = page.copyvio_compare(url)
         result.cached = True
         result.queries = num_queries
         result.tdiff = time() - t_start
@@ -68,7 +74,7 @@
 
     def get_fresh_results(page, conn):
         t_start = time()
-        result = page.copyvio_check(min_confidence=0.5, max_queries=10)
+        result = page.copyvio_check(max_queries=10)
         result.cached = False
         result.tdiff = time() - t_start
         cache_result(page, result, conn)

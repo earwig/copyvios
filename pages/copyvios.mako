@@ -95,7 +95,7 @@
 
     def highlight_delta(chain, delta):
         processed = []
-        prev = chain.START
+        prev_prev = prev = chain.START
         i = 0
         all_words = chain.text.split()
         paragraphs = chain.text.split("\n")
@@ -108,12 +108,15 @@
                 except IndexError:
                     next = chain.END
                 sword = strip_word(word)
-                before = prev in delta.chain and sword in delta.chain[prev]
-                after = sword in delta.chain and next in delta.chain[sword]
+                block = [prev_prev, prev]  # Block for before
+                alock = [prev, sword]  # Block for after
+                before = [block in delta.chain and sword in delta.chain[block]]
+                after = [alock in delta.chain and next in delta.chain[alock]]
                 is_first = i == 0
                 is_last = i + 1 == len(all_words)
                 res = highlight_word(word, before, after, is_first, is_last)
                 processed_words.append(res)
+                prev_prev = prev
                 prev = sword
             processed.append(u" ".join(processed_words))
             i += 1

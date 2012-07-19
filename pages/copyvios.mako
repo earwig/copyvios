@@ -24,10 +24,16 @@
 
         page = site.get_page(title)
         conn = open_sql_connection(bot)
-        if not query.get("nocache"):
+        """if not query.get("nocache"):
             result = get_cached_results(page, conn)
         if query.get("nocache") or not result:
             result = get_fresh_results(page, conn)
+        """
+        mc1 = __import__("earwigbot").wiki.copyvios.MarkovChain(page.get())
+        mc2 = __import__("earwigbot").wiki.copyvios.MarkovChain("This is some random textual content for a page.")
+        mci = __import__("earwigbot").wiki.copyvios.MarkovChainIntersection(mc1, mc2)
+        result = __import__("earwigbot").wiki.copyvios.CopyvioCheckResult(
+            True, 0.67123, "http://example.com/", 7, mc1, (mc2, mci))
         return page, result
 
     def open_sql_connection(bot):

@@ -12,7 +12,7 @@
     from earwigbot import bot, exceptions
     import oursql
 
-    def get_results(lang, project, title, query):
+    def get_results(lang, project, title, url, query):
         bot = bot.Bot(".earwigbot")
         try:
             site = bot.wiki.get_site(lang=lang, project=project)
@@ -22,19 +22,27 @@
             except exceptions.APIError:
                 return None, None
 
-        page = site.get_page(title)
-        conn = open_sql_connection(bot)
-        """if not query.get("nocache"):
-            result = get_cached_results(page, conn)
-        if query.get("nocache") or not result:
-            result = get_fresh_results(page, conn)
-        """
+        page = site.get_page(title)                                                                                           # TODO: what if the page doesn't exist?
+        # if url:
+        #     result = get_url_specific_results(page, url)
+        # else:
+        #     conn = open_sql_connection(bot)
+        #     if not query.get("nocache"):
+        #         result = get_cached_results(page, conn)
+        #     if query.get("nocache") or not result:
+        #         result = get_fresh_results(page, conn)
         mc1 = __import__("earwigbot").wiki.copyvios.MarkovChain(page.get())
         mc2 = __import__("earwigbot").wiki.copyvios.MarkovChain("This is some random textual content for a page.")
         mci = __import__("earwigbot").wiki.copyvios.MarkovChainIntersection(mc1, mc2)
         result = __import__("earwigbot").wiki.copyvios.CopyvioCheckResult(
             True, 0.67123, "http://example.com/", 7, mc1, (mc2, mci))
         return page, result
+
+    def get_url_specific_results(page, url):
+        t_start = time()
+        result = page.copyvio_compare(url)
+        result.tdiff = time() - t_start
+        return result
 
     def open_sql_connection(bot):
         conn_args = bot.config.wiki["_toolserverSQLCache"]
@@ -47,7 +55,7 @@
         return oursql.connect(**conn_args)
 
     def get_cached_results(page, conn):
-        query1 = "DELETE FROM cache WHERE cache_time < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY)"
+        query1 = "DELETE FROM cache WHERE cache_time < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)"
         query2 = "SELECT cache_url, cache_time, cache_queries, cache_process_time FROM cache WHERE cache_id = ? AND cache_hash = ?"
         pageid = page.pageid()
         hash = sha256(page.get()).hexdigest()
@@ -184,14 +192,15 @@
         lang = query["lang"][0]
         project = query["project"][0]
         title = query["title"][0]
+        url = query.get("url", [None])[0]
     except (KeyError, IndexError):
         page = None
     else:
-        page, result = get_results(lang, project, title, query)
+        page, result = get_results(lang, project, title, url, query)
 %>\
 <%include file="/support/header.mako" args="environ=environ, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>
             <h1>Copyvio Detector</h1>
-            <p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in Wikipedia articles.</p>
+            <p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. Simply give the title of the page you want to check and hit Submit. The tool will then search for its content elsewhere on the web and display a report if a similar webpage is found. If you provide a URL, it will not query any search engines and instead display a report comparing the article to that particular webpage, like the <a href="//toolserver.org/~dcoetzee/duplicationdetector/">Duplication Detector</a>. Check out the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/FAQ">FAQ</a> for more information and technical details.</p>
             <form action="${environ['PATH_INFO']}" method="get">
                 <table>
                     <tr>
@@ -208,9 +217,17 @@
                     <tr>
                         <td>Page title:</td>
                         % if page:
-                            <td><input type="text" name="title" size="50" value="${page.title() | h}" /></td>
+                            <td><input type="text" name="title" size="60" value="${page.title() | h}" /></td>
                         % else:
-                            <td><input type="text" name="title" size="50" /></td>
+                            <td><input type="text" name="title" size="60" /></td>
+                        % endif
+                    </tr>
+                    <tr>
+                        <td>URL:</td>
+                        % if url:
+                            <td><input type="text" name="url" size="120" value="${url | h}" /></td>
+                        % else:
+                            <td><input type="text" name="url" size="120" /></td>
                         % endif
                     </tr>
                     % if query.get("nocache") or page:
@@ -240,7 +257,7 @@
                         <li><b><tt>${round(result.confidence * 100, 1)}%</tt></b> confidence of a violation.</li>
                         % if result.cached:
                             <li>Results are <a id="cv-cached" href="#">cached
-                                <span>To save time (and money), this tool will retain the results of checks for up to 24 hours. This includes the URL of the "violated" source, but neither its content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made.</span>
+                                <span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URL of the "violated" source, but neither its content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span>
                             </a> from ${result.cache_time} (${result.cache_age} ago). <a href="${environ['REQUEST_URI'] | h}&amp;nocache=1">Bypass the cache.</a></li>
                         % else:
                             <li>Results generated in <tt>${round(result.tdiff, 3)}</tt> seconds using <tt>${result.queries}</tt> queries.</li>
@@ -249,7 +266,7 @@
                     </ul>
                     <div id="cv-result-detail" style="display: none;">
                         <ul id="cv-result-detail-list">
-                            <li>Markov chain size: Article: <tt>${result.article_chain.size()}</tt> / Source: <tt>${result.source_chain.size()}</tt> / Delta: <tt>${result.delta_chain.size()}</tt></li>
+                            <li>Trigrams: <i>Article:</i> <tt>${result.article_chain.size()}</tt> / <i>Source:</i> <tt>${result.source_chain.size()}</tt> / <i>Delta:</i> <tt>${result.delta_chain.size()}</tt></li>
                             % if result.cached:
                                 % if result.queries:
                                     <li>Retrieved from cache in <tt>${round(result.tdiff, 3)}</tt> seconds (originally generated in <tt>${round(result.original_tdiff, 3)}</tt>s using <tt>${result.queries}</tt> queries; <tt>${round(result.original_tdiff - result.tdiff, 3)}</tt>s saved).</li>
@@ -257,7 +274,9 @@
                                     <li>Retrieved from cache in <tt>${round(result.tdiff, 3)}</tt> seconds (originally generated in <tt>${round(result.original_tdiff, 3)}</tt>s; <tt>${round(result.original_tdiff - result.tdiff, 3)}</tt>s saved).</li>
                                 % endif
                             % endif
-                            <li><i>Fun fact:</i> The Wikimedia Foundation paid Yahoo! Inc. <a href="http://info.yahoo.com/legal/us/yahoo/search/bosspricing/details.html">$${result.queries * 0.0008} USD</a> for these results.</li>
+                            % if result.queries:
+                                <li><i>Fun fact:</i> The Wikimedia Foundation paid Yahoo! Inc. <a href="http://info.yahoo.com/legal/us/yahoo/search/bosspricing/details.html">$${result.queries * 0.0008} USD</a> for these results.</li>
+                            % endif
                         </ul>
                         <table id="cv-chain-table">
                             <tr>

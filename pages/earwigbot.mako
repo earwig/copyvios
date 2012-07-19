@@ -5,7 +5,7 @@
     from shlex import split
     from subprocess import check_output, CalledProcessError, STDOUT
 
-    os.environ["SGE_ROOT"] = "/sge62"
+    os.environ["SGE_ROOT"] = "/sge/GE"
 
     def format_date(d):
         start = datetime.strptime(d, "%a %b %d %H:%M:%S %Y")
@@ -28,10 +28,10 @@
         try:
             result = check_output(["qstat", "-j", "earwigbot"], stderr=STDOUT)
         except CalledProcessError as e:
-            return ["offline"]
+            return ["offline", None, None, None]
 
         if result.startswith("Following jobs do not exist:"):
-            return ["offline"]
+            return ["offline", None, None, None]
 
         lines = result.splitlines()[1:]
         re_key = "^(.*?):\s"

@@ -132,7 +132,10 @@
         query3 = "SELECT project_code, project_name FROM project"
         with conn.cursor() as cursor:
             cursor.execute(query1, ("sites",))
-            time_since_update = int(time() - cursor.fetchall()[0][0])
+            try:
+                time_since_update = int(time() - cursor.fetchall()[0][0])
+            except IndexError:
+                time_since_update = 0
             if time_since_update > max_staleness:
                 update_sites(bot, cursor)
             cursor.execute(query2)
@@ -173,10 +176,16 @@
         query4 = "SELECT project_code, project_name FROM project"
         query5 = "DELETE FROM project WHERE project_code = ? AND project_name = ?"
         query6 = "INSERT INTO project VALUES (?, ?)"
-        query7 = "UPDATE updates SET update_time = ? WHERE update_service = ?"
+        query7 = "SELECT 1 FROM updates WHERE update_service = ?"
+        query8 = "UPDATE updates SET update_time = ? WHERE update_service = ?"
+        query9 = "INSERT INTO updates VALUES (?, ?)"
         synchronize_sites_with_db(cursor, languages, query1, query2, query3)
         synchronize_sites_with_db(cursor, projects, query4, query5, query6)
-        cursor.execute(query7, (time(), "sites"))
+        cursor.execute(query7, "sites",)
+        if cursor.fetchall():
+            cursor.execute(query8, (time(), "sites"))
+        else:
+            cursor.execute(query9, ("sites", time()))
 
     def synchronize_sites_with_db(cursor, updates, q_list, q_rmv, q_update):
         removals = []

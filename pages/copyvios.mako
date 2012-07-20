@@ -8,7 +8,8 @@
     from time import time
     from urlparse import parse_qs
 
-    from earwigbot import bot, exceptions
+    from earwigbot import exceptions
+    from earwigbot.bot import Bot
     import oursql
 
     def get_results(bot, lang, project, all_projects, title, url, query):
@@ -274,7 +275,7 @@
         return url
 %>\
 <%
-    bot = bot.Bot(".earwigbot")
+    bot = Bot(".earwigbot")
     site = bot.wiki.get_site()
     query = parse_qs(environ["QUERY_STRING"])
     lang = query["lang"][0].decode("utf8").lower() if "lang" in query else None

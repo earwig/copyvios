@@ -156,6 +156,7 @@
                         code = special["dbname"]
                         name = special["code"].capitalize()
                         languages.add((code, name))
+                continue
             this = set()
             for web in site["site"]:
                 if "closed" in web:

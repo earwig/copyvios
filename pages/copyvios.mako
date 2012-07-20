@@ -312,7 +312,7 @@
                                 <% selected_project = project if project else site.project %>
                                 % for code, name in all_projects:
                                     % if code == selected_project:
-                                        <option value="${code" selected="selected">${name}</option>
+                                        <option value="${code}" selected="selected">${name}</option>
                                     % else:
                                         <option value="${code}">${name}</option>
                                     % endif

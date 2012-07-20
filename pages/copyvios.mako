@@ -126,8 +126,7 @@
 
     def get_sites(bot):
         max_staleness = 60 * 60 * 24 * 7
-        site = bot.wiki.get_site()
-        conn = open_sql_connection(site, "globals")
+        conn = open_sql_connection(bot, "globals")
         query1 = "SELECT update_time FROM updates WHERE update_service = ?"
         query2 = "SELECT lang_code, lang_name FROM language"
         query3 = "SELECT project_code, project_name FROM project"
@@ -138,7 +137,7 @@
             except IndexError:
                 time_since_update = 0
             if time_since_update > max_staleness:
-                update_sites(bot, cursor)
+                update_sites(bot.wiki.get_site(), cursor)
             cursor.execute(query2)
             langs = cursor.fetchall()
             cursor.execute(query3)

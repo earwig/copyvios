@@ -28,10 +28,11 @@
         #     if query.get("nocache") or not result:
         #         result = get_fresh_results(page, conn)
         mc1 = __import__("earwigbot").wiki.copyvios.MarkovChain(page.get())
-        mc2 = __import__("earwigbot").wiki.copyvios.MarkovChain("This is some random textual content for a page.")
+        mc2 = __import__("earwigbot").wiki.copyvios.MarkovChain(u"This is some random textual content for a page.")
         mci = __import__("earwigbot").wiki.copyvios.MarkovChainIntersection(mc1, mc2)
         result = __import__("earwigbot").wiki.copyvios.CopyvioCheckResult(
             True, 0.67123, "http://example.com/", 7, mc1, (mc2, mci))
+        # END TEST BLOCK
         return page, result
 
     def get_site(bot, lang, project, all_projects):
@@ -129,18 +130,15 @@
         query1 = "SELECT update_time FROM updates WHERE update_service = ?"
         query2 = "SELECT lang_code, lang_name FROM languages"
         query3 = "SELECT project_code, project_name FROM projects"
-
         with conn.cursor() as cursor:
             cursor.execute(query1, ("sites",))
             time_since_update = int(time() - cursor.fetchall()[0][0])
             if time_since_update > max_staleness:
                 update_sites(bot, cursor)
-
             cursor.execute(query2)
             langs = cursor.fetchall()
             cursor.execute(query3)
             projects = cursor.fetchall()
-
         return langs, projects
 
     def update_sites(site, cursor):
@@ -152,8 +150,8 @@
                 projects.add(("wikimedia", "Wikimedia"))
                 for special in site:
                     if "closed" not in special and "private" not in special:
-                        code = special["dbname"]
-                        name = special["code"].capitalize()
+                        code = special["dbname"].encode("utf8")
+                        name = special["code"].encode("utf8").capitalize()
                         languages.add((code, name))
             this = set()
             for web in site["site"]:
@@ -293,9 +291,9 @@
                             <select name="lang">
                             % for code, name in all_langs:
                                 % if code == selected_lang:
-                                    <option value="${code}" selected="selected">${name}</option>
+                                    <option value="${code.decode('utf8')}" selected="selected">${name.decode("utf8")}</option>
                                 % else:
-                                    <option value="${code}">${name}</option>
+                                    <option value="${code.decode('utf8')}">${name.decode("utf8")}</option>
                                 % endif
                             % endfor
                             </select>
@@ -303,9 +301,9 @@
                             <select name="project">
                             % for code, name in all_projects:
                                 % if code == selected_project:
-                                    <option value="${code}" selected="selected">${name}</option>
+                                    <option value="${code.decode('utf8')}" selected="selected">${name.decode("utf8")}</option>
                                 % else:
-                                    <option value="${code}">${name}</option>
+                                    <option value="${code.decode('utf8')}">${name.decode("utf8")}</option>
                                 % endif
                             % endfor
                             </select>
@@ -314,7 +312,7 @@
                     <tr>
                         <td>Page title:</td>
                         % if page:
-                            <td><input type="text" name="title" size="60" value="${page.title() | h}" /></td>
+                            <td><input type="text" name="title" size="60" value="${page.title | h}" /></td>
                         % elif title:
                             <td><input type="text" name="title" size="60" value="${title | h}" /></td>
                         % else:
@@ -345,23 +343,29 @@
                 </table>
             </form>
             % if project and lang and title and not page:
-                CASE WHEN GIVEN SITE DOESN'T EXIST
+                <div class="divider"></div>
+                <div id="cv-result-yes">
+                    <p>The given site, (project=<b><tt>${project.decode("utf8")}</tt></b>, language=<b><tt>${lang.decode("utf8")}</tt></b>) doesn't seem to exist. <a href="//${lang.decode('utf8')}.${project.decode('utf8')}.org/">Check its URL?</a></p>
+                </div>
             % elif project and lang and title and page and not result:
-                CASE WHEN GIVEN PAGE DOESN'T EXIST
+                <div class="divider"></div>
+                <div id="cv-result-yes">
+                    <p>The given page, <a href="${page.url}">${page.title | h}</a>, doesn't seem to exist.</p>
+                </div>
             % elif page:
                 <div class="divider"></div>
                 <div id="cv-result-${'yes' if result.violation else 'no'}">
                     % if result.violation:
-                        <h2 id="cv-result-header"><a href="${page.url()}">${page.title() | h}</a> is a suspected violation of <a href="${result.url | h}">${result.url | urlstrip}</a>.</h2>
+                        <h2 id="cv-result-header"><a href="${page.url}">${page.title | h}</a> is a suspected violation of <a href="${result.url | h}">${result.url | urlstrip}</a>.</h2>
                     % else:
-                        <h2 id="cv-result-header">No violations detected in <a href="${page.url()}">${page.title() | h}</a>.</h2>
+                        <h2 id="cv-result-header">No violations detected in <a href="${page.url()}">${page.title | h}</a>.</h2>
                     % endif
                     <ul id="cv-result-list">
                         <li><b><tt>${round(result.confidence * 100, 1)}%</tt></b> confidence of a violation.</li>
                         % if result.cached:
                             <li>Results are <a id="cv-cached" href="#">cached
                                 <span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URL of the "violated" source, but neither its content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span>
-                            </a> from ${result.cache_time} (${result.cache_age} ago). <a href="${environ['REQUEST_URI'] | h}&amp;nocache=1">Bypass the cache.</a></li>
+                            </a> from ${result.cache_time} (${result.cache_age} ago). <a href="${environ['REQUEST_URI'].decode("utf8") | h}&amp;nocache=1">Bypass the cache.</a></li>
                         % else:
                             <li>Results generated in <tt>${round(result.tdiff, 3)}</tt> seconds using <tt>${result.queries}</tt> queries.</li>
                         % endif

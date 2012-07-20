@@ -15,7 +15,8 @@ from mako.lookup import TemplateLookup
 
 def myapp(environ, start_response):
     start_response("200 OK", [("Content-Type", "text/html")])
-    lookup = TemplateLookup(directories=["{{pages_dir}}"])
+    lookup = TemplateLookup(directories=["{{pages_dir}}"],
+                            input_encoding="utf8")
     template = Template(filename="{{src}}", module_directory="{{temp_dir}}",
                         lookup=lookup, format_exceptions=True)
     return [template.render(environ=environ).encode("utf8")]

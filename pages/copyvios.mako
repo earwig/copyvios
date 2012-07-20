@@ -128,8 +128,8 @@
         site = bot.wiki.get_site()
         conn = open_sql_connection(site, "globals")
         query1 = "SELECT update_time FROM updates WHERE update_service = ?"
-        query2 = "SELECT lang_code, lang_name FROM languages"
-        query3 = "SELECT project_code, project_name FROM projects"
+        query2 = "SELECT lang_code, lang_name FROM language"
+        query3 = "SELECT project_code, project_name FROM project"
         with conn.cursor() as cursor:
             cursor.execute(query1, ("sites",))
             time_since_update = int(time() - cursor.fetchall()[0][0])
@@ -167,12 +167,12 @@
         save_site_updates(cursor, languages, projects)
 
     def save_site_updates(cursor, languages, projects):
-        query1 = "SELECT lang_code, lang_name FROM languages"
-        query2 = "DELETE FROM languages WHERE lang_code = ? AND lang_name = ?"
-        query3 = "INSERT INTO languages VALUES (?, ?)"
-        query4 = "SELECT project_code, project_name FROM projects"
-        query5 = "DELETE FROM projects WHERE project_code = ? AND project_name = ?"
-        query6 = "INSERT INTO projects VALUES (?, ?)"
+        query1 = "SELECT lang_code, lang_name FROM language"
+        query2 = "DELETE FROM language WHERE lang_code = ? AND lang_name = ?"
+        query3 = "INSERT INTO language VALUES (?, ?)"
+        query4 = "SELECT project_code, project_name FROM project"
+        query5 = "DELETE FROM project WHERE project_code = ? AND project_name = ?"
+        query6 = "INSERT INTO project VALUES (?, ?)"
         query7 = "UPDATE updates SET update_time = ? WHERE update_service = ?"
         synchronize_sites_with_db(cursor, languages, query1, query2, query3)
         synchronize_sites_with_db(cursor, projects, query4, query5, query6)

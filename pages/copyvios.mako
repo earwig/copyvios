@@ -11,16 +11,14 @@
     from earwigbot import bot, exceptions
     import oursql
 
-    def get_results(bot, lang, project, title, url, query):
-        try:
-            site = bot.wiki.get_site(lang=lang, project=project)                        # UPDATE ME FOR SPECIAL SITES!
-        except exceptions.SiteNotFoundError:
-            try:
-                site = bot.wiki.add_site(lang=lang, project=project)                    # TODO: what if the site doesn't exist?
-            except exceptions.APIError:
-                return None, None
+    def get_results(bot, lang, project, all_projects, title, url, query):
+        site = get_site(bot, lang, project, all_projects)
+        if not site:
+            return None, None
+        page = site.get_page(title)
+        if page.exists in [page.PAGE_MISSING, page.PAGE_INVALID]:
+            return page, None
 
-        page = site.get_page(title)                                                     # TODO: what if the page doesn't exist?
         # if url:
         #     result = get_url_specific_results(page, url)
         # else:
@@ -35,6 +33,25 @@
         result = __import__("earwigbot").wiki.copyvios.CopyvioCheckResult(
             True, 0.67123, "http://example.com/", 7, mc1, (mc2, mci))
         return page, result
+
+    def get_site(bot, lang, project, all_projects):
+        if project not in [proj[0] for proj in all_projects]:
+            return None
+        if project == "wikimedia":  # Special sites:
+            try:
+                return bot.wiki.get_site(name=lang)
+            except exceptions.SiteNotFoundError:
+                try:
+                    return bot.wiki.add_site(lang=lang, project=project)
+                except exceptions.APIError:
+                    return None
+        try:
+            return bot.wiki.get_site(lang=lang, project=project)
+        except exceptions.SiteNotFoundError:
+            try:
+                return bot.wiki.add_site(lang=lang, project=project)
+            except exceptions.APIError:
+                return None
 
     def get_url_specific_results(page, url):
         t_start = time()
@@ -118,14 +135,13 @@
             time_since_update = int(time() - cursor.fetchall()[0][0])
             if time_since_update > max_staleness:
                 update_sites(bot, cursor)
-            langs = load_sites_from_db(cursor, query2, site.lang)
-            projects = load_sites_from_db(cursor, query3, site.project)
 
-        langs = "\n".join(langs)
-        projects = "\n".join(projects)
-        result = '<select name="lang">\n{0}\n</select>\n'.format(langs)
-        result += '<select name="project">\n{0}\n</select>'.format(projects)
-        return result
+            cursor.execute(query2)
+            langs = cursor.fetchall()
+            cursor.execute(query3)
+            projects = cursor.fetchall()
+
+        return langs, projects
 
     def update_sites(site, cursor):
         matrix = site.api_query(action="sitematrix")["sitematrix"]
@@ -170,16 +186,6 @@
             updates.remove(site) if site in updates else removals.append(site)
         cursor.executemany(q_rmv, removals)
         cursor.executemany(q_update, updates)
-
-    def load_sites_from_db(cursor, query, selected_code):
-        tl_normal = '<option value="{0}">{1}</option>'
-        tl_selected = '<option value="{0}" selected="selected">{1}</option>'
-        cursor.execute(query)
-        results = []
-        for code, name in cursor.fetchall():
-            template = tl_selected if code == selected_code else tl_normal
-            results.append(template.format(code, name))
-        return results
 
     def highlight_delta(chain, delta):
         processed = []
@@ -262,16 +268,18 @@
 %>\
 <%
     bot = bot.Bot(".earwigbot")
+    site = bot.wiki.get_site()
     query = parse_qs(environ["QUERY_STRING"])
-    try:
-        lang = query["lang"][0]
-        project = query["project"][0]
-        title = query["title"][0]
-        url = query.get("url", [None])[0]
-    except (KeyError, IndexError):
-        page = None
+    lang = query["lang"][0].lower() if "lang" in query else None
+    project = query["project"][0].lower() if "project" in query else None
+    title = query["title"][0] if "title" in query else None
+    url = query["url"][0] if "url" in query else None
+    all_langs, all_projects = get_sites(bot)
+    if lang and project and title:
+        page, result = get_results(bot, lang, project, all_projects, title,
+                                   url, query)
     else:
-        page, result = get_results(bot, lang, project, title, url, query)
+        page = result = None
 %>\
 <%include file="/support/header.mako" args="environ=environ, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>
             <h1>Copyvio Detector</h1>
@@ -281,13 +289,34 @@
                     <tr>
                         <td>Site:</td>
                         <td>
-                            ${get_sites(bot)}
+                            <% selected_lang = lang if lang else site.lang %>
+                            <select name="lang">
+                            % for code, name in all_langs:
+                                % if code == selected_lang:
+                                    <option value="${code}" selected="selected">${name}</option>
+                                % else:
+                                    <option value="${code}">${name}</option>
+                                % endif
+                            % endfor
+                            </select>
+                            <% selected_project = project if project else site.project %>
+                            <select name="project">
+                            % for code, name in all_projects:
+                                % if code == selected_project:
+                                    <option value="${code}" selected="selected">${name}</option>
+                                % else:
+                                    <option value="${code}">${name}</option>
+                                % endif
+                            % endfor
+                            </select>
                         </td>
                     </tr>
                     <tr>
                         <td>Page title:</td>
                         % if page:
                             <td><input type="text" name="title" size="60" value="${page.title() | h}" /></td>
+                        % elif title:
+                            <td><input type="text" name="title" size="60" value="${title | h}" /></td>
                         % else:
                             <td><input type="text" name="title" size="60" /></td>
                         % endif
@@ -315,7 +344,11 @@
                     </tr>
                 </table>
             </form>
-            % if page:
+            % if project and lang and title and not page:
+                CASE WHEN GIVEN SITE DOESN'T EXIST
+            % elif project and lang and title and page and not result:
+                CASE WHEN GIVEN PAGE DOESN'T EXIST
+            % elif page:
                 <div class="divider"></div>
                 <div id="cv-result-${'yes' if result.violation else 'no'}">
                     % if result.violation:

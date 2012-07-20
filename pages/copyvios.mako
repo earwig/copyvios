@@ -287,26 +287,29 @@
                     <tr>
                         <td>Site:</td>
                         <td>
-                            <% selected_lang = lang if lang else site.lang %>
+                            http://
                             <select name="lang">
-                            % for code, name in all_langs:
-                                % if code == selected_lang:
-                                    <option value="${code.decode('utf8')}" selected="selected">${name.decode("utf8")}</option>
-                                % else:
-                                    <option value="${code.decode('utf8')}">${name.decode("utf8")}</option>
-                                % endif
-                            % endfor
+                                <% selected_lang = lang if lang else site.lang %>
+                                % for code, name in all_langs:
+                                    % if code == selected_lang:
+                                        <option value="${code.decode('utf8')}" selected="selected">${name.decode("utf8")}</option>
+                                    % else:
+                                        <option value="${code.decode('utf8')}">${name.decode("utf8")}</option>
+                                    % endif
+                                % endfor
                             </select>
-                            <% selected_project = project if project else site.project %>
+                            .
                             <select name="project">
-                            % for code, name in all_projects:
-                                % if code == selected_project:
-                                    <option value="${code.decode('utf8')}" selected="selected">${name.decode("utf8")}</option>
-                                % else:
-                                    <option value="${code.decode('utf8')}">${name.decode("utf8")}</option>
-                                % endif
-                            % endfor
+                                <% selected_project = project if project else site.project %>
+                                % for code, name in all_projects:
+                                    % if code == selected_project:
+                                        <option value="${code.decode('utf8')}" selected="selected">${name.decode("utf8")}</option>
+                                    % else:
+                                        <option value="${code.decode('utf8')}">${name.decode("utf8")}</option>
+                                    % endif
+                                % endfor
                             </select>
+                            .org
                         </td>
                     </tr>
                     <tr>

@@ -150,19 +150,19 @@
                 projects.add(("wikimedia", "Wikimedia"))
                 for special in site:
                     if "closed" not in special and "private" not in special:
-                        code = special["dbname"].encode("utf8")
-                        name = special["code"].encode("utf8").capitalize()
+                        code = special["dbname"]
+                        name = special["code"].capitalize()
                         languages.add((code, name))
             this = set()
             for web in site["site"]:
                 if "closed" in web:
                     continue
-                project = "wikipedia" if web["code"] == "wiki" else web["code"]
+                project = "wikipedia" if web["code"] == u"wiki" else web["code"]
                 this.add((project, project.capitalize()))
             if this:
-                code = site["code"].encode("utf8")
-                name = site["name"].encode("utf8")
-                languages.add((code, "{0} ({1})".format(code, name)))
+                code = site["code"]
+                name = site["name"]
+                languages.add((code, u"{0} ({1})".format(code, name)))
                 projects |= this
         save_site_updates(cursor, languages, projects)
 
@@ -268,10 +268,10 @@
     bot = bot.Bot(".earwigbot")
     site = bot.wiki.get_site()
     query = parse_qs(environ["QUERY_STRING"])
-    lang = query["lang"][0].lower() if "lang" in query else None
-    project = query["project"][0].lower() if "project" in query else None
-    title = query["title"][0] if "title" in query else None
-    url = query["url"][0] if "url" in query else None
+    lang = query["lang"][0].decode("utf8").lower() if "lang" in query else None
+    project = query["project"][0].decode("utf8").lower() if "project" in query else None
+    title = query["title"][0].decode("utf8") if "title" in query else None
+    url = query["url"][0].decode("utf8") if "url" in query else None
     all_langs, all_projects = get_sites(bot)
     if lang and project and title:
         page, result = get_results(bot, lang, project, all_projects, title,
@@ -292,9 +292,9 @@
                                 <% selected_lang = lang if lang else site.lang %>
                                 % for code, name in all_langs:
                                     % if code == selected_lang:
-                                        <option value="${code.decode('utf8')}" selected="selected">${name.decode("utf8")}</option>
+                                        <option value="${code}" selected="selected">${name}</option>
                                     % else:
-                                        <option value="${code.decode('utf8')}">${name.decode("utf8")}</option>
+                                        <option value="${code}">${name}</option>
                                     % endif
                                 % endfor
                             </select>
@@ -303,9 +303,9 @@
                                 <% selected_project = project if project else site.project %>
                                 % for code, name in all_projects:
                                     % if code == selected_project:
-                                        <option value="${code.decode('utf8')}" selected="selected">${name.decode("utf8")}</option>
+                                        <option value="${code" selected="selected">${name}</option>
                                     % else:
-                                        <option value="${code.decode('utf8')}">${name.decode("utf8")}</option>
+                                        <option value="${code}">${name}</option>
                                     % endif
                                 % endfor
                             </select>
@@ -348,7 +348,7 @@
             % if project and lang and title and not page:
                 <div class="divider"></div>
                 <div id="cv-result-yes">
-                    <p>The given site, (project=<b><tt>${project.decode("utf8")}</tt></b>, language=<b><tt>${lang.decode("utf8")}</tt></b>) doesn't seem to exist. <a href="//${lang.decode('utf8')}.${project.decode('utf8')}.org/">Check its URL?</a></p>
+                    <p>The given site, (project=<b><tt>${project}</tt></b>, language=<b><tt>${lang}</tt></b>) doesn't seem to exist. <a href="//${lang}.${project}.org/">Check its URL?</a></p>
                 </div>
             % elif project and lang and title and page and not result:
                 <div class="divider"></div>

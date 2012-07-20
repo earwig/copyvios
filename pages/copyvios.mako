@@ -13,14 +13,14 @@
 
     def get_results(bot, lang, project, title, url, query):
         try:
-            site = bot.wiki.get_site(lang=lang, project=project)
+            site = bot.wiki.get_site(lang=lang, project=project)                        # UPDATE ME FOR SPECIAL SITES!
         except exceptions.SiteNotFoundError:
             try:
-                site = bot.wiki.add_site(lang=lang, project=project)
+                site = bot.wiki.add_site(lang=lang, project=project)                    # TODO: what if the site doesn't exist?
             except exceptions.APIError:
                 return None, None
 
-        page = site.get_page(title)                                                                                           # TODO: what if the page doesn't exist?
+        page = site.get_page(title)                                                     # TODO: what if the page doesn't exist?
         # if url:
         #     result = get_url_specific_results(page, url)
         # else:
@@ -111,28 +111,15 @@
         conn = open_sql_connection(site, "globals")
         query1 = "SELECT update_time FROM updates WHERE update_service = ?"
         query2 = "SELECT lang_code, lang_name FROM languages"
-        query3 = "SELECT project_name FROM projects"
-        tl_normal = '<option value="{0}">{1}</option>'
-        tl_select = '<option value="{0}" selected="selected">{1}</option>'
+        query3 = "SELECT project_code, project_name FROM projects"
 
         with conn.cursor() as cursor:
             cursor.execute(query1, ("sites",))
             time_since_update = int(time() - cursor.fetchall()[0][0])
             if time_since_update > max_staleness:
                 update_sites(bot, cursor)
-
-            cursor.execute(query2)
-            langs = []
-            for lang, lang_name in cursor.fetchall():
-                template = tl_select if lang == site.lang else tl_normal
-                fullname = "{0} ({1})".format(lang, lang_name)
-                langs.append(template.format(lang, fullname))
-
-            cursor.execute(query3)
-            projects = []
-            for (project,) in cursor.fetchall():
-                template = tl_select if project == site.project else tl_normal
-                projects.append(template.format(project, project.capitalize()))
+            langs = load_sites_from_db(cursor, query2, site.lang)
+            projects = load_sites_from_db(cursor, query3, site.project)
 
         langs = "\n".join(langs)
         projects = "\n".join(projects)
@@ -146,22 +133,32 @@
         languages, projects = set(), set()
         for site in matrix.itervalues():
             if isinstance(site, list):  # Special sites
-                continue
-            code = site["code"].encode("utf8")
-            name = site["name"].encode("utf8")
-            languages.add((code, name))
+                projects.add(("wikimedia", "Wikimedia"))
+                for special in site:
+                    if "closed" not in special and "private" not in special:
+                        code = special["dbname"]
+                        name = special["code"].capitalize()
+                        languages.add((code, name))
+            this = set()
             for web in site["site"]:
+                if "closed" in web:
+                    continue
                 project = "wikipedia" if web["code"] == "wiki" else web["code"]
-                projects.add(project)
+                this.add((project, project.capitalize()))
+            if this:
+                code = site["code"].encode("utf8")
+                name = site["name"].encode("utf8")
+                languages.add((code, "{0} ({1})".format(code, name)))
+                projects |= this
         save_site_updates(cursor, languages, projects)
 
     def save_site_updates(cursor, languages, projects):
         query1 = "SELECT lang_code, lang_name FROM languages"
         query2 = "DELETE FROM languages WHERE lang_code = ? AND lang_name = ?"
         query3 = "INSERT INTO languages VALUES (?, ?)"
-        query4 = "SELECT project_name FROM projects"
-        query5 = "DELETE FROM projects WHERE project_name = ?"
-        query6 = "INSERT INTO projects VALUES (?)"
+        query4 = "SELECT project_code, project_name FROM projects"
+        query5 = "DELETE FROM projects WHERE project_code = ? AND project_name = ?"
+        query6 = "INSERT INTO projects VALUES (?, ?)"
         query7 = "UPDATE updates SET update_time = ? WHERE update_service = ?"
         synchronize_sites_with_db(cursor, languages, query1, query2, query3)
         synchronize_sites_with_db(cursor, projects, query4, query5, query6)
@@ -173,6 +170,16 @@
             updates.remove(site) if site in updates else removals.append(site)
         cursor.executemany(q_rmv, removals)
         cursor.executemany(q_update, updates)
+
+    def load_sites_from_db(cursor, query, selected_code):
+        tl_normal = '<option value="{0}">{1}</option>'
+        tl_selected = '<option value="{0}" selected="selected">{1}</option>'
+        cursor.execute(query)
+        results = []
+        for code, name in cursor.fetchall():
+            template = tl_selected if code == selected_code else tl_normal
+            results.append(template.format(code, name))
+        return results
 
     def highlight_delta(chain, delta):
         processed = []

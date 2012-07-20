@@ -1,5 +1,4 @@
 <%!
-    from collections import defaultdict
     from datetime import datetime
     from hashlib import sha256
     from itertools import count
@@ -12,8 +11,7 @@
     from earwigbot import bot, exceptions
     import oursql
 
-    def get_results(lang, project, title, url, query):
-        bot = bot.Bot(".earwigbot")
+    def get_results(bot, lang, project, title, url, query):
         try:
             site = bot.wiki.get_site(lang=lang, project=project)
         except exceptions.SiteNotFoundError:
@@ -26,7 +24,7 @@
         # if url:
         #     result = get_url_specific_results(page, url)
         # else:
-        #     conn = open_sql_connection(bot)
+        #     conn = open_sql_connection(bot, "copyvioCache")
         #     if not query.get("nocache"):
         #         result = get_cached_results(page, conn)
         #     if query.get("nocache") or not result:
@@ -44,8 +42,8 @@
         result.tdiff = time() - t_start
         return result
 
-    def open_sql_connection(bot):
-        conn_args = bot.config.wiki["_toolserverSQLCache"]
+    def open_sql_connection(bot, dbname):
+        conn_args = bot.config.wiki["_toolserverSQL"][dbname]
         if "read_default_file" not in conn_args and "user" not in conn_args and "passwd" not in conn_args:
             conn_args["read_default_file"] = expanduser("~/.my.cnf")
         if "autoping" not in conn_args:
@@ -106,6 +104,75 @@
                 cursor.execute(query2, (pageid,))
             cursor.execute(query3, (pageid, hash, result.url, result.queries,
                                     result.tdiff))
+
+    def get_sites(bot):
+        max_staleness = 60 * 60 * 24 * 7
+        site = bot.wiki.get_site()
+        conn = open_sql_connection(site, "globals")
+        query1 = "SELECT update_time FROM updates WHERE update_service = ?"
+        query2 = "SELECT lang_code, lang_name FROM languages"
+        query3 = "SELECT project_name FROM projects"
+        tl_normal = '<option value="{0}">{1}</option>'
+        tl_select = '<option value="{0}" selected="selected">{1}</option>'
+
+        with conn.cursor() as cursor:
+            cursor.execute(query1, ("sites",))
+            time_since_update = int(time() - cursor.fetchall()[0][0])
+            if time_since_update > max_staleness:
+                update_sites(bot, cursor)
+
+            cursor.execute(query2)
+            langs = []
+            for lang, lang_name in cursor.fetchall():
+                template = tl_select if lang == site.lang else tl_normal
+                fullname = "{0} ({1})".format(lang, lang_name)
+                langs.append(template.format(lang, fullname))
+
+            cursor.execute(query3)
+            projects = []
+            for (project,) in cursor.fetchall():
+                template = tl_select if project == site.project else tl_normal
+                projects.append(template.format(project, project.capitalize()))
+
+        langs = "\n".join(langs)
+        projects = "\n".join(projects)
+        result = '<select name="lang">\n{0}\n</select>\n'.format(langs)
+        result += '<select name="project">\n{0}\n</select>'.format(projects)
+        return result
+
+    def update_sites(site, cursor):
+        matrix = site.api_query(action="sitematrix")["sitematrix"]
+        del matrix["count"]
+        languages, projects = set(), set()
+        for site in matrix.itervalues():
+            if isinstance(site, list):  # Special sites
+                continue
+            code = site["code"].encode("utf8")
+            name = site["name"].encode("utf8")
+            languages.add((code, name))
+            for web in site["site"]:
+                project = "wikipedia" if web["code"] == "wiki" else web["code"]
+                projects.add(project)
+        save_site_updates(cursor, languages, projects)
+
+    def save_site_updates(cursor, languages, projects):
+        query1 = "SELECT lang_code, lang_name FROM languages"
+        query2 = "DELETE FROM languages WHERE lang_code = ? AND lang_name = ?"
+        query3 = "INSERT INTO languages VALUES (?, ?)"
+        query4 = "SELECT project_name FROM projects"
+        query5 = "DELETE FROM projects WHERE project_name = ?"
+        query6 = "INSERT INTO projects VALUES (?)"
+        query7 = "UPDATE updates SET update_time = ? WHERE update_service = ?"
+        synchronize_sites_with_db(cursor, languages, query1, query2, query3)
+        synchronize_sites_with_db(cursor, projects, query4, query5, query6)
+        cursor.execute(query7, (time(), "sites"))
+
+    def synchronize_sites_with_db(cursor, updates, q_list, q_rmv, q_update):
+        removals = []
+        for site in cursor.execute(q_list):
+            updates.remove(site) if site in updates else removals.append(site)
+        cursor.executemany(q_rmv, removals)
+        cursor.executemany(q_update, updates)
 
     def highlight_delta(chain, delta):
         processed = []
@@ -187,6 +254,7 @@
         return url
 %>\
 <%
+    bot = bot.Bot(".earwigbot")
     query = parse_qs(environ["QUERY_STRING"])
     try:
         lang = query["lang"][0]
@@ -196,7 +264,7 @@
     except (KeyError, IndexError):
         page = None
     else:
-        page, result = get_results(lang, project, title, url, query)
+        page, result = get_results(bot, lang, project, title, url, query)
 %>\
 <%include file="/support/header.mako" args="environ=environ, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>
             <h1>Copyvio Detector</h1>
@@ -206,12 +274,7 @@
                     <tr>
                         <td>Site:</td>
                         <td>
-                            <select name="lang">
-                                <option value="en" selected="selected">en (English)</option>
-                            </select>
-                            <select name="project">
-                                <option value="wikipedia" selected="selected">Wikipedia</option>
-                            </select>
+                            ${get_sites(bot)}
                         </td>
                     </tr>
                     <tr>

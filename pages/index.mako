@@ -1,6 +1,5 @@
 <%!
     from os import path
-    import time
 
     tools = [
         ("Home", "home", "index", True, None),

@@ -135,7 +135,7 @@
             try:
                 time_since_update = int(time() - cursor.fetchall()[0][0])
             except IndexError:
-                time_since_update = 0
+                time_since_update = time()
             if time_since_update > max_staleness:
                 update_sites(bot.wiki.get_site(), cursor)
             cursor.execute(query2)

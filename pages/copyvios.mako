@@ -153,7 +153,10 @@
                 for special in site:
                     if "closed" not in special and "private" not in special:
                         full = urlparse(special["url"]).netloc
-                        lang, project = full.rsplit(".", 2)[:2]
+                        if full.count(".") == 1:  # No subdomain, so use "www"
+                            lang, project = "www", full.split(".")[0]
+                        else:
+                            lang, project = full.rsplit(".", 2)[:2]
                         code = u"{0}::{1}".format(lang, special["dbname"])
                         name = special["code"].capitalize()
                         languages.add((code, u"{0} ({1})".format(lang, name)))
@@ -307,7 +310,7 @@
                     <tr>
                         <td>Site:</td>
                         <td>
-                            http://
+                            <tt>http://</tt>
                             <select name="lang">
                                 <% selected_lang = lang if lang else site.lang %>
                                 % for code, name in all_langs:
@@ -318,7 +321,7 @@
                                     % endif
                                 % endfor
                             </select>
-                            .
+                            <tt>.</tt>
                             <select name="project">
                                 <% selected_project = project if project else site.project %>
                                 % for code, name in all_projects:
@@ -329,7 +332,7 @@
                                     % endif
                                 % endfor
                             </select>
-                            .org
+                            <tt>.org</tt>
                         </td>
                     </tr>
                     <tr>

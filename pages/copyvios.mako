@@ -278,14 +278,20 @@
         return url
 %>\
 <%
+    lang = project = name = title = url = None
+    query = parse_qs(environ["QUERY_STRING"])
+    if "lang" in query:
+        lang = query["lang"][0].decode("utf8").lower()
+        if "::" in lang:
+            lang, name = lang.split("::", 1)
+    if "project" in query:
+        project = query["project"][0].decode("utf8").lower()
+    if "title" in query:
+        title = query["title"][0].decode("utf8")
+    if "url" in query:
+        url = query["url"][0].decode("utf8")
     bot = Bot(".earwigbot")
     site = bot.wiki.get_site()
-    query = parse_qs(environ["QUERY_STRING"])
-    lang = query["lang"][0].decode("utf8").lower() if "lang" in query else None
-    lang, name = lang.split("::", 1) if "::" in lang else (lang, None)
-    project = query["project"][0].decode("utf8").lower() if "project" in query else None
-    title = query["title"][0].decode("utf8") if "title" in query else None
-    url = query["url"][0].decode("utf8") if "url" in query else None
     all_langs, all_projects = get_sites(bot)
     if lang and project and title:
         page, result = get_results(bot, lang, project, name, all_projects,

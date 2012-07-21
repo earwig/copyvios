@@ -15,10 +15,10 @@
     def get_results(bot, lang, project, name, all_projects, title, url, query):
         site = get_site(bot, lang, project, name, all_projects)
         if not site:
-            return None, None
+            return None, None, None
         page = site.get_page(title)
         if page.exists in [page.PAGE_MISSING, page.PAGE_INVALID]:
-            return page, None
+            return site, page, None
 
         # if url:
         #     result = get_url_specific_results(page, url)
@@ -37,7 +37,7 @@
         result.cached = False
         result.tdiff = time() - tstart
         # END TEST BLOCK
-        return page, result
+        return site, page, result
 
     def get_site(bot, lang, project, name, all_projects):
         if project not in [proj[0] for proj in all_projects]:
@@ -285,10 +285,10 @@
         return url
 %>\
 <%
-    lang = project = name = title = url = None
+    lang = orig_lang = project = name = title = url = None
     query = parse_qs(environ["QUERY_STRING"])
     if "lang" in query:
-        lang = query["lang"][0].decode("utf8").lower()
+        lang = orig_lang = query["lang"][0].decode("utf8").lower()
         if "::" in lang:
             lang, name = lang.split("::", 1)
     if "project" in query:
@@ -298,13 +298,13 @@
     if "url" in query:
         url = query["url"][0].decode("utf8")
     bot = Bot(".earwigbot")
-    site = bot.wiki.get_site()
+    default_site = bot.wiki.get_site()
     all_langs, all_projects = get_sites(bot)
     if lang and project and title:
-        page, result = get_results(bot, lang, project, name, all_projects,
-                                   title, url, query)
+        site, page, result = get_results(bot, lang, project, name,
+                                         all_projects, title, url, query)
     else:
-        page = result = None
+        site, page, result = default_site, None, None
 %>\
 <%include file="/support/header.mako" args="environ=environ, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>
             <h1>Copyvio Detector</h1>
@@ -316,7 +316,7 @@
                         <td>
                             <tt>http://</tt>
                             <select name="lang">
-                                <% selected_lang = lang if lang else site.lang %>
+                                <% selected_lang = orig_lang if orig_lang else default_site.lang %>
                                 % for code, name in all_langs:
                                     % if code == selected_lang:
                                         <option value="${code}" selected="selected">${name}</option>
@@ -327,7 +327,7 @@
                             </select>
                             <tt>.</tt>
                             <select name="project">
-                                <% selected_project = project if project else site.project %>
+                                <% selected_project = project if project else default_site.project %>
                                 % for code, name in all_projects:
                                     % if code == selected_project:
                                         <option value="${code}" selected="selected">${name}</option>

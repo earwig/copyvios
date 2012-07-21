@@ -182,7 +182,7 @@
         query9 = "INSERT INTO updates VALUES (?, ?)"
         synchronize_sites_with_db(cursor, languages, query1, query2, query3)
         synchronize_sites_with_db(cursor, projects, query4, query5, query6)
-        cursor.execute(query7, "sites",)
+        cursor.execute(query7, ("sites",))
         if cursor.fetchall():
             cursor.execute(query8, (time(), "sites"))
         else:

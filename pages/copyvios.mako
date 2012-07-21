@@ -48,14 +48,14 @@
             except exceptions.SiteNotFoundError:
                 try:
                     return bot.wiki.add_site(lang=lang, project=project)
-                except exceptions.APIError:
+                except (exceptions.APIError, exceptions.LoginError):
                     return None
         try:
             return bot.wiki.get_site(lang=lang, project=project)
         except exceptions.SiteNotFoundError:
             try:
                 return bot.wiki.add_site(lang=lang, project=project)
-            except exceptions.APIError:
+            except (exceptions.APIError, exceptions.LoginError):
                 return None
 
     def get_url_specific_results(page, url):
@@ -374,7 +374,7 @@
             % if project and lang and title and not page:
                 <div class="divider"></div>
                 <div id="cv-result-yes">
-                    <p>The given site, (project=<b><tt>${project}</tt></b>, language=<b><tt>${lang}</tt></b>) doesn't seem to exist. <a href="//${lang}.${project}.org/">Check its URL?</a></p>
+                    <p>The given site, (project=<b><tt>${project}</tt></b>, language=<b><tt>${lang}</tt></b>) doesn't seem to exist. It may also be closed or private. <a href="//${lang}.${project}.org/">Confirm its URL.</a></p>
                 </div>
             % elif project and lang and title and page and not result:
                 <div class="divider"></div>

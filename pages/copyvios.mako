@@ -17,7 +17,9 @@
         if not site:
             return None, None, None
         page = site.get_page(title)
-        if page.exists in [page.PAGE_MISSING, page.PAGE_INVALID]:
+        try:
+            page.get()  # Make sure that the page exists before we check it!
+        except (exceptions.PageNotFoundError, exceptions.InvalidPageError):
             return site, page, None
 
         # if url:

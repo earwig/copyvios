@@ -143,7 +143,11 @@
             if time_since_update > max_staleness:
                 update_sites(bot.wiki.get_site(), cursor)
             cursor.execute(query2)
-            langs = [(code, name.decode("unicode_escape")) for (code, name) in cursor.fetchall()]
+            langs = []
+            for code, name in cursor.fetchall():
+                if "\U" in name:
+                    name = name.decode("unicode_escape")
+                langs.append((code, name))
             cursor.execute(query3)
             projects = cursor.fetchall()
         return langs, projects
@@ -154,8 +158,9 @@
         languages, projects = set(), set()
         for site in matrix.itervalues():
             if isinstance(site, list):  # Special sites
+                bad_sites = ["closed", "private", "fishbowl"]
                 for special in site:
-                    if "closed" not in special and "private" not in special and "fishbowl" not in special:
+                    if all([key not in special for key in bad_sites]):
                         full = urlparse(special["url"]).netloc
                         if full.count(".") == 1:  # No subdomain, so use "www"
                             lang, project = "www", full.split(".")[0]
@@ -174,7 +179,10 @@
                 this.add((project, project.capitalize()))
             if this:
                 code = site["code"]
-                name = site["name"].encode("unicode_escape")
+                if "\U" in site["name"].encode("unicode_escape"):
+                    name = site["name"].encode("unicode_escape")
+                else:
+                    name = site["name"]
                 languages.add((code, u"{0} ({1})".format(code, name)))
                 projects |= this
         save_site_updates(cursor, languages, projects)
@@ -374,12 +382,12 @@
             % if project and lang and title and not page:
                 <div class="divider"></div>
                 <div id="cv-result-yes">
-                    <p>The given site, (project=<b><tt>${project}</tt></b>, language=<b><tt>${lang}</tt></b>) doesn't seem to exist. It may also be closed or private. <a href="//${lang}.${project}.org/">Confirm its URL.</a></p>
+                    <p>The given site (project=<b><tt>${project}</tt></b>, language=<b><tt>${lang}</tt></b>) doesn't seem to exist. It may also be closed or private. <a href="//${lang}.${project}.org/">Confirm its URL.</a></p>
                 </div>
             % elif project and lang and title and page and not result:
                 <div class="divider"></div>
                 <div id="cv-result-yes">
-                    <p>The given page, <a href="${page.url}">${page.title | h}</a>, doesn't seem to exist.</p>
+                    <p>The given page doesn't seem to exist: <a href="${page.url}">${page.title | h}</a>.</p>
                 </div>
             % elif page:
                 <div class="divider"></div>

@@ -42,7 +42,7 @@
     def get_site(bot, lang, project, name, all_projects):
         if project not in [proj[0] for proj in all_projects]:
             return None
-        if project == "wikimedia":  # Special sites:
+        if project == "wikimedia" and name:  # Special sites:
             try:
                 return bot.wiki.get_site(name=name)
             except exceptions.SiteNotFoundError:
@@ -298,13 +298,12 @@
     if "url" in query:
         url = query["url"][0].decode("utf8")
     bot = Bot(".earwigbot")
-    default_site = bot.wiki.get_site()
     all_langs, all_projects = get_sites(bot)
     if lang and project and title:
         site, page, result = get_results(bot, lang, project, name,
                                          all_projects, title, url, query)
     else:
-        site, page, result = default_site, None, None
+        site = page = result = None
 %>\
 <%include file="/support/header.mako" args="environ=environ, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>
             <h1>Copyvio Detector</h1>
@@ -316,7 +315,7 @@
                         <td>
                             <tt>http://</tt>
                             <select name="lang">
-                                <% selected_lang = orig_lang if orig_lang else default_site.lang %>
+                                <% selected_lang = orig_lang if orig_lang else bot.wiki.get_site().lang %>
                                 % for code, name in all_langs:
                                     % if code == selected_lang:
                                         <option value="${code}" selected="selected">${name}</option>
@@ -327,7 +326,7 @@
                             </select>
                             <tt>.</tt>
                             <select name="project">
-                                <% selected_project = project if project else default_site.project %>
+                                <% selected_project = project if project else bot.wiki.get_site().project %>
                                 % for code, name in all_projects:
                                     % if code == selected_project:
                                         <option value="${code}" selected="selected">${name}</option>

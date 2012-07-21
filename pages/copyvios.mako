@@ -155,7 +155,7 @@
         for site in matrix.itervalues():
             if isinstance(site, list):  # Special sites
                 for special in site:
-                    if "closed" not in special and "private" not in special:
+                    if "closed" not in special and "private" not in special and "fishbowl" not in special:
                         full = urlparse(special["url"]).netloc
                         if full.count(".") == 1:  # No subdomain, so use "www"
                             lang, project = "www", full.split(".")[0]

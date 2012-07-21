@@ -139,7 +139,7 @@
             if time_since_update > max_staleness:
                 update_sites(bot.wiki.get_site(), cursor)
             cursor.execute(query2)
-            langs = cursor.fetchall()
+            langs = [(code, name.decode("unicode_escape")) for (code, name) in cursor.fetchall()]
             cursor.execute(query3)
             projects = cursor.fetchall()
         return langs, projects
@@ -165,7 +165,7 @@
                 this.add((project, project.capitalize()))
             if this:
                 code = site["code"]
-                name = site["name"]
+                name = site["name"].encode("unicode_escape")
                 languages.add((code, u"{0} ({1})".format(code, name)))
                 projects |= this
         save_site_updates(cursor, languages, projects)

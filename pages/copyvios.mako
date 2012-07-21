@@ -6,14 +6,14 @@
     from re import sub, UNICODE
     from sys import path
     from time import time
-    from urlparse import parse_qs
+    from urlparse import parse_qs, urlparse
 
     from earwigbot import exceptions
     from earwigbot.bot import Bot
     import oursql
 
-    def get_results(bot, lang, project, all_projects, title, url, query):
-        site = get_site(bot, lang, project, all_projects)
+    def get_results(bot, lang, project, name, all_projects, title, url, query):
+        site = get_site(bot, lang, project, name, all_projects)
         if not site:
             return None, None
         page = site.get_page(title)
@@ -36,12 +36,12 @@
         # END TEST BLOCK
         return page, result
 
-    def get_site(bot, lang, project, all_projects):
+    def get_site(bot, lang, project, name, all_projects):
         if project not in [proj[0] for proj in all_projects]:
             return None
         if project == "wikimedia":  # Special sites:
             try:
-                return bot.wiki.get_site(name=lang)
+                return bot.wiki.get_site(name=name)
             except exceptions.SiteNotFoundError:
                 try:
                     return bot.wiki.add_site(lang=lang, project=project)
@@ -150,12 +150,14 @@
         languages, projects = set(), set()
         for site in matrix.itervalues():
             if isinstance(site, list):  # Special sites
-                projects.add(("wikimedia", "Wikimedia"))
                 for special in site:
                     if "closed" not in special and "private" not in special:
-                        code = special["dbname"]
+                        full = urlparse(special["url"]).netloc
+                        lang, project = full.rsplit(".", 2)[:2]
+                        code = u"{0}::{1}".format(lang, special["dbname"])
                         name = special["code"].capitalize()
-                        languages.add((code, name))
+                        languages.add((code, u"{0} ({1})".format(lang, name)))
+                        projects.add((project, project.capitalize()))
                 continue
             this = set()
             for web in site["site"]:
@@ -211,8 +213,8 @@
                 except IndexError:
                     next = chain.END
                 sword = strip_word(word)
-                block = [prev_prev, prev]  # Block for before
-                alock = [prev, sword]  # Block for after
+                block = (prev_prev, prev)  # Block for before
+                alock = (prev, sword)  # Block for after
                 before = [block in delta.chain and sword in delta.chain[block]]
                 after = [alock in delta.chain and next in delta.chain[alock]]
                 is_first = i == 0
@@ -280,13 +282,14 @@
     site = bot.wiki.get_site()
     query = parse_qs(environ["QUERY_STRING"])
     lang = query["lang"][0].decode("utf8").lower() if "lang" in query else None
+    lang, name = lang.split("::", 1) if "::" in lang else (lang, None)
     project = query["project"][0].decode("utf8").lower() if "project" in query else None
     title = query["title"][0].decode("utf8") if "title" in query else None
     url = query["url"][0].decode("utf8") if "url" in query else None
     all_langs, all_projects = get_sites(bot)
     if lang and project and title:
-        page, result = get_results(bot, lang, project, all_projects, title,
-                                   url, query)
+        page, result = get_results(bot, lang, project, name, all_projects,
+                                   title, url, query)
     else:
         page = result = None
 %>\

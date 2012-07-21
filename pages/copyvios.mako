@@ -28,11 +28,14 @@
         #         result = get_cached_results(page, conn)
         #     if query.get("nocache") or not result:
         #         result = get_fresh_results(page, conn)
+        tstart = time()
         mc1 = __import__("earwigbot").wiki.copyvios.MarkovChain(page.get())
         mc2 = __import__("earwigbot").wiki.copyvios.MarkovChain(u"This is some random textual content for a page.")
         mci = __import__("earwigbot").wiki.copyvios.MarkovChainIntersection(mc1, mc2)
         result = __import__("earwigbot").wiki.copyvios.CopyvioCheckResult(
             True, 0.67123, "http://example.com/", 7, mc1, (mc2, mci))
+        result.cached = False
+        result.tdiff = time() - tstart
         # END TEST BLOCK
         return page, result
 
@@ -58,6 +61,7 @@
     def get_url_specific_results(page, url):
         t_start = time()
         result = page.copyvio_compare(url)
+        result.cached = False
         result.tdiff = time() - t_start
         return result
 

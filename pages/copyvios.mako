@@ -366,7 +366,7 @@
                             <td><input type="text" name="url" size="120" /></td>
                         % endif
                     </tr>
-                    % if query.get("nocache") or page:
+                    % if query.get("nocache") or (result and result.cached):
                         <tr>
                             <td>Bypass cache:</td>
                             % if query.get("nocache"):

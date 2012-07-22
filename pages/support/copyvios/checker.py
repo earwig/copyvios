@@ -8,15 +8,12 @@ from earwigbot import exceptions
 
 from ..misc import open_sql_connection
 
-def get_results(context, bot, lang, project, name, all_projects, title, url, query):
-    site = get_site(bot, lang, project, name, all_projects)
-    if not site:
-        return None, None, None
+def get_results(context, bot, site, title, url, query):
     page = site.get_page(title)
     try:
         page.get()  # Make sure that the page exists before we check it!
     except (exceptions.PageNotFoundError, exceptions.InvalidPageError):
-        return site, page, None
+        return page, None
 
     # if url:
     #     result = get_url_specific_results(page, url)
@@ -35,7 +32,7 @@ def get_results(context, bot, lang, project, name, all_projects, title, url, que
     result.cached = False
     result.tdiff = time() - tstart
     # END TEST BLOCK
-    return site, page, result
+    return page, result
 
 def get_url_specific_results(page, url):
     t_start = time()

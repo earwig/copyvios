@@ -7,6 +7,9 @@
 <%namespace module="support.misc" import="urlstrip"/>\
 <%
     lang = orig_lang = project = name = title = url = None
+    site = page = result = None
+
+    # Parse the query string.
     query = parse_qs(environ["QUERY_STRING"])
     if "lang" in query:
         lang = orig_lang = query["lang"][0].decode("utf8").lower()
@@ -18,13 +21,13 @@
         title = query["title"][0].decode("utf8")
     if "url" in query:
         url = query["url"][0].decode("utf8")
+
     bot = Bot(".earwigbot")
     all_langs, all_projects = get_sites(bot)
     if lang and project and title:
-        site, page, result = get_results(bot, lang, project, name,
-                                         all_projects, title, url, query)
-    else:
-        site = page = result = None
+        site = get_site(bot, lang, project, name, all_projects)
+        if site:
+            page, result = get_results(bot, site, title, url, query)
 %>\
 <%include file="/support/header.mako" args="environ=environ, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>
             <h1>Copyvio Detector</h1>

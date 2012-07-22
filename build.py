@@ -11,7 +11,7 @@ import os
 import sys
 
 os.chdir("..")
-sys.path.insert(0, os.path.join(".", "{{source_dir}}"))
+sys.path.insert(0, ".")
 
 from mako.template import Template
 from mako.lookup import TemplateLookup
@@ -42,7 +42,6 @@ class Builder(object):
         self.static_dir = "static"
         self.pages_dir = "pages"
         self.support_dir = "pages/support"
-        self.source_dir = "toolserver"
         self.temp_dir = "temp"
         self.rs_file = "rewrite.script"
 
@@ -69,7 +68,6 @@ class Builder(object):
         logger.debug("build {0} -> {1}".format(src, dest))
         content = page_src.replace("{{src}}", src)
         content = content.replace("{{pages_dir}}", self.pages_dir)
-        content = content.replace("{{source_dir}}", self.source_dir)
         content = content.replace("{{temp_dir}}", self.temp_dir)
         with open(dest, "w") as fp:
             fp.write(content)

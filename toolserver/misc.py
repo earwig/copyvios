@@ -19,7 +19,10 @@ class Query(object):
             return None
 
     def __setattr__(self, key, value):
-        self.query[key] = value
+        if key == "query":
+            super(Query, self).__setattr__(key, value)
+        else:
+            self.query[key] = value
 
 
 def open_sql_connection(bot, dbname):

@@ -1,8 +1,26 @@
 # -*- coding: utf-8  -*-
 
 from os.path import expanduser
+from urlparse import parse_qs
 
 import oursql
+
+class Query(object):
+    def __init__(self, environ):
+        self.query = {}
+        parsed = parse_qs(environ["QUERY_STRING"])
+        for key, value in parsed.iteritems():
+            self.query[key] = value[-1].decode("utf8")
+
+    def __getattr__(self, key):
+        try:
+            return self.query[key]
+        except KeyError:
+            return None
+
+    def __setattr__(self, key, value):
+        self.query[key] = value
+
 
 def open_sql_connection(bot, dbname):
     conn_args = bot.config.wiki["_toolserverSQL"][dbname]

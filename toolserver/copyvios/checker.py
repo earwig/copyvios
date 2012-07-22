@@ -8,20 +8,20 @@ from earwigbot import exceptions
 
 from ..misc import open_sql_connection
 
-def get_results(bot, site, title, url, query):
-    page = site.get_page(title)
+def get_results(bot, site, query):
+    page = site.get_page(query.title)
     try:
         page.get()  # Make sure that the page exists before we check it!
     except (exceptions.PageNotFoundError, exceptions.InvalidPageError):
         return page, None
 
-    # if url:
-    #     result = _get_url_specific_results(page, url)
+    # if query.url:
+    #     result = _get_url_specific_results(page, query.url)
     # else:
     #     conn = open_sql_connection(bot, "copyvioCache")
-    #     if not query.get("nocache"):
+    #     if not query.nocache:
     #         result = _get_cached_results(page, conn)
-    #     if query.get("nocache") or not result:
+    #     if query.nocache or not result:
     #         result = _get_fresh_results(page, conn)
     tstart = time()
     mc1 = __import__("earwigbot").wiki.copyvios.MarkovChain(page.get())

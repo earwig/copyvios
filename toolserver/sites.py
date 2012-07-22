@@ -7,7 +7,8 @@ from earwigbot import exceptions
 
 from .misc import open_sql_connection
 
-def get_site(bot, lang, project, name, all_projects):
+def get_site(bot, query, all_projects):
+    lang, project, name = query.lang, query.project, query.name
     if project not in [proj[0] for proj in all_projects]:
         return None
     if project == "wikimedia" and name:  # Special sites:

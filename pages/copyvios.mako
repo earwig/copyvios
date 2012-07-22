@@ -1,7 +1,7 @@
 <%include file="/support/header.mako" args="environ=environ, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>\
 <%namespace module="toolserver.copyvios" import="main, highlight_delta"/>\
 <%namespace module="toolserver.misc" import="urlstrip"/>\
-<% lang, orig_lang, project, title, url, bot, page, result = main(environ) %>
+<% query, bot, all_langs, all_projects, page, result = main(environ) %>
             <h1>Copyvio Detector</h1>
             <p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. Simply give the title of the page you want to check and hit Submit. The tool will then search for its content elsewhere on the web and display a report if a similar webpage is found. If you also provide a URL, it will not query any search engines and instead display a report comparing the article to that particular webpage, like the <a href="//toolserver.org/~dcoetzee/duplicationdetector/">Duplication Detector</a>. Check out the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/FAQ">FAQ</a> for more information and technical details.</p>
             <form action="${environ['PATH_INFO']}" method="get">
@@ -11,7 +11,7 @@
                         <td>
                             <tt>http://</tt>
                             <select name="lang">
-                                <% selected_lang = orig_lang if orig_lang else bot.wiki.get_site().lang %>
+                                <% selected_lang = query.orig_lang if query.orig_lang else bot.wiki.get_site().lang %>
                                 % for code, name in all_langs:
                                     % if code == selected_lang:
                                         <option value="${code}" selected="selected">${name}</option>
@@ -22,7 +22,7 @@
                             </select>
                             <tt>.</tt>
                             <select name="project">
-                                <% selected_project = project if project else bot.wiki.get_site().project %>
+                                <% selected_project = query.project if query.project else bot.wiki.get_site().project %>
                                 % for code, name in all_projects:
                                     % if code == selected_project:
                                         <option value="${code}" selected="selected">${name}</option>
@@ -38,24 +38,24 @@
                         <td>Page title:</td>
                         % if page:
                             <td><input type="text" name="title" size="60" value="${page.title | h}" /></td>
-                        % elif title:
-                            <td><input type="text" name="title" size="60" value="${title | h}" /></td>
+                        % elif query.title:
+                            <td><input type="text" name="title" size="60" value="${query.title | h}" /></td>
                         % else:
                             <td><input type="text" name="title" size="60" /></td>
                         % endif
                     </tr>
                     <tr>
                         <td>URL (optional):</td>
-                        % if url:
-                            <td><input type="text" name="url" size="120" value="${url | h}" /></td>
+                        % if query.url:
+                            <td><input type="text" name="url" size="120" value="${query.url | h}" /></td>
                         % else:
                             <td><input type="text" name="url" size="120" /></td>
                         % endif
                     </tr>
-                    % if query.get("nocache") or (result and result.cached):
+                    % if query.nocache or (result and result.cached):
                         <tr>
                             <td>Bypass cache:</td>
-                            % if query.get("nocache"):
+                            % if query.nocache:
                                 <td><input type="checkbox" name="nocache" value="1" checked="checked" /></td>
                             % else:
                                 <td><input type="checkbox" name="nocache" value="1" /></td>
@@ -67,12 +67,12 @@
                     </tr>
                 </table>
             </form>
-            % if project and lang and title and not page:
+            % if query.project and query.lang and query.title and not page:
                 <div class="divider"></div>
                 <div id="cv-result-yes">
-                    <p>The given site (project=<b><tt>${project}</tt></b>, language=<b><tt>${lang}</tt></b>) doesn't seem to exist. It may also be closed or private. <a href="//${lang}.${project}.org/">Confirm its URL.</a></p>
+                    <p>The given site (project=<b><tt>${query.project}</tt></b>, language=<b><tt>${query.lang}</tt></b>) doesn't seem to exist. It may also be closed or private. <a href="//${query.lang}.${query.project}.org/">Confirm its URL.</a></p>
                 </div>
-            % elif project and lang and title and page and not result:
+            % elif query.project and query.lang and query.title and page and not result:
                 <div class="divider"></div>
                 <div id="cv-result-yes">
                     <p>The given page doesn't seem to exist: <a href="${page.url}">${page.title | h}</a>.</p>

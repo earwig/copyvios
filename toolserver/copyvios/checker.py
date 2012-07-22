@@ -24,11 +24,11 @@ def get_results(bot, site, query):
     #     if query.nocache or not result:
     #         result = _get_fresh_results(page, conn)
     tstart = time()
-    mc1 = __import__("earwigbot").wiki.copyvios.MarkovChain(page.get())
-    mc2 = __import__("earwigbot").wiki.copyvios.MarkovChain(u"This is some random textual content for a page.")
-    mci = __import__("earwigbot").wiki.copyvios.MarkovChainIntersection(mc1, mc2)
-    result = __import__("earwigbot").wiki.copyvios.CopyvioCheckResult(
-        True, 0.67123, "http://example.com/", 7, mc1, (mc2, mci))
+    from earwigbot.wiki.copyvios import MarkovChain, MarkovChainIntersection, CopyvioCheckResult
+    mc1 = MarkovChain(page.get())
+    mc2 = MarkovChain(u"This is some random textual content for a page.")
+    mci = MarkovChainIntersection(mc1, mc2)
+    result = CopyvioCheckResult(True, 0.67123, "http://example.com/", 7, mc1, (mc2, mci))
     result.cached = False
     result.tdiff = time() - tstart
     # END TEST BLOCK

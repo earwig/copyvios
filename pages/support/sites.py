@@ -7,7 +7,7 @@ from earwigbot import exceptions
 
 from .misc import open_sql_connection
 
-def get_site(context, bot, lang, project, name, all_projects):
+def get_site(bot, lang, project, name, all_projects):
     if project not in [proj[0] for proj in all_projects]:
         return None
     if project == "wikimedia" and name:  # Special sites:
@@ -26,7 +26,7 @@ def get_site(context, bot, lang, project, name, all_projects):
         except (exceptions.APIError, exceptions.LoginError):
             return None
 
-def get_sites(context, bot):
+def get_sites(bot):
     max_staleness = 60 * 60 * 24 * 7
     conn = open_sql_connection(bot, "globals")
     query1 = "SELECT update_time FROM updates WHERE update_service = ?"

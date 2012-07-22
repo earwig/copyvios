@@ -2,7 +2,7 @@
 
 from re import sub, UNICODE
 
-def highlight_delta(chain, delta):
+def highlight_delta(context, chain, delta):
     processed = []
     prev_prev = prev = chain.START
     i = 0

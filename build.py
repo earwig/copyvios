@@ -8,7 +8,10 @@ import shutil
 page_src = """#! /usr/bin/env python
 # -*- coding: utf-8  -*-
 import os
+import sys
+
 os.chdir("..")
+sys.path.insert(0, os.path.join(".", "{{pages_dir}}"))
 
 from mako.template import Template
 from mako.lookup import TemplateLookup

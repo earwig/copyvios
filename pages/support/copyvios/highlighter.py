@@ -2,7 +2,7 @@
 
 from re import sub, UNICODE
 
-def highlight_delta(chain, delta):
+def highlight_delta(context, chain, delta):
     processed = []
     prev_prev = prev = chain.START
     i = 0
@@ -11,7 +11,7 @@ def highlight_delta(chain, delta):
     for paragraph in paragraphs:
         processed_words = []
         words = paragraph.split(" ")
-        for i, word in enumerate(words, i)
+        for i, word in enumerate(words, i):
             try:
                 next = strip_word(all_words[i+1])
             except IndexError:

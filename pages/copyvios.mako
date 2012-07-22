@@ -2,9 +2,9 @@
     from urlparse import parse_qs
     from earwigbot.bot import Bot
 %>\
-<%namespace file="/support/copyvios/__init__.py" import="get_results, highlight_delta"/>\
-<%namespace file="/support/sites.py" import="get_site, get_sites"/>\
-<%namespace file="/support/misc.py" import="urlstrip"/>\
+<%namespace module="support.copyvios" import="get_results, highlight_delta"/>\
+<%namespace module="support.sites" import="get_site, get_sites"/>\
+<%namespace module="support.misc" import="urlstrip"/>\
 <%
     lang = orig_lang = project = name = title = url = None
     query = parse_qs(environ["QUERY_STRING"])

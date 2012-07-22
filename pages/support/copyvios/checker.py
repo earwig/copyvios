@@ -6,7 +6,7 @@ from time import time
 
 from earwigbot import exceptions
 
-def get_results(bot, lang, project, name, all_projects, title, url, query):
+def get_results(context, bot, lang, project, name, all_projects, title, url, query):
     site = get_site(bot, lang, project, name, all_projects)
     if not site:
         return None, None, None

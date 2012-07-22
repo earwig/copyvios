@@ -8,7 +8,7 @@ from earwigbot import exceptions
 
 from ..misc import open_sql_connection
 
-def get_results(context, bot, site, title, url, query):
+def get_results(bot, site, title, url, query):
     page = site.get_page(title)
     try:
         page.get()  # Make sure that the page exists before we check it!

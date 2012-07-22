@@ -1,35 +1,7 @@
-<%!
-    from urlparse import parse_qs
-    from earwigbot.bot import Bot
-%>\
-<%namespace module="support.copyvios" import="get_results, highlight_delta"/>\
-<%namespace module="support.sites" import="get_site, get_sites"/>\
+<%include file="/support/header.mako" args="environ=environ, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>\
+<%namespace module="support.copyvios" import="main, highlight_delta"/>\
 <%namespace module="support.misc" import="urlstrip"/>\
-<%
-    lang = orig_lang = project = name = title = url = None
-    site = page = result = None
-
-    # Parse the query string.
-    query = parse_qs(environ["QUERY_STRING"])
-    if "lang" in query:
-        lang = orig_lang = query["lang"][0].decode("utf8").lower()
-        if "::" in lang:
-            lang, name = lang.split("::", 1)
-    if "project" in query:
-        project = query["project"][0].decode("utf8").lower()
-    if "title" in query:
-        title = query["title"][0].decode("utf8")
-    if "url" in query:
-        url = query["url"][0].decode("utf8")
-
-    bot = Bot(".earwigbot")
-    all_langs, all_projects = get_sites(bot)
-    if lang and project and title:
-        site = get_site(bot, lang, project, name, all_projects)
-        if site:
-            page, result = get_results(bot, site, title, url, query)
-%>\
-<%include file="/support/header.mako" args="environ=environ, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>
+<% lang, project, name, title, url, site, page, result = main(environ) %>
             <h1>Copyvio Detector</h1>
             <p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. Simply give the title of the page you want to check and hit Submit. The tool will then search for its content elsewhere on the web and display a report if a similar webpage is found. If you also provide a URL, it will not query any search engines and instead display a report comparing the article to that particular webpage, like the <a href="//toolserver.org/~dcoetzee/duplicationdetector/">Duplication Detector</a>. Check out the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/FAQ">FAQ</a> for more information and technical details.</p>
             <form action="${environ['PATH_INFO']}" method="get">

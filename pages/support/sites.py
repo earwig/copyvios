@@ -39,7 +39,7 @@ def get_sites(context, bot):
         except IndexError:
             time_since_update = time()
         if time_since_update > max_staleness:
-            update_sites(bot.wiki.get_site(), cursor)
+            _update_sites(bot.wiki.get_site(), cursor)
         cursor.execute(query2)
         langs = []
         for code, name in cursor.fetchall():
@@ -50,7 +50,7 @@ def get_sites(context, bot):
         projects = cursor.fetchall()
     return langs, projects
 
-def update_sites(site, cursor):
+def _update_sites(site, cursor):
     matrix = site.api_query(action="sitematrix")["sitematrix"]
     del matrix["count"]
     languages, projects = set(), set()
@@ -83,9 +83,9 @@ def update_sites(site, cursor):
                 name = site["name"]
             languages.add((code, u"{0} ({1})".format(code, name)))
             projects |= this
-    save_site_updates(cursor, languages, projects)
+    _save_site_updates(cursor, languages, projects)
 
-def save_site_updates(cursor, languages, projects):
+def _save_site_updates(cursor, languages, projects):
     query1 = "SELECT lang_code, lang_name FROM language"
     query2 = "DELETE FROM language WHERE lang_code = ? AND lang_name = ?"
     query3 = "INSERT INTO language VALUES (?, ?)"
@@ -95,15 +95,15 @@ def save_site_updates(cursor, languages, projects):
     query7 = "SELECT 1 FROM updates WHERE update_service = ?"
     query8 = "UPDATE updates SET update_time = ? WHERE update_service = ?"
     query9 = "INSERT INTO updates VALUES (?, ?)"
-    synchronize_sites_with_db(cursor, languages, query1, query2, query3)
-    synchronize_sites_with_db(cursor, projects, query4, query5, query6)
+    _synchronize_sites_with_db(cursor, languages, query1, query2, query3)
+    _synchronize_sites_with_db(cursor, projects, query4, query5, query6)
     cursor.execute(query7, ("sites",))
     if cursor.fetchall():
         cursor.execute(query8, (time(), "sites"))
     else:
         cursor.execute(query9, ("sites", time()))
 
-def synchronize_sites_with_db(cursor, updates, q_list, q_rmv, q_update):
+def _synchronize_sites_with_db(cursor, updates, q_list, q_rmv, q_update):
     removals = []
     cursor.execute(q_list)
     for site in cursor:

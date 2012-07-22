@@ -9,9 +9,8 @@ from ..sites import get_site, get_sites
 
 def main(context, environ):
     lang = orig_lang = project = name = title = url = None
-    site = page = result = None
 
-    # Parse the query string.
+    # Parse the query string:
     query = parse_qs(environ["QUERY_STRING"])
     if "lang" in query:
         lang = orig_lang = query["lang"][0].decode("utf8").lower()
@@ -26,9 +25,10 @@ def main(context, environ):
 
     bot = Bot(".earwigbot")
     all_langs, all_projects = get_sites(bot)
+    page = result = None
     if lang and project and title:
         site = get_site(bot, lang, project, name, all_projects)
         if site:
             page, result = get_results(bot, site, title, url, query)
 
-    return lang, project, name, title, url, site, page, result
+    return lang, orig_lang, project, title, url, bot, page, result

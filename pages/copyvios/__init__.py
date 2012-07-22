@@ -5,7 +5,7 @@ from earwigbot.bot import Bot
 
 from .checker import get_results
 from .highlighter import highlight_delta
-from ..sites import get_site, get_sites
+from ..support.sites import get_site, get_sites
 
 def main(context, environ):
     lang = orig_lang = project = name = title = url = None

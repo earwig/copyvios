@@ -1,5 +1,5 @@
 <%include file="/support/header.mako" args="environ=environ, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>\
-<%namespace module="support.copyvios" import="main, highlight_delta"/>\
+<%namespace module="copyvios" import="main, highlight_delta"/>\
 <%namespace module="support.misc" import="urlstrip"/>\
 <% lang, project, name, title, url, site, page, result = main(environ) %>
             <h1>Copyvio Detector</h1>

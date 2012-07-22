@@ -6,7 +6,7 @@ from time import time
 
 from earwigbot import exceptions
 
-from ..misc import open_sql_connection
+from ..support.misc import open_sql_connection
 
 def get_results(bot, site, title, url, query):
     page = site.get_page(title)

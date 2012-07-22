@@ -5,6 +5,8 @@ from urlparse import urlparse
 
 from earwigbot import exceptions
 
+from .misc import open_sql_connection
+
 def get_site(context, bot, lang, project, name, all_projects):
     if project not in [proj[0] for proj in all_projects]:
         return None

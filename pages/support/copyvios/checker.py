@@ -6,6 +6,8 @@ from time import time
 
 from earwigbot import exceptions
 
+from ..misc import open_sql_connection
+
 def get_results(context, bot, lang, project, name, all_projects, title, url, query):
     site = get_site(bot, lang, project, name, all_projects)
     if not site:

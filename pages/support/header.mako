@@ -31,8 +31,11 @@
         <div id="header">
             <p id="heading"><a class="dark" href="${pretty}">earwig</a><span class="light">@</span><a class="mid" href="https://wiki.toolserver.org/">toolserver</a><span class="light">:</span><a class="dark" href="${this}">${slug}</a></p>
             <p id="links"><span class="light">&gt;</span>
-                % for num, (name, tool, link, complete, desc) in enumerate(tools, 1):
-                    <abbr title="${name}${' (incomplete)' if not complete else ''}"><a class="${'dark' if complete else 'mid'}" href="${pretty}/${link}">${tool}</a></abbr>
+                % for num, tool in enumerate(tools, 1):
+                    % if tool != "DIVIDER":
+                        <% name, tool, link, complete, desc = tool %>
+                        <abbr title="${name}${' (incomplete)' if not complete else ''}"><a class="${'dark' if complete else 'mid'}" href="${pretty}/${link}">${tool}</a></abbr>
+                    % endif
                     % if num < len(tools):
                         <span class="light">&#124;</span>
                     % endif

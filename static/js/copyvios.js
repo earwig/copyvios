@@ -16,6 +16,7 @@ function get_cookie(name) {
 }
 
 function set_cookie(name, value, days) {
+    value = window.btoa(value);
     var path = window.location.pathname.split("/", 2)[1];
     if (days) {
         var date = new Date();
@@ -39,7 +40,7 @@ function copyvio_toggle_details(details) {
     if (link.innerHTML == "Show details:") {
         details.style.display = "block";
         link.innerHTML = "Hide details:";
-        set_cookie("EarwigCVShowDetails", "True", 180);
+        set_cookie("EarwigCVShowDetails", "True", 365);
     } else {
         details.style.display = "none";
         link.innerHTML = "Show details:";

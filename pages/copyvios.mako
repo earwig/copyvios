@@ -1,6 +1,7 @@
 <%include file="/support/header.mako" args="environ=environ, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>\
 <%namespace module="toolserver.copyvios" import="main, highlight_delta"/>\
-<%namespace module="toolserver.misc" import="parse_cookies, urlstrip"/>\
+<%namespace module="toolserver.cookies" import="parse_cookies"/>\
+<%namespace module="toolserver.misc" import="urlstrip"/>\
 <% query, bot, all_langs, all_projects, page, result = main(environ) %>
 <% cookies = parse_cookies(environ) %>
             <h1>Copyvio Detector</h1>

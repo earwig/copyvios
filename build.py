@@ -16,17 +16,19 @@ sys.path.insert(0, ".")
 from mako.template import Template
 from mako.lookup import TemplateLookup
 
-def myapp(environ, start_response):
-    start_response("200 OK", [("Content-Type", "text/html")])
+def main(environ, start_response):
     lookup = TemplateLookup(directories=["{{pages_dir}}"],
                             input_encoding="utf8")
     template = Template(filename="{{src}}", module_directory="{{temp_dir}}",
                         lookup=lookup, format_exceptions=True)
-    return [template.render(environ=environ).encode("utf8")]
+    headers = [("Content-Type", "text/html")]
+    page = template.render(environ=environ, headers=headers).encode("utf8")
+    start_response("200 OK", headers)
+    return [page]
 
 if __name__ == "__main__":
     from flup.server.fcgi import WSGIServer
-    WSGIServer(myapp).run()
+    WSGIServer(main).run()
 """
 
 rewrite_script_src = """match URL into $ with ^/~earwig/{0}(\?.*?)?$

@@ -14,8 +14,8 @@ def main(context, environ):
     if query.project:
         query.project = query.project.lower()
 
-    bot = get_bot(context)
-    all_langs, all_projects = get_sites(context, bot)
+    bot = get_bot()
+    all_langs, all_projects = get_sites(bot)
     page = result = None
     if query.lang and query.project and query.title:
         site = get_site(bot, query, all_projects)

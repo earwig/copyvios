@@ -1,6 +1,5 @@
 # -*- coding: utf-8  -*-
 
-from Cookie import CookieError, SimpleCookie
 from os.path import expanduser
 from urlparse import parse_qs
 
@@ -48,11 +47,5 @@ def urlstrip(context, url):
         url = url[:-1]
     return url
 
-def get_bot(context):
-    return Bot(".earwigbot")
-
-def parse_cookies(context, environ):
-    try:
-        return SimpleCookie(environ["HTTP_COOKIE"])
-    except CookieError:
-        return SimpleCookie()
+def get_bot():
+    return Bot(".earwigbot", 100)  # Don't print any logs to the console

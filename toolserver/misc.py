@@ -4,6 +4,7 @@ from Cookie import CookieError, SimpleCookie
 from os.path import expanduser
 from urlparse import parse_qs
 
+from earwigbot.bot import Bot
 import oursql
 
 class Query(object):
@@ -46,6 +47,9 @@ def urlstrip(context, url):
     if url.endswith("/"):
         url = url[:-1]
     return url
+
+def get_bot(context):
+    return Bot(".earwigbot")
 
 def parse_cookies(context, environ):
     try:

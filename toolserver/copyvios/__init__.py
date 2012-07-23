@@ -1,10 +1,8 @@
 # -*- coding: utf-8  -*-
 
-from earwigbot.bot import Bot
-
 from .checker import get_results
 from .highlighter import highlight_delta
-from ..misc import Query
+from ..misc import get_bot, Query
 from ..sites import get_site, get_sites
 
 def main(context, environ):
@@ -16,8 +14,8 @@ def main(context, environ):
     if query.project:
         query.project = query.project.lower()
 
-    bot = Bot(".earwigbot")
-    all_langs, all_projects = get_sites(bot)
+    bot = get_bot(context)
+    all_langs, all_projects = get_sites(context, bot)
     page = result = None
     if query.lang and query.project and query.title:
         site = get_site(bot, query, all_projects)

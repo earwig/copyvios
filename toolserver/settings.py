@@ -1,8 +1,8 @@
 # -*- coding: utf-8  -*-
 
-from ..cookies import parse_cookies, set_cookie, delete_cookie
-from ..misc import get_bot, Query
-from ..sites import get_sites
+from .cookies import parse_cookies, set_cookie, delete_cookie
+from .misc import get_bot, Query
+from .sites import get_sites
 
 def main(context, environ, headers):
     cookies = parse_cookies(context, environ)

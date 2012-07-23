@@ -23,7 +23,7 @@
                             </select>
                             <tt>.</tt>
                             <select name="project">
-                                <% selected_project = cookies["EarwigDefaultProject"].value if "EarwigDefaultProject" in cookies else bot.wiki.get_site().lang %>
+                                <% selected_project = cookies["EarwigDefaultProject"].value if "EarwigDefaultProject" in cookies else bot.wiki.get_site().project %>
                                 % for code, name in projects:
                                     % if code == selected_project:
                                         <option value="${code}" selected="selected">${name}</option>
@@ -48,7 +48,7 @@
                 <ul>
                 % for cookie in cookies.itervalues():
                     <li>
-                        <tt>${cookie.key | h}</tt>: <tt>${cookie.value | h}</tt> (<tt>${cookie["path"] | h}</tt>)
+                        <tt>${cookie.key | h}</tt>: <tt>${cookie.value | h}</tt>
                         <form action="${environ['PATH_INFO']}" method="post">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="cookie" value="${cookie.key | h}">

@@ -12,13 +12,16 @@ class _CookieManager(SimpleCookie):
             super(_CookieManager, self).__init__(environ["HTTP_COOKIE"])
         except (CookieError, AttributeError):
             super(_CookieManager, self).__init__()
+        for cookie in self:
+            if self[cookie].value is False:
+                del self[cookie]
 
     def value_decode(self, value):
         unquoted = super(_CookieManager, self).value_decode(value)[0]
         try:
             return base64.b64decode(unquoted).decode("utf8"), value
         except (TypeError, UnicodeDecodeError):
-            return u"False", "False"
+            return False, "False"
 
     def value_encode(self, value):
         encoded = base64.b64encode(value.encode("utf8"))

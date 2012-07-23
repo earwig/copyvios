@@ -12,7 +12,7 @@
                         <td>
                             <tt>http://</tt>
                             <select name="lang">
-                                <% selected_lang = query.orig_lang if query.orig_lang else bot.wiki.get_site().lang %>
+                                <% selected_lang = query.orig_lang if query.orig_lang else cookies["EarwigDefaultLang"].value if "EarwigDefaultLang" in cookies else bot.wiki.get_site().lang %>
                                 % for code, name in all_langs:
                                     % if code == selected_lang:
                                         <option value="${code}" selected="selected">${name}</option>
@@ -23,7 +23,7 @@
                             </select>
                             <tt>.</tt>
                             <select name="project">
-                                <% selected_project = query.project if query.project else bot.wiki.get_site().project %>
+                                <% selected_project = query.project if query.project else cookies["EarwigDefaultProject"].value if "EarwigDefaultProject" in cookies else bot.wiki.get_site().project %>
                                 % for code, name in all_projects:
                                     % if code == selected_project:
                                         <option value="${code}" selected="selected">${name}</option>

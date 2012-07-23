@@ -49,7 +49,7 @@
                         <tt>${cookie.key | h}</tt>: <tt>${cookie.value | h}</tt>
                         <form action="${environ['PATH_INFO']}" method="post">
                             <input type="hidden" name="action" value="deleteCookie">
-                            <input type="hidden" name="cookie" value="${cookie.name | h}">
+                            <input type="hidden" name="cookie" value="${cookie.key | h}">
                             <button type="submit">Delete</button>
                         </form>
                     </li>

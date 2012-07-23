@@ -48,7 +48,7 @@
                 <ul>
                 % for cookie in cookies.itervalues():
                     <li>
-                        <tt>${cookie.key | h}</tt>: <tt>${cookie.value | h}</tt> (<tt>${cookie.path | h}</tt>)
+                        <tt>${cookie.key | h}</tt>: <tt>${cookie.value | h}</tt> (<tt>${cookie["path"] | h}</tt>)
                         <form action="${environ['PATH_INFO']}" method="post">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="cookie" value="${cookie.key | h}">

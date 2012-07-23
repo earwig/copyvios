@@ -1,7 +1,8 @@
 <%include file="/support/header.mako" args="environ=environ, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>\
 <%namespace module="toolserver.copyvios" import="main, highlight_delta"/>\
-<%namespace module="toolserver.misc" import="urlstrip"/>\
+<%namespace module="toolserver.misc" import="parse_cookies, urlstrip"/>\
 <% query, bot, all_langs, all_projects, page, result = main(environ) %>
+<% cookies = parse_cookies(environ) %>
             <h1>Copyvio Detector</h1>
             <p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. Simply give the title of the page you want to check and hit Submit. The tool will then search for its content elsewhere on the web and display a report if a similar webpage is found. If you also provide a URL, it will not query any search engines and instead display a report comparing the article to that particular webpage, like the <a href="//toolserver.org/~dcoetzee/duplicationdetector/">Duplication Detector</a>. Check out the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/FAQ">FAQ</a> for more information and technical details.</p>
             <form action="${environ['PATH_INFO']}" method="get">
@@ -94,9 +95,17 @@
                         % else:
                             <li>Results generated in <tt>${round(result.tdiff, 3)}</tt> seconds using <tt>${result.queries}</tt> queries.</li>
                         % endif
-                        <li><a id="cv-result-detail-link" href="#cv-result-detail" onclick="copyvio_toggle_details()">Show details:</a></li>
+                        % if "EarwigCVShowDetails" cookies and cookies["EarwigCVShowDetails"] == "True":
+                            <li><a id="cv-result-detail-link" href="#cv-result-detail" onclick="copyvio_toggle_details()">Hide details:</a></li>
+                        % else:
+                            <li><a id="cv-result-detail-link" href="#cv-result-detail" onclick="copyvio_toggle_details()">Show details:</a></li>
+                        % endif
                     </ul>
-                    <div id="cv-result-detail" style="display: none;">
+                    % if "EarwigCVShowDetails" cookies and cookies["EarwigCVShowDetails"] == "True":
+                        <div id="cv-result-detail" style="display: block;">
+                    % else:
+                        <div id="cv-result-detail" style="display: none;">
+                    % endif
                         <ul id="cv-result-detail-list">
                             <li>Trigrams: <i>Article:</i> <tt>${result.article_chain.size()}</tt> / <i>Source:</i> <tt>${result.source_chain.size()}</tt> / <i>Delta:</i> <tt>${result.delta_chain.size()}</tt></li>
                             % if result.cached:

@@ -1,5 +1,6 @@
 # -*- coding: utf-8  -*-
 
+from Cookie import CookieError, SimpleCookie
 from os.path import expanduser
 from urlparse import parse_qs
 
@@ -45,3 +46,9 @@ def urlstrip(context, url):
     if url.endswith("/"):
         url = url[:-1]
     return url
+
+def parse_cookies(context, environ):
+    try:
+        return SimpleCookie(environ["HTTP_COOKIE"])
+    except CookieError:
+        return SimpleCookie()

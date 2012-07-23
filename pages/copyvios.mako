@@ -95,13 +95,13 @@
                         % else:
                             <li>Results generated in <tt>${round(result.tdiff, 3)}</tt> seconds using <tt>${result.queries}</tt> queries.</li>
                         % endif
-                        % if "EarwigCVShowDetails" in cookies and cookies["EarwigCVShowDetails"] == "True":
+                        % if "EarwigCVShowDetails" in cookies and cookies["EarwigCVShowDetails"].value == "True":
                             <li><a id="cv-result-detail-link" href="#cv-result-detail" onclick="copyvio_toggle_details()">Hide details:</a></li>
                         % else:
                             <li><a id="cv-result-detail-link" href="#cv-result-detail" onclick="copyvio_toggle_details()">Show details:</a></li>
                         % endif
                     </ul>
-                    % if "EarwigCVShowDetails" in cookies and cookies["EarwigCVShowDetails"] == "True":
+                    % if "EarwigCVShowDetails" in cookies and cookies["EarwigCVShowDetails"].value == "True":
                         <div id="cv-result-detail" style="display: block;">
                     % else:
                         <div id="cv-result-detail" style="display: none;">

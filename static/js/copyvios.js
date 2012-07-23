@@ -16,6 +16,7 @@ function get_cookie(name) {
 }
 
 function set_cookie(name, value, days) {
+    var path = window.location.pathname.split("/", 2)[1];
     if (days) {
         var date = new Date();
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -24,7 +25,7 @@ function set_cookie(name, value, days) {
     else {
         var expires = "";
     }
-    document.cookie = name + "=" + value + expires + "; path=/~earwig";
+    document.cookie = name + "=" + value + expires + "; path=/" + path;
 }
 
 function delete_cookie(name) {

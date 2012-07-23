@@ -44,7 +44,7 @@
             <h2>Cookies</h2>
             % if cookies:
                 <ul>
-                % for cookie in cookies:
+                % for cookie in cookies.itervalues():
                     <li>
                         <tt>${cookie.key | h}</tt>: <tt>${cookie.value | h}</tt>
                         <form action="${environ['PATH_INFO']}" method="post">

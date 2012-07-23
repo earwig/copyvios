@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 
-from ..cookies import parse_cookies, set_cookie
+from ..cookies import parse_cookies, set_cookie, delete_cookie
 from ..misc import get_bot, Query
 from ..sites import get_sites
 

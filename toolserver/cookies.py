@@ -9,9 +9,9 @@ class _CookieManager(BaseCookie):
     def __init__(self, environ):
         self._path = path.split(environ["PATH_INFO"])[0]
         try:
-            self.load(environ["HTTP_COOKIE"])
+            super(_CookieManager, self).__init__(environ["HTTP_COOKIE"])
         except AttributeError:
-            pass
+            super(_CookieManager, self).__init__()
 
     def value_decode(self, value):
         try:

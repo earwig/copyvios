@@ -1,26 +1,29 @@
 # -*- coding: utf-8  -*-
 
 import base64
-from Cookie import BaseCookie
+from Cookie import CookieError, SimpleCookie
 from datetime import datetime, timedelta
 from os import path
 
-class _CookieManager(BaseCookie):
+class _CookieManager(SimpleCookie):
     def __init__(self, environ):
         self._path = path.split(environ["PATH_INFO"])[0]
         try:
             super(_CookieManager, self).__init__(environ["HTTP_COOKIE"])
-        except AttributeError:
+        except (CookieError, AttributeError):
             super(_CookieManager, self).__init__()
 
     def value_decode(self, value):
+        unquoted = super(_CookieManager, self).value_decode(value)[0]
         try:
-            return base64.b64decode(value).decode("utf8")
+            return base64.b64decode(unquoted).decode("utf8"), value
         except (TypeError, UnicodeDecodeError):
-            return u"False"
+            return u"False", "False"
 
     def value_encode(self, value):
-        return base64.b64encode(value.encode("utf8"))
+        encoded = base64.b64encode(value.encode("utf8"))
+        quoted = super(_CookieManager, self).value_encode(encoded)[1]
+        return value, encoded
 
     @property
     def path(self):

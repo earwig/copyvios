@@ -46,7 +46,7 @@
                 <ul>
                 % for cookie in cookies:
                     <li>
-                        <tt>${cookie.name | h}</tt>: <tt>${cookie.value | h}</tt>
+                        <tt>${cookie.key | h}</tt>: <tt>${cookie.value | h}</tt>
                         <form action="${environ['PATH_INFO']}" method="post">
                             <input type="hidden" name="action" value="deleteCookie">
                             <input type="hidden" name="cookie" value="${cookie.name | h}">

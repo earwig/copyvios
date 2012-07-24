@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 from os import path
 
 class _CookieManager(SimpleCookie):
+    MAGIC = "--ets1"
+
     def __init__(self, environ):
         self._path = path.split(environ["PATH_INFO"])[0]
         try:
@@ -19,12 +21,15 @@ class _CookieManager(SimpleCookie):
     def value_decode(self, value):
         unquoted = super(_CookieManager, self).value_decode(value)[0]
         try:
-            return base64.b64decode(unquoted).decode("utf8"), value
+            decoded = base64.b64decode(unquoted).decode("utf8")
         except (TypeError, UnicodeDecodeError):
             return False, "False"
+        if decoded.startswith(self.MAGIC):
+            return decoded[len(self.MAGIC):], value
+        return False, "False"
 
     def value_encode(self, value):
-        encoded = base64.b64encode(value.encode("utf8"))
+        encoded = base64.b64encode(self.MAGIC + value.encode("utf8"))
         quoted = super(_CookieManager, self).value_encode(encoded)[1]
         return value, quoted
 
@@ -45,4 +50,4 @@ def set_cookie(headers, cookies, key, value, days=0):
     headers.append(("Set-Cookie", cookies[key].OutputString()))
 
 def delete_cookie(headers, cookies, key):
-    set_cookie(headers, cookies, key, "", days=-1)
+    set_cookie(headers, cookies, key, u"", days=-1)

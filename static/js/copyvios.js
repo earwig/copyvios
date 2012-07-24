@@ -16,7 +16,7 @@ function get_cookie(name) {
 }
 
 function set_cookie(name, value, days) {
-    value = window.btoa(value);
+    value = window.btoa("--ets1" + value);
     var path = window.location.pathname.split("/", 2)[1];
     if (days) {
         var date = new Date();

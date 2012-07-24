@@ -22,8 +22,7 @@ def main(context, environ, headers):
             delete_cookie(headers, cookies, query.cookie)
         elif query.all:
             for cookie in cookies.values():
-                if cookie.path.startswith(cookies.path):
-                    delete_cookie(headers, cookies, cookie.key)
+                delete_cookie(headers, cookies, cookie.key)
 
     bot = get_bot()
     langs, projects = get_sites(bot)

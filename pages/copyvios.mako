@@ -71,12 +71,12 @@
             </form>
             % if query.project and query.lang and query.title and not page:
                 <div class="divider"></div>
-                <div id="cv-result-yes">
+                <div class="red-box">
                     <p>The given site (project=<b><tt>${query.project}</tt></b>, language=<b><tt>${query.lang}</tt></b>) doesn't seem to exist. It may also be closed or private. <a href="//${query.lang}.${query.project}.org/">Confirm its URL.</a></p>
                 </div>
             % elif query.project and query.lang and query.title and page and not result:
                 <div class="divider"></div>
-                <div id="cv-result-yes">
+                <div class="red-box">
                     <p>The given page doesn't seem to exist: <a href="${page.url}">${page.title | h}</a>.</p>
                 </div>
             % elif page:

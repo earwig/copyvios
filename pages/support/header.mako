@@ -22,6 +22,7 @@
         % for filename in add_css:
             <link rel="stylesheet" href="${root}/static/css/${filename}" type="text/css" />
         % endfor
+        <script src="${root}/static/js/cookies.js" type="text/javascript"></script>
         <script src="${root}/static/js/potd.js" type="text/javascript"></script>
         % for filename in add_js:
             <script src="${root}/static/js/${filename}" type="text/javascript"></script>

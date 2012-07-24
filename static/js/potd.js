@@ -1,6 +1,6 @@
 function potd_set_background() {
     var d = new Date();
-    var callback = "like_a_boss";
+    var callback = "earwigpotd1";
     var date = (d.getUTCFullYear()) + "-" + zero_pad(d.getUTCMonth() + 1, 2) + "-" + zero_pad(d.getUTCDate(), 2);
     var base = "//commons.wikimedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=Template:Potd/";
     var url = base + date + "&callback=" + callback;
@@ -25,7 +25,7 @@ function parse_file_name(data) {
     }
     var filename = /\{\{Potd filename\|(1=)?(.*?)\|.*?\}\}/.exec(content)[2];
 
-    var callback = "like_a_faust";
+    var callback = "earwigpotd2";
     var base = "//commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url|size&format=json&titles=File:";
     var url = base + escape(filename) + "&callback=" + callback;
 
@@ -55,7 +55,10 @@ function parse_file_url(data, filename) {
         imgwidth = r["width"];
         imgheight = r["height"];
     }
+    set_background(url, descurl, imgwidth, imgheight);
+}
 
+function set_background(url, descurl, imgwidth, imgheight) {
     var s = get_window_size();
     var winwidth = s[0];
     var winheight = s[1];

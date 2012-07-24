@@ -77,6 +77,20 @@ div.divider {
     margin-bottom: 15px;
 }
 
+div.green-box {
+    padding: 0 10px 0 10px;
+    margin: 0 5px 10px 5px;
+    background-color: #FEE;
+    border: 1px solid #F77;
+}
+
+div.red-box {
+    padding: 0 10px 0 10px;
+    margin: 0 5px 10px 5px;
+    background-color: #EFE;
+    border: 1px solid #7F7;
+}
+
 p.toolname {
     font-size: 18px;
     margin: 6px 0 6px 0;

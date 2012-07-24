@@ -19,7 +19,7 @@ def main(context, environ, headers):
                 set_cookie(headers, cookies, key, query.project, 365)
     elif query.action == "delete":
         if query.cookie in cookies:
-            delete_cookie(headers, cookies, query.cookie)
+            delete_cookie(headers, cookies, query.cookie.encode("utf8"))
         elif query.all:
             for cookie in cookies.values():
                 delete_cookie(headers, cookies, cookie.key)

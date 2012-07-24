@@ -12,7 +12,7 @@ class _CookieManager(SimpleCookie):
             super(_CookieManager, self).__init__(environ["HTTP_COOKIE"])
         except (CookieError, AttributeError):
             super(_CookieManager, self).__init__()
-        for cookie in self:
+        for cookie in self.keys():
             if self[cookie].value is False:
                 del self[cookie]
 

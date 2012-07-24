@@ -51,3 +51,4 @@ def set_cookie(headers, cookies, key, value, days=0):
 
 def delete_cookie(headers, cookies, key):
     set_cookie(headers, cookies, key, u"", days=-1)
+    del cookies[key]

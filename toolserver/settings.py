@@ -21,7 +21,7 @@ def main(context, environ, headers):
         if query.cookie in cookies:
             delete_cookie(headers, cookies, query.cookie)
         elif query.all:
-            for cookie in cookies.values:
+            for cookie in cookies.values():
                 if cookie.path.startswith(cookies.path):
                     delete_cookie(headers, cookies, cookie.key)
 

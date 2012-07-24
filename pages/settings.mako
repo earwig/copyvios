@@ -45,23 +45,30 @@
             </form>
             <h2>Cookies</h2>
             % if cookies:
-                <ul>
+                <table>
                 % for cookie in cookies.itervalues():
-                    <li>
-                        <tt>${cookie.key | h}</tt>: <tt>${cookie.value | h}</tt>
-                        <form action="${environ['PATH_INFO']}" method="post">
-                            <input type="hidden" name="action" value="delete">
-                            <input type="hidden" name="cookie" value="${cookie.key | h}">
-                            <button type="submit">Delete</button>
-                        </form>
-                    </li>
+                    <tr>
+                        <td><b><tt>${cookie.key | h}</tt></b></td>
+                        <td><tt>${cookie.value | h}</tt></td>
+                        <td>
+                            <form action="${environ['PATH_INFO']}" method="post">
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="cookie" value="${cookie.key | h}">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
                 % endfor
-                </ul>
-                <form action="${environ['PATH_INFO']}" method="post">
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="all" value="1">
-                    <button type="submit">Delete all</button>
-                </form>
+                    <tr>
+                        <td>
+                            <form action="${environ['PATH_INFO']}" method="post">
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="all" value="1">
+                                <button type="submit">Delete all</button>
+                            </form>
+                        </td>
+                    </tr>
+                </table>
             % else:
                 <p>No cookies!</p>
             % endif

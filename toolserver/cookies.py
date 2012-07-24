@@ -26,7 +26,7 @@ class _CookieManager(SimpleCookie):
     def value_encode(self, value):
         encoded = base64.b64encode(value.encode("utf8"))
         quoted = super(_CookieManager, self).value_encode(encoded)[1]
-        return value, encoded
+        return value, quoted
 
     @property
     def path(self):

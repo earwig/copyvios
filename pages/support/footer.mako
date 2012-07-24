@@ -1,5 +1,4 @@
 <%page args="environ"/>\
-<%namespace name="bash" file="/bash.mako" import="get_bash"/>\
 <%!
     from os import path
 %>\
@@ -20,8 +19,7 @@
                             <a href="mailto:earwig@toolserver.org">Contact</a> &bull; \
                             <a href="https://github.com/earwig/toolserver">View Source</a> &bull; \
                             <a id="bg_image_link" href="">Background</a> &bull; \
-                            <a href="http://validator.w3.org/check?uri=referer">Valid XHTML 1.0 Strict</a><br />
-                            <i><a class="black" href="${pretty}/bash">"${get_bash()}"</a></i>
+                            <a href="http://validator.w3.org/check?uri=referer">Valid XHTML 1.0 Strict</a>
                         </p>
                     </td>
                     <td>

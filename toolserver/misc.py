@@ -7,11 +7,20 @@ from earwigbot.bot import Bot
 import oursql
 
 class Query(object):
-    def __init__(self, environ):
+    def __init__(self, environ, method="GET"):
         self.query = {}
-        parsed = parse_qs(environ["QUERY_STRING"])
+        if method == "GET":
+            parsed = parse_qs(environ["QUERY_STRING"])
+        elif method == "POST":
+            size = environ.get("CONTENT_LENGTH", 0)
+            parsed = parse_qs(environ["wsgi.input"].read(size))
+        else:
+            parsed = {}
         for key, value in parsed.iteritems():
-            self.query[key] = value[-1].decode("utf8")
+            try:
+                self.query[key] = value[-1].decode("utf8")
+            except UnicodeDecodeError:
+                pass
 
     def __getattr__(self, key):
         try:

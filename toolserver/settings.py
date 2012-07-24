@@ -6,7 +6,7 @@ from .sites import get_sites
 
 def main(context, environ, headers):
     cookies = parse_cookies(context, environ)
-    query = Query(environ)
+    query = Query(environ, method="POST")
 
     if query.action == "set":
         if query.lang:

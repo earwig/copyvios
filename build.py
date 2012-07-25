@@ -58,6 +58,13 @@ class Builder(object):
         self.root.addHandler(handler)
         self.root.setLevel(logging.DEBUG)
 
+    def _replace_file(self, name, program, logger):
+        logger.debug("{0} {1}".format(program, name))
+        replacement = subprocess.check_output([program, name])
+        os.remove(name)
+        with open(name, "w") as fp:
+            fp.write(replacement)
+
     def _gen_page(self, page, base):
         if not page.endswith(".mako"):
             base.warn("Skipping {0} (not endswith('.mako'))".format(page))
@@ -98,13 +105,11 @@ class Builder(object):
         shutil.copytree(self.static_dir, dest)
         for dirpath, dirnames, filenames in os.walk(dest):
             for filename in filenames:
-                if filename.endswith(".js"):
-                    name = os.path.join(dirpath, filename)
-                    logger.debug("uglifyjs {0}".format(name))
-                    uglified = subprocess.check_output(["uglifyjs", name])
-                    os.remove(name)
-                    with open(name, "w") as fp:
-                        fp.write(uglified)
+                name = os.path.join(dirpath, filename)
+                if name.endswith(".js"):
+                    self._replace_file(name, "uglifyjs", logger)
+                elif name.endswith(".css"):
+                    self._replace_file(name, "uglifycss", logger)
 
     def gen_pages(self):
         logger = self.root.getChild("pages")

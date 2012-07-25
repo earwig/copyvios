@@ -11,3 +11,4 @@ Dependencies
 * [mako](http://www.makotemplates.org/)
 * [oursql](http://packages.python.org/oursql/)
 * [uglifyjs](https://github.com/mishoo/UglifyJS/)
+* [uglifycss](https://github.com/fmarcia/UglifyCSS/)

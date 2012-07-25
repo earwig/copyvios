@@ -74,8 +74,12 @@ function parse_file_url(data, filename) {
 
     set_background(url, descurl, imgwidth, imgheight);
     var data = {"url": url, "descurl": descurl, "imgwidth": imgwidth, "imgheight": imgheight};
-    var now = new Date();
-    var expires = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1);
+    var expires = new Date();
+    expires.setUTCMilliseconds(0);
+    expires.setUTCSeconds(0);
+    expires.setUTCMinutes(0);
+    expires.setUTCHours(0);
+    expires.setUTCDate(expires.getUTCDate() + 1);
     set_cookie_with_date("EarwigBackgroundCache", JSON.stringify(data), expires);
 }
 

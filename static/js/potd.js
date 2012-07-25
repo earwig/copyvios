@@ -20,6 +20,7 @@ function set_background_potd() {
 
 function set_background_list() {
     if (cache_cookie()) return;
+    var callback = "earwigpotd1";
     var base = "//commons.wikimedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=User:The+Earwig/POTD";
     var url = base + "&callback=" + callback;
 

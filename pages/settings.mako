@@ -54,14 +54,13 @@
                         <td><b><tt>${cookie.key | h}</tt></b></td>
                         % try:
                             <% lines = dumps(loads(cookie.value), indent=4).splitlines() %>
-                        % except ValueError:
-                            <td><tt>${cookie.value | h}</tt></td>
-                        % else:
                             <td>
                                 % for line in lines:
                                     <tt><div class="indentable">${line | h}</div></tt>
                                 % endfor
                             </td>
+                        % except ValueError:
+                            <td><tt>${cookie.value | h}</tt></td>
                         % endtry
                         <td>
                             <form action="${environ['PATH_INFO']}" method="post">

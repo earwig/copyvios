@@ -3,12 +3,13 @@ function potd_set_background() {
     if (cookie) {
         try {
             data = JSON.parse(cookie);
+            var filename = data.filename;
             var url = data.url;
             var descurl = data.descurl;
             var imgwidth = data.imgwidth;
             var imgheight = data.imgheight;
-            if (url && descurl && imgwidth && imgheight) {
-                set_background(url, descurl, imgwidth, imgheight);
+            if (filename && url && descurl && imgwidth && imgheight) {
+                set_background(filename, url, descurl, imgwidth, imgheight);
                 return;
             }
         }
@@ -72,8 +73,8 @@ function parse_file_url(data, filename) {
         imgheight = r["height"];
     }
 
-    set_background(url, descurl, imgwidth, imgheight);
-    var data = {"url": url, "descurl": descurl, "imgwidth": imgwidth, "imgheight": imgheight};
+    set_background(filename, url, descurl, imgwidth, imgheight);
+    var data = {"filename": filename, "url": url, "descurl": descurl, "imgwidth": imgwidth, "imgheight": imgheight};
     var expires = new Date();
     expires.setUTCMilliseconds(0);
     expires.setUTCSeconds(0);
@@ -83,7 +84,7 @@ function parse_file_url(data, filename) {
     set_cookie_with_date("EarwigBackgroundCache", JSON.stringify(data), expires);
 }
 
-function set_background(url, descurl, imgwidth, imgheight) {
+function set_background(filename, url, descurl, imgwidth, imgheight) {
     var s = get_window_size();
     var winwidth = s[0];
     var winheight = s[1];

@@ -11,9 +11,9 @@ def main(context, environ, headers):
     cookies = parse_cookies(context, environ)
 
     if query.action == "set":
-        status = _do_set(query, cookies)
+        status = _do_set(query, cookies, headers)
     elif query.action == "delete":
-        status = _do_delete(query, cookies)
+        status = _do_delete(query, cookies, headers)
     else:
         status = None
 
@@ -21,7 +21,7 @@ def main(context, environ, headers):
     langs, projects = get_sites(bot)
     return bot, cookies, status, langs, projects
 
-def _do_set(query, cookies):
+def _do_set(query, cookies, headers):
     changes = set()
     if query.lang:
         key = "EarwigDefaultLang"
@@ -38,7 +38,7 @@ def _do_set(query, cookies):
         return "Updated {0}.".format(changes)
     return None
 
-def _do_delete(query, cookies):
+def _do_delete(query, cookies, headers):
     if query.cookie in cookies:
         delete_cookie(headers, cookies, query.cookie.encode("utf8"))
         template = "Deleted cookie <b><tt>{0}</tt></b>."

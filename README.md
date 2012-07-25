@@ -10,3 +10,4 @@ Dependencies
 * [earwigbot](https://github.com/earwig/earwigbot)
 * [mako](http://www.makotemplates.org/)
 * [oursql](http://packages.python.org/oursql/)
+* [uglifyjs](https://github.com/mishoo/UglifyJS/)

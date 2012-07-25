@@ -4,6 +4,7 @@
 import logging
 import os
 import shutil
+import subprocess
 
 page_src = """#! /usr/bin/env python
 # -*- coding: utf-8  -*-
@@ -95,6 +96,15 @@ class Builder(object):
 
         logger.debug("copytree {0} -> {1}".format(self.static_dir, dest))
         shutil.copytree(self.static_dir, dest)
+        for dirpath, dirnames, filenames in os.walk(dest):
+            for filename in filenames:
+                if filename.endswith(".js"):
+                    name = os.path.join(dirpath, filename)
+                    logger.debug("uglifyjs {0}".format(name))
+                    uglified = subprocess.check_output(["uglifyjs", name])
+                    os.remove(name)
+                    with open(name, "w") as fp:
+                        fp.write(uglified)
 
     def gen_pages(self):
         logger = self.root.getChild("pages")

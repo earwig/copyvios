@@ -1,4 +1,20 @@
 function potd_set_background() {
+    var cookie = get_cookie("EarwigBackgroundCache");
+    if (cookie) {
+        try {
+            data = JSON.parse(cookie);
+            var url = data.url;
+            var descurl = data.descurl;
+            var imgwidth = data.imgwidth;
+            var imgheight = data.imgheight;
+            if (url && descurl && imgwidth && imgheight) {
+                set_background(url, descurl, imgwidth, imgheight);
+                return;
+            }
+        }
+        catch (SyntaxError) {}
+    }
+
     var d = new Date();
     var callback = "earwigpotd1";
     var date = (d.getUTCFullYear()) + "-" + zero_pad(d.getUTCMonth() + 1, 2) + "-" + zero_pad(d.getUTCDate(), 2);
@@ -55,7 +71,12 @@ function parse_file_url(data, filename) {
         imgwidth = r["width"];
         imgheight = r["height"];
     }
+
     set_background(url, descurl, imgwidth, imgheight);
+    var data = {"url": url, "descurl": descurl, "imgwidth": imgwidth, "imgheight": imgheight};
+    var now = new Date();
+    var expires = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1);
+    set_cookie_with_date("EarwigBackgroundCache", JSON.stringify(data), expires);
 }
 
 function set_background(url, descurl, imgwidth, imgheight) {

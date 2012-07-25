@@ -57,7 +57,7 @@
                                 <td>&nbsp;</td>
                             % endif
                             <td>
-                                <input type="radio" name="background" value="${value}" "${'checked' if value == selected else ''}" /> ${desc}
+                                <input type="radio" name="background" value="${value}" ${'checked' if value == selected else ''} /> ${desc}
                             </td>
                         </tr>
                     % endfor

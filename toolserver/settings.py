@@ -36,9 +36,10 @@ def _do_set(query, headers, cookies):
         key = "EarwigBackground"
         if key not in cookies or cookies[key].value != query.background:
             set_cookie(headers, cookies, key, query.background, 365)
+            delete_cookie(headers, cookies, "EarwigBackgroundCache")
             changes.add("background")
     if changes:
-        changes = ", ".format(sorted(list(changes)))
+        changes = ", ".join(sorted(list(changes)))
         return "Updated {0}.".format(changes)
     return None
 

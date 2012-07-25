@@ -1,7 +1,7 @@
+<% bot, status, langs, projects = main(environ, headers, cookies) %>\
 <%include file="/support/header.mako" args="environ=environ, cookies=cookies, title='Settings'"/>\
 <%namespace module="toolserver.settings" import="main"/>\
 <%! from json import dumps, loads %>
-<% bot, status, langs, projects = main(environ, headers, cookies) %>
             % if status:
                 <div class="green-box">
                     <p>${status}</p>

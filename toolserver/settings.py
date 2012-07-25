@@ -18,7 +18,7 @@ def main(context, environ, headers, cookies):
 
     bot = get_bot()
     langs, projects = get_sites(bot)
-    return bot, cookies, status, langs, projects
+    return bot, status, langs, projects
 
 def _do_set(query, headers, cookies):
     changes = set()

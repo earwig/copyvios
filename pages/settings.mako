@@ -1,5 +1,6 @@
 <%include file="/support/header.mako" args="environ=environ, title='Settings'"/>\
 <%namespace module="toolserver.settings" import="main"/>\
+<%! from json import dumps, loads %>
 <% bot, cookies, status, langs, projects = main(environ, headers) %>
             % if status:
                 <div class="green-box">${status}</div>
@@ -51,7 +52,17 @@
                 % for cookie in cookies.itervalues():
                     <tr>
                         <td><b><tt>${cookie.key | h}</tt></b></td>
-                        <td><tt>${cookie.value | h}</tt></td>
+                        % try:
+                            <% lines = dumps(loads(cookie.value), indent=4).splitlines() %>
+                        % except ValueError:
+                            <td><tt>${cookie.value | h}</tt></td>
+                        % else:
+                            <td>
+                                % for line in lines:
+                                    <tt><div class="indentable">${line | h}</div></tt>
+                                % endfor
+                            </td>
+                        % endtry
                         <td>
                             <form action="${environ['PATH_INFO']}" method="post">
                                 <input type="hidden" name="action" value="delete">

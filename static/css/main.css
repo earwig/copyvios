@@ -92,6 +92,10 @@ div.red-box {
     border: 1px solid #7F7;
 }
 
+div.indentable {
+    white-space: pre-wrap;
+}
+
 p.toolname {
     font-size: 18px;
     margin: 6px 0 6px 0;

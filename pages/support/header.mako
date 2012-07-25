@@ -28,16 +28,13 @@
             <script src="${root}/static/js/${filename}" type="text/javascript"></script>
         % endfor
     </head>
-    % if "EarwigBackground" in cookies:
-        % if cookies["EarwigBackground"].value == "list":
-            <body onload="set_background_list()">
-        % elif cookies["EarwigBackground"].value in ["plain-brown", "plain-blue"]:
-            <body style="background-image: url('${root}/static/images/background-${cookies['EarwigBackground'].value[6:]}.png');">
-        % else:
-            <body onload="set_background_potd()">
-        % endif
-    % else:
+    <% selected = cookies["EarwigBackground"].value if "EarwigBackground" in cookies else "list" %>\
+    % if selected in ["plain-brown", "plain-blue"]:
+        <body style="background-image: url('${root}/static/images/background-${selected[6:]}.png');">
+    % elif selected == "potd":
         <body onload="set_background_potd()">
+    % else:
+        <body onload="set_background_list()">
     % endif
         <div id="header">
             <p id="heading"><a class="dark" href="${pretty}">earwig</a><span class="light">@</span><a class="mid" href="https://wiki.toolserver.org/">toolserver</a><span class="light">:</span><a class="dark" href="${this}">${slug}</a></p>

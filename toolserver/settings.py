@@ -2,18 +2,17 @@
 
 from markupsafe import escape
 
-from .cookies import parse_cookies, set_cookie, delete_cookie
+from .cookies import set_cookie, delete_cookie
 from .misc import get_bot, Query
 from .sites import get_sites
 
-def main(context, environ, headers):
+def main(context, environ, headers, cookies):
     query = Query(environ, method="POST")
-    cookies = parse_cookies(context, environ)
 
     if query.action == "set":
-        status = _do_set(query, cookies, headers)
+        status = _do_set(query, headers, cookies)
     elif query.action == "delete":
-        status = _do_delete(query, cookies, headers)
+        status = _do_delete(query, headers, cookies)
     else:
         status = None
 
@@ -21,7 +20,7 @@ def main(context, environ, headers):
     langs, projects = get_sites(bot)
     return bot, cookies, status, langs, projects
 
-def _do_set(query, cookies, headers):
+def _do_set(query, headers, cookies):
     changes = set()
     if query.lang:
         key = "EarwigDefaultLang"
@@ -38,7 +37,7 @@ def _do_set(query, cookies, headers):
         return "Updated {0}.".format(changes)
     return None
 
-def _do_delete(query, cookies, headers):
+def _do_delete(query, headers, cookies):
     if query.cookie in cookies:
         delete_cookie(headers, cookies, query.cookie.encode("utf8"))
         template = "Deleted cookie <b><tt>{0}</tt></b>."

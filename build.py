@@ -17,13 +17,17 @@ sys.path.insert(0, ".")
 from mako.template import Template
 from mako.lookup import TemplateLookup
 
+from toolserver.cookies import parse_cookies
+
 def main(environ, start_response):
     lookup = TemplateLookup(directories=["{{pages_dir}}"],
                             input_encoding="utf8")
     template = Template(filename="{{src}}", module_directory="{{temp_dir}}",
                         lookup=lookup, format_exceptions=True)
     headers = [("Content-Type", "text/html")]
-    page = template.render(environ=environ, headers=headers).encode("utf8")
+    cookies = parse_cookies(environ)
+    page = template.render(environ=environ, headers=headers,
+                           cookies=cookies).encode("utf8")
     start_response("200 OK", headers)
     return [page]
 

@@ -48,8 +48,8 @@
         since ${since} (${uptime} uptime) on <tt>${host}</tt>
     % endif
 </%def>\
-<%include file="/support/header.mako" args="environ=environ, title='EarwigBot Status'"/>
+<%include file="/support/header.mako" args="environ=environ, cookies=cookies, title='EarwigBot Status'"/>
             <h1>EarwigBot Status</h1>
             <p>EarwigBot ${get_status()}.</p>
             <p>Additional information: <a href="http://status.toolserver.org/">status.toolserver.org</a></p>
-<%include file="/support/footer.mako" args="environ=environ"/>
+<%include file="/support/footer.mako" args="environ=environ, cookies=cookies"/>

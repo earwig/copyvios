@@ -1,9 +1,7 @@
-<%include file="/support/header.mako" args="environ=environ, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>\
+<%include file="/support/header.mako" args="environ=environ, cookies=cookies, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>\
 <%namespace module="toolserver.copyvios" import="main, highlight_delta"/>\
-<%namespace module="toolserver.cookies" import="parse_cookies"/>\
 <%namespace module="toolserver.misc" import="urlstrip"/>\
 <% query, bot, all_langs, all_projects, page, result = main(environ) %>
-<% cookies = parse_cookies(environ) %>
             <h1>Copyvio Detector</h1>
             <p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. Simply give the title of the page you want to check and hit Submit. The tool will then search for its content elsewhere on the web and display a report if a similar webpage is found. If you also provide a URL, it will not query any search engines and instead display a report comparing the article to that particular webpage, like the <a href="//toolserver.org/~dcoetzee/duplicationdetector/">Duplication Detector</a>. Check out the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/FAQ">FAQ</a> for more information and technical details.</p>
             <form action="${environ['PATH_INFO']}" method="get">
@@ -129,4 +127,4 @@
                     </div>
                 </div>
             % endif
-<%include file="/support/footer.mako" args="environ=environ"/>
+<%include file="/support/footer.mako" args="environ=environ, cookies=cookies"/>

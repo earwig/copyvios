@@ -38,7 +38,7 @@ class _CookieManager(SimpleCookie):
         return self._path
 
 
-def parse_cookies(context, environ):
+def parse_cookies(environ):
     return _CookieManager(environ)
 
 def set_cookie(headers, cookies, key, value, days=0):

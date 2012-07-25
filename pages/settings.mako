@@ -1,7 +1,7 @@
-<%include file="/support/header.mako" args="environ=environ, title='Settings'"/>\
+<%include file="/support/header.mako" args="environ=environ, cookies=cookies, title='Settings'"/>\
 <%namespace module="toolserver.settings" import="main"/>\
 <%! from json import dumps, loads %>
-<% bot, cookies, status, langs, projects = main(environ, headers) %>
+<% bot, status, langs, projects = main(environ, headers, cookies) %>
             % if status:
                 <div class="green-box">
                     <p>${status}</p>
@@ -86,4 +86,4 @@
             % else:
                 <p>No cookies!</p>
             % endif
-<%include file="/support/footer.mako" args="environ=environ"/>
+<%include file="/support/footer.mako" args="environ=environ, cookies=cookies"/>

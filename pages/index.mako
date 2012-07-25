@@ -16,7 +16,7 @@
     pretty = path.split(root)[0]
 %>\
 <%def name="get_tools()"><% return tools %></%def>\
-<%include file="/support/header.mako" args="environ=environ, title='Home', slug='home'"/>
+<%include file="/support/header.mako" args="environ=environ, cookies=cookies, title='Home', slug='home'"/>
             <h1>My Tools</h1>
             % for tool in tools:
                 % if tool != "DIVIDER":
@@ -29,4 +29,4 @@
                     % endif
                 % endif
             % endfor
-<%include file="/support/footer.mako" args="environ=environ"/>
+<%include file="/support/footer.mako" args="environ=environ, cookies=cookies"/>

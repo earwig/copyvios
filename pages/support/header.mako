@@ -1,4 +1,4 @@
-<%page args="environ, title, slug=None, add_css=(), add_js=()"/>\
+<%page args="environ, cookies, title, slug=None, add_css=(), add_js=()"/>\
 <%namespace name="index" file="/index.mako" import="get_tools"/>\
 <%!
     from os import path
@@ -28,7 +28,17 @@
             <script src="${root}/static/js/${filename}" type="text/javascript"></script>
         % endfor
     </head>
-    <body onload="potd_set_background()">
+    % if "EarwigBackground" in cookies:
+        % if cookies["EarwigBackground"].value == "list":
+            <body onload="set_background_list()">
+        % elif cookies["EarwigBackground"].value == "plain":
+            <body style="background-image: url('${root}/static/images/background.png');">
+        % else
+            <body onload="set_background_potd()">
+        % endif
+    % else
+        <body onload="set_background_potd()">
+    % endif
         <div id="header">
             <p id="heading"><a class="dark" href="${pretty}">earwig</a><span class="light">@</span><a class="mid" href="https://wiki.toolserver.org/">toolserver</a><span class="light">:</span><a class="dark" href="${this}">${slug}</a></p>
             <p id="links"><span class="light">&gt;</span>

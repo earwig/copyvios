@@ -1,4 +1,4 @@
-<%page args="environ"/>\
+<%page args="environ, cookies"/>\
 <%!
     from os import path
 %>\
@@ -18,7 +18,9 @@
                         <p>Copyright &copy; 2009&ndash;2012 <a href="//en.wikipedia.org/wiki/User:The_Earwig">Ben Kurtovic</a> &bull; \
                             <a href="mailto:earwig@toolserver.org">Contact</a> &bull; \
                             <a href="https://github.com/earwig/toolserver">View Source</a> &bull; \
-                            <a id="bg_image_link" href="">Background</a> &bull; \
+                            % if ("EarwigBackground" in cookies and cookies["EarwigBackground"].value in ["potd", "list"]) or "EarwigBackground" not in cookies:
+                                <a id="bg_image_link" href="">Background</a> &bull; \
+                            % endif
                             <a href="http://validator.w3.org/check?uri=referer">Valid XHTML 1.0 Strict</a>
                         </p>
                     </td>

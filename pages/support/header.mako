@@ -31,8 +31,8 @@
     % if "EarwigBackground" in cookies:
         % if cookies["EarwigBackground"].value == "list":
             <body onload="set_background_list()">
-        % elif cookies["EarwigBackground"].value == "plain":
-            <body style="background-image: url('${root}/static/images/background.png');">
+        % elif cookies["EarwigBackground"].value in ["plain-brown", "plain-blue"]:
+            <body style="background-image: url('${root}/static/images/background-${cookies['EarwigBackground'].value[6:]}.png');">
         % else
             <body onload="set_background_potd()">
         % endif

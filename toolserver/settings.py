@@ -32,8 +32,13 @@ def _do_set(query, headers, cookies):
         if key not in cookies or cookies[key].value != query.project:
             set_cookie(headers, cookies, key, query.project, 365)
             changes.add("site")
+    if query.background:
+        key = "EarwigBackground"
+        if key not in cookies or cookies[key].value != query.background:
+            set_cookie(headers, cookies, key, query.background, 365)
+            changes.add("background")
     if changes:
-        changes = ", ".format(changes)
+        changes = ", ".format(sorted(list(changes)))
         return "Updated {0}.".format(changes)
     return None
 

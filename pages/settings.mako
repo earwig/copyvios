@@ -40,9 +40,27 @@
                             <tt>.org</tt>
                         </td>
                     </tr>
-                    <tr>
-                        <td>Background:</td>
-                    </tr>
+                    <%
+                        background_options = [
+                            ("plain-brown", "Use a plain tiled background (brown version)."),
+                            ("plain-blue", "Use a plain tiled background (blue version)."),
+                            ("potd", 'Use the current <a href="//commons.wikimedia.org/">Wikimedia Commons</a> <a href="//commons.wikimedia.org/wiki/Commons:Picture_of_the_day">Picture of the Day</a>, unfiltered. Certain POTDs may be unsuitable as backgrounds due to their aspect ratio or subject matter (generally portraits do not work well).'),
+                            ("list", 'Randomly select from <a href="http://commons.wikimedia.org/wiki/User:The_Earwig/POTD">a subset of previous Commons Pictures of the Day</a> that work well as widescreen backgrounds, refreshed daily (default).'),
+                        ]
+                        selected = cookies["EarwigBackground"].value if "EarwigBackground" in cookies else None
+                    %>
+                    % for i, (value, desc) in enumerate(background_options):
+                        <tr>
+                            % if i == 0:
+                                <td>Background:</td>
+                            % else:
+                                <td>&nbsp;</td>
+                            % endif
+                            <td>
+                                <input type="radio" name="background" value="${value}" "${'checked' if option == elected else ''}" /> ${desc}
+                            </td>
+                        </tr>
+                    % endfor
                     <tr>
                         <td><button type="submit">Save</button></td>
                     </tr>

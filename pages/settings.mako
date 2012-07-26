@@ -1,7 +1,7 @@
 <% bot, status, langs, projects = main(environ, headers, cookies) %>\
 <%include file="/support/header.mako" args="environ=environ, cookies=cookies, title='Settings'"/>\
 <%namespace module="toolserver.settings" import="main"/>\
-<%! from json import dumps, loads %>
+<%! from json import dumps, loads %>\
             % if status:
                 <div class="green-box">
                     <p>${status}</p>
@@ -17,7 +17,7 @@
                         <td>
                             <tt>http://</tt>
                             <select name="lang">
-                                <% selected_lang = cookies["EarwigDefaultLang"].value if "EarwigDefaultLang" in cookies else bot.wiki.get_site().lang %>
+                                <% selected_lang = cookies["EarwigDefaultLang"].value if "EarwigDefaultLang" in cookies else bot.wiki.get_site().lang %>\
                                 % for code, name in langs:
                                     % if code == selected_lang:
                                         <option value="${code | h}" selected="selected">${name}</option>
@@ -28,7 +28,7 @@
                             </select>
                             <tt>.</tt>
                             <select name="project">
-                                <% selected_project = cookies["EarwigDefaultProject"].value if "EarwigDefaultProject" in cookies else bot.wiki.get_site().project %>
+                                <% selected_project = cookies["EarwigDefaultProject"].value if "EarwigDefaultProject" in cookies else bot.wiki.get_site().project %>\
                                 % for code, name in projects:
                                     % if code == selected_project:
                                         <option value="${code | h}" selected="selected">${name}</option>
@@ -48,7 +48,7 @@
                             ("list", 'Randomly select from <a href="http://commons.wikimedia.org/wiki/User:The_Earwig/POTD">a subset of previous Commons Pictures of the Day</a> that work well as widescreen backgrounds, refreshed daily (default).'),
                         ]
                         selected = cookies["EarwigBackground"].value if "EarwigBackground" in cookies else "list"
-                    %>
+                    %>\
                     % for i, (value, desc) in enumerate(background_options):
                         <tr>
                             % if i == 0:
@@ -75,7 +75,7 @@
                     <tr>
                         <td><b><tt>${key | h}</tt></b></td>
                         % try:
-                            <% lines = dumps(loads(cookie.value), indent=4).splitlines() %>
+                            <% lines = dumps(loads(cookie.value), indent=4).splitlines() %>\
                             <td>
                                 % for line in lines:
                                     <tt><div class="indentable">${line | h}</div></tt>

@@ -41,7 +41,7 @@
             <p id="links"><span class="light">&gt;</span>
                 % for num, tool in enumerate(tools, 1):
                     % if tool != "DIVIDER":
-                        <% name, tool, link, complete, desc = tool %>
+                        <% name, tool, link, complete, desc = tool %>\
                         <abbr title="${name}${' (incomplete)' if not complete else ''}"><a class="${'dark' if complete else 'mid'}" href="${pretty}/${link}">${tool}</a></abbr>
                     % endif
                     % if num < len(tools):

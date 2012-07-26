@@ -1,7 +1,7 @@
 <%include file="/support/header.mako" args="environ=environ, cookies=cookies, title='Copyvio Detector', add_css=('copyvios.css',), add_js=('copyvios.js',)"/>\
 <%namespace module="toolserver.copyvios" import="main, highlight_delta"/>\
 <%namespace module="toolserver.misc" import="urlstrip"/>\
-<% query, bot, all_langs, all_projects, page, result = main(environ) %>
+<% query, bot, all_langs, all_projects, page, result = main(environ) %>\
             % if query.project and query.lang and query.title and not page:
                 <div class="red-box">
                     <p>The given site (project=<b><tt>${query.project | h}</tt></b>, language=<b><tt>${query.lang | h}</tt></b>) doesn't seem to exist. It may also be closed or private. <a href="//${query.lang | h}.${query.project | h}.org/">Confirm its URL.</a></p>
@@ -20,7 +20,7 @@
                         <td>
                             <tt>http://</tt>
                             <select name="lang">
-                                <% selected_lang = query.orig_lang if query.orig_lang else cookies["EarwigDefaultLang"].value if "EarwigDefaultLang" in cookies else bot.wiki.get_site().lang %>
+                                <% selected_lang = query.orig_lang if query.orig_lang else cookies["EarwigDefaultLang"].value if "EarwigDefaultLang" in cookies else bot.wiki.get_site().lang %>\
                                 % for code, name in all_langs:
                                     % if code == selected_lang:
                                         <option value="${code | h}" selected="selected">${name}</option>
@@ -31,7 +31,7 @@
                             </select>
                             <tt>.</tt>
                             <select name="project">
-                                <% selected_project = query.project if query.project else cookies["EarwigDefaultProject"].value if "EarwigDefaultProject" in cookies else bot.wiki.get_site().project %>
+                                <% selected_project = query.project if query.project else cookies["EarwigDefaultProject"].value if "EarwigDefaultProject" in cookies else bot.wiki.get_site().project %>\
                                 % for code, name in all_projects:
                                     % if code == selected_project:
                                         <option value="${code | h}" selected="selected">${name}</option>

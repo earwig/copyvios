@@ -69,9 +69,11 @@
             <h2>Cookies</h2>
             % if cookies:
                 <table>
-                % for cookie in cookies.itervalues():
+                <% cookie_order = ["EarwigDefaultProject", "EarwigDefaultLang", "EarwigBackground", "EarwigCVShowDetails", "EarwigBackgroundCache"] %>\
+                % for key in [key for key in cookie_order if key in cookies]:
+                    <% cookie = cookies[key] %>\
                     <tr>
-                        <td><b><tt>${cookie.key | h}</tt></b></td>
+                        <td><b><tt>${key | h}</tt></b></td>
                         % try:
                             <% lines = dumps(loads(cookie.value), indent=4).splitlines() %>
                             <td>
@@ -85,7 +87,7 @@
                         <td>
                             <form action="${environ['PATH_INFO']}" method="post">
                                 <input type="hidden" name="action" value="delete">
-                                <input type="hidden" name="cookie" value="${cookie.key | h}">
+                                <input type="hidden" name="cookie" value="${key | h}">
                                 <button type="submit">Delete</button>
                             </form>
                         </td>

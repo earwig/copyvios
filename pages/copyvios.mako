@@ -2,6 +2,15 @@
 <%namespace module="toolserver.copyvios" import="main, highlight_delta"/>\
 <%namespace module="toolserver.misc" import="urlstrip"/>\
 <% query, bot, all_langs, all_projects, page, result = main(environ) %>
+            % if query.project and query.lang and query.title and not page:
+                <div class="red-box">
+                    <p>The given site (project=<b><tt>${query.project}</tt></b>, language=<b><tt>${query.lang}</tt></b>) doesn't seem to exist. It may also be closed or private. <a href="//${query.lang}.${query.project}.org/">Confirm its URL.</a></p>
+                </div>
+            % elif query.project and query.lang and query.title and page and not result:
+                <div class="red-box">
+                    <p>The given page doesn't seem to exist: <a href="${page.url}">${page.title | h}</a>.</p>
+                </div>
+            % endif
             <h1>Copyvio Detector</h1>
             <p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. Simply give the title of the page you want to check and hit Submit. The tool will then search for its content elsewhere on the web and display a report if a similar webpage is found. If you also provide a URL, it will not query any search engines and instead display a report comparing the article to that particular webpage, like the <a href="//toolserver.org/~dcoetzee/duplicationdetector/">Duplication Detector</a>. Check out the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/FAQ">FAQ</a> for more information and technical details.</p>
             <form action="${environ['PATH_INFO']}" method="get">
@@ -67,17 +76,7 @@
                     </tr>
                 </table>
             </form>
-            % if query.project and query.lang and query.title and not page:
-                <div class="divider"></div>
-                <div class="red-box">
-                    <p>The given site (project=<b><tt>${query.project}</tt></b>, language=<b><tt>${query.lang}</tt></b>) doesn't seem to exist. It may also be closed or private. <a href="//${query.lang}.${query.project}.org/">Confirm its URL.</a></p>
-                </div>
-            % elif query.project and query.lang and query.title and page and not result:
-                <div class="divider"></div>
-                <div class="red-box">
-                    <p>The given page doesn't seem to exist: <a href="${page.url}">${page.title | h}</a>.</p>
-                </div>
-            % elif page:
+            % if page:
                 <div class="divider"></div>
                 <div id="cv-result-${'yes' if result.violation else 'no'}">
                     % if result.violation:

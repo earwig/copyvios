@@ -76,7 +76,7 @@
                     </tr>
                 </table>
             </form>
-            % if page:
+            % if page and result:
                 <div class="divider"></div>
                 <div id="cv-result-${'yes' if result.violation else 'no'}">
                     % if result.violation:

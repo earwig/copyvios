@@ -88,7 +88,7 @@ function parse_list_file_name(data) {
     }
 
     var filenames = [];
-    var regexp = /\*\s*\[\[:File:(.*?)\]\]/g;
+    var regexp = /\*\*?\s*\[\[:File:(.*?)\]\]/g;
     while ((match = regexp.exec(content)) !== null) {
         filenames.push(match[1]);
     }

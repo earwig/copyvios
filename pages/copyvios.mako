@@ -4,7 +4,7 @@
 <% query, bot, all_langs, all_projects, page, result = main(environ) %>
             % if query.project and query.lang and query.title and not page:
                 <div class="red-box">
-                    <p>The given site (project=<b><tt>${query.project}</tt></b>, language=<b><tt>${query.lang}</tt></b>) doesn't seem to exist. It may also be closed or private. <a href="//${query.lang}.${query.project}.org/">Confirm its URL.</a></p>
+                    <p>The given site (project=<b><tt>${query.project | h}</tt></b>, language=<b><tt>${query.lang | h}</tt></b>) doesn't seem to exist. It may also be closed or private. <a href="//${query.lang | h}.${query.project | h}.org/">Confirm its URL.</a></p>
                 </div>
             % elif query.project and query.lang and query.title and page and not result:
                 <div class="red-box">
@@ -23,9 +23,9 @@
                                 <% selected_lang = query.orig_lang if query.orig_lang else cookies["EarwigDefaultLang"].value if "EarwigDefaultLang" in cookies else bot.wiki.get_site().lang %>
                                 % for code, name in all_langs:
                                     % if code == selected_lang:
-                                        <option value="${code}" selected="selected">${name}</option>
+                                        <option value="${code | h}" selected="selected">${name}</option>
                                     % else:
-                                        <option value="${code}">${name}</option>
+                                        <option value="${code | h}">${name}</option>
                                     % endif
                                 % endfor
                             </select>
@@ -34,9 +34,9 @@
                                 <% selected_project = query.project if query.project else cookies["EarwigDefaultProject"].value if "EarwigDefaultProject" in cookies else bot.wiki.get_site().project %>
                                 % for code, name in all_projects:
                                     % if code == selected_project:
-                                        <option value="${code}" selected="selected">${name}</option>
+                                        <option value="${code | h}" selected="selected">${name}</option>
                                     % else:
-                                        <option value="${code}">${name}</option>
+                                        <option value="${code | h}">${name}</option>
                                     % endif
                                 % endfor
                             </select>
@@ -80,16 +80,16 @@
                 <div class="divider"></div>
                 <div id="cv-result-${'yes' if result.violation else 'no'}">
                     % if result.violation:
-                        <h2 id="cv-result-header"><a href="${page.url}">${page.title | h}</a> is a suspected violation of <a href="${result.url | h}">${result.url | urlstrip}</a>.</h2>
+                        <h2 id="cv-result-header"><a href="${page.url}">${page.title | h}</a> is a suspected violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</h2>
                     % else:
-                        <h2 id="cv-result-header">No violations detected in <a href="${page.url()}">${page.title | h}</a>.</h2>
+                        <h2 id="cv-result-header">No violations detected in <a href="${page.url}">${page.title | h}</a>.</h2>
                     % endif
                     <ul id="cv-result-list">
                         <li><b><tt>${round(result.confidence * 100, 1)}%</tt></b> confidence of a violation.</li>
                         % if result.cached:
                             <li>Results are <a id="cv-cached" href="#">cached
                                 <span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URL of the "violated" source, but neither its content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span>
-                            </a> from ${result.cache_time} (${result.cache_age} ago). <a href="${environ['REQUEST_URI'].decode("utf8") | h}&amp;nocache=1">Bypass the cache.</a></li>
+                            </a> from ${result.cache_time} (${result.cache_age} ago). <a href="${environ['REQUEST_URI'] | h}&amp;nocache=1">Bypass the cache.</a></li>
                         % else:
                             <li>Results generated in <tt>${round(result.tdiff, 3)}</tt> seconds using <tt>${result.queries}</tt> queries.</li>
                         % endif

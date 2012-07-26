@@ -12,7 +12,7 @@ class _CookieManager(SimpleCookie):
         self._path = path.split(environ["PATH_INFO"])[0]
         try:
             super(_CookieManager, self).__init__(environ["HTTP_COOKIE"])
-        except (CookieError, AttributeError):
+        except (CookieError, KeyError):
             super(_CookieManager, self).__init__()
         for cookie in self.keys():
             if self[cookie].value is False:

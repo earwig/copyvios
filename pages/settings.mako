@@ -20,9 +20,9 @@
                                 <% selected_lang = cookies["EarwigDefaultLang"].value if "EarwigDefaultLang" in cookies else bot.wiki.get_site().lang %>
                                 % for code, name in langs:
                                     % if code == selected_lang:
-                                        <option value="${code}" selected="selected">${name}</option>
+                                        <option value="${code | h}" selected="selected">${name}</option>
                                     % else:
-                                        <option value="${code}">${name}</option>
+                                        <option value="${code | h}">${name}</option>
                                     % endif
                                 % endfor
                             </select>
@@ -31,9 +31,9 @@
                                 <% selected_project = cookies["EarwigDefaultProject"].value if "EarwigDefaultProject" in cookies else bot.wiki.get_site().project %>
                                 % for code, name in projects:
                                     % if code == selected_project:
-                                        <option value="${code}" selected="selected">${name}</option>
+                                        <option value="${code | h}" selected="selected">${name}</option>
                                     % else:
-                                        <option value="${code}">${name}</option>
+                                        <option value="${code | h}">${name}</option>
                                     % endif
                                 % endfor
                             </select>

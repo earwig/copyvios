@@ -2,6 +2,8 @@
 
 from re import sub, UNICODE
 
+# TODO: escape if input contains pseudo-HTML
+
 def highlight_delta(context, chain, delta):
     processed = []
     prev_prev = prev = chain.START

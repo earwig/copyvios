@@ -112,4 +112,4 @@ def _build_url(screen, filename, url, imgwidth, imgheight):
     if width >= imgwidth:
         return url
     url = url.replace("/commons/", "/commons/thumb/")
-    return url + "/" + width + "px-" + filename
+    return url + "/" + str(width) + "px-" + filename

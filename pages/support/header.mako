@@ -32,9 +32,9 @@
     % if selected in ["plain-brown", "plain-blue"]:
         <body style="background-image: url('${root}/static/images/background-${selected[6:]}.png');">
     % elif selected == "potd":
-        <body onload="set_background_potd()">
+        <body onload="set_background_potd()" style="background-repeat: no-repeat;">
     % else:
-        <body onload="set_background_list()">
+        <body onload="set_background_list()" style="background-repeat: no-repeat;">
     % endif
         <div id="header">
             <p id="heading"><a class="dark" href="${pretty}">earwig</a><span class="light">@</span><a class="mid" href="https://wiki.toolserver.org/">toolserver</a><span class="light">:</span><a class="dark" href="${this}">${slug}</a></p>

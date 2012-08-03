@@ -6,6 +6,9 @@ from urlparse import parse_qs
 from earwigbot.bot import Bot
 import oursql
 
+_bot = None
+_connections = {}
+
 class Query(object):
     def __init__(self, environ, method="GET"):
         self.query = {}
@@ -35,7 +38,15 @@ class Query(object):
             self.query[key] = value
 
 
+def get_bot():
+    global _bot
+    if not _bot:
+        _bot = Bot(".earwigbot", 100)  # Don't print any logs to the console
+    return _bot
+
 def open_sql_connection(bot, dbname):
+    if dbname in _connections:
+        return _connections[dbname]
     conn_args = bot.config.wiki["_toolserverSQL"][dbname]
     if "read_default_file" not in conn_args and "user" not in conn_args and "passwd" not in conn_args:
         conn_args["read_default_file"] = expanduser("~/.my.cnf")
@@ -43,7 +54,9 @@ def open_sql_connection(bot, dbname):
         conn_args["autoping"] = True
     if "autoreconnect" not in conn_args:
         conn_args["autoreconnect"] = True
-    return oursql.connect(**conn_args)
+    conn = oursql.connect(**conn_args)
+    _connections[dbname] = conn
+    return conn
 
 def urlstrip(context, url):
     if url.startswith("http://"):
@@ -55,6 +68,3 @@ def urlstrip(context, url):
     if url.endswith("/"):
         url = url[:-1]
     return url
-
-def get_bot():
-    return Bot(".earwigbot", 100)  # Don't print any logs to the console

@@ -1,4 +1,5 @@
 <%page args="environ, cookies"/>\
+<%namespace module="toolserver.background" import="get_desc_url"/>\
 <%!
     from os import path
 %>\
@@ -19,7 +20,7 @@
                             <a href="mailto:earwig@toolserver.org">Contact</a> &bull; \
                             <a href="https://github.com/earwig/toolserver">View Source</a> &bull; \
                             % if ("EarwigBackground" in cookies and cookies["EarwigBackground"].value in ["potd", "list"]) or "EarwigBackground" not in cookies:
-                                <a id="bg_image_link" href="">Background</a> &bull; \
+                                <a href="${get_desc_url() | h}">Background</a> &bull; \
                             % endif
                             <a href="http://validator.w3.org/check?uri=referer">Valid XHTML 1.0 Strict</a>
                         </p>

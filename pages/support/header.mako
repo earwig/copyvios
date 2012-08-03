@@ -1,4 +1,5 @@
 <%page args="environ, cookies, title, slug=None, add_css=(), add_js=()"/>\
+<%namespace module="toolserver.background" import="set_background"/>\
 <%namespace name="index" file="/index.mako" import="get_tools"/>\
 <%!
     from os import path
@@ -31,10 +32,9 @@
     <% selected = cookies["EarwigBackground"].value if "EarwigBackground" in cookies else "list" %>\
     % if selected in ["plain-brown", "plain-blue"]:
         <body style="background-image: url('${root}/static/images/background-${selected[6:]}.png');">
-    % elif selected == "potd":
-        <body onload="set_background_potd()" style="background-repeat: no-repeat;">
     % else:
-        <body onload="set_background_list()" style="background-repeat: no-repeat;">
+        <% bg_url = set_background(cookies, selected) %>\
+        <body onload="update_screen_size()" style="background-image: url('${bg_url | h}'); background-size: cover;">
     % endif
         <div id="header">
             <p id="heading"><a class="dark" href="${pretty}">earwig</a><span class="light">@</span><a class="mid" href="https://wiki.toolserver.org/">toolserver</a><span class="light">:</span><a class="dark" href="${this}">${slug}</a></p>

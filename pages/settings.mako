@@ -69,7 +69,7 @@
             <h2>Cookies</h2>
             % if cookies:
                 <table>
-                <% cookie_order = ["EarwigDefaultProject", "EarwigDefaultLang", "EarwigBackground", "EarwigCVShowDetails", "EarwigBackgroundCache"] %>\
+                <% cookie_order = ["EarwigDefaultProject", "EarwigDefaultLang", "EarwigBackground", "EarwigScreenCache", "EarwigCVShowDetails"] %>\
                 % for key in [key for key in cookie_order if key in cookies]:
                     <% cookie = cookies[key] %>\
                     <tr>

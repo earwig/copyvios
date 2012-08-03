@@ -5,7 +5,7 @@ function copyvio_toggle_details(details) {
     if (link.innerHTML == "Show details:") {
         details.style.display = "block";
         link.innerHTML = "Hide details:";
-        set_cookie("EarwigCVShowDetails", "True", 365);
+        set_cookie("EarwigCVShowDetails", "True", 1095);
     } else {
         details.style.display = "none";
         link.innerHTML = "Show details:";

@@ -25,17 +25,17 @@ def _do_set(query, headers, cookies):
     if query.lang:
         key = "EarwigDefaultLang"
         if key not in cookies or cookies[key].value != query.lang:
-            set_cookie(headers, cookies, key, query.lang, 365)
+            set_cookie(headers, cookies, key, query.lang, 1095)
             changes.add("site")
     if query.project:
         key = "EarwigDefaultProject"
         if key not in cookies or cookies[key].value != query.project:
-            set_cookie(headers, cookies, key, query.project, 365)
+            set_cookie(headers, cookies, key, query.project, 1095)
             changes.add("site")
     if query.background:
         key = "EarwigBackground"
         if key not in cookies or cookies[key].value != query.background:
-            set_cookie(headers, cookies, key, query.background, 365)
+            set_cookie(headers, cookies, key, query.background, 1095)
             delete_cookie(headers, cookies, "EarwigBackgroundCache")
             changes.add("background")
     if changes:

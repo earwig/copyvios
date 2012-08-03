@@ -10,6 +10,21 @@ CREATE DATABASE `u_earwig_toolserver`
   DEFAULT COLLATE utf8_unicode_ci;
 
 --
+-- Table structure for table `background`
+--
+
+DROP TABLE IF EXISTS `background`;
+CREATE TABLE `background` (
+  `background_id` int(9) unsigned NOT NULL,
+  `background_filename` varchar(512) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `background_url` varchar(512) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `background_descurl` varchar(512) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `background_width` int(9) unsigned DEFAULT NULL,
+  `background_height` int(9) unsigned DEFAULT NULL,
+  PRIMARY KEY (`background_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
 -- Table structure for table `language`
 --
 

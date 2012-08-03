@@ -12,7 +12,7 @@ from .misc import get_bot, open_sql_connection
 
 _descurl = None
 
-def set_background(cookies, selected):
+def set_background(context, cookies, selected):
     global _descurl
     conn = open_sql_connection(get_bot(), "globals")
     if "EarwigScreenCache" in cookies:
@@ -35,7 +35,7 @@ def set_background(cookies, selected):
     _descurl = descurl
     return bg_url
 
-def get_desc_url():
+def get_desc_url(context):
     return _descurl
 
 def _update_url(conn, service, bg_id, callback):

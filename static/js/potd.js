@@ -4,7 +4,7 @@ function update_screen_size() {
         "width": window.screen.availWidth,
         "height": window.screen.availHeight
     }
-    if (!cookie || cookie["width"] != data["width"] || cookie["height"] != data["height"]) {
+    if (!cache || cache["width"] != data["width"] || cache["height"] != data["height"]) {
         set_cookie("EarwigScreenCache", JSON.stringify(data), 1095);
     }
 }

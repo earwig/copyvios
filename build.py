@@ -12,6 +12,12 @@ import os
 import sys
 
 os.chdir("..")
+plat = sys.platform
+if plat.startswith("sunos"):
+    plat = "solaris"
+elif plat.startswith("linux"):
+    plat = "linux"
+sys.path.insert(0, os.path.expanduser("~/.local/" + plat + "/lib/python2.7/site-packages"))
 sys.path.insert(0, ".")
 
 from mako.template import Template

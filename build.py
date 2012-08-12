@@ -9,6 +9,7 @@ import subprocess
 page_src = """#! /usr/bin/env python
 # -*- coding: utf-8  -*-
 import os
+import site
 import sys
 
 os.chdir("..")
@@ -17,7 +18,7 @@ if plat.startswith("sunos"):
     plat = "solaris"
 elif plat.startswith("linux"):
     plat = "linux"
-sys.path.insert(0, os.path.expanduser("~/.local/" + plat + "/lib/python2.7/site-packages"))
+site.addsitedir(os.path.expanduser("~/.local/" + plat + "/lib/python2.7/site-packages"))
 sys.path.insert(0, ".")
 
 from mako.template import Template

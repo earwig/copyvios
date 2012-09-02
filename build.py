@@ -9,18 +9,15 @@ import subprocess
 page_src = """#! /usr/bin/env python
 # -*- coding: utf-8  -*-
 import os
-import site
 import sys
 
 os.chdir("..")
-plat = sys.platform
-if plat.startswith("sunos"):
-    plat = "solaris"
-elif plat.startswith("linux"):
-    plat = "linux"
-site.addsitedir(os.path.expanduser("~/.local/" + plat + "/lib/python2.7/site-packages"))
-sys.path.insert(0, os.path.expanduser("~/.local/" + plat + "/lib/python2.7/site-packages"))
 sys.path.insert(0, ".")
+
+try:
+    from toolserver import preconfig
+except ImportError:
+    pass
 
 from mako.template import Template
 from mako.lookup import TemplateLookup

@@ -1,5 +1,11 @@
 *.pyc
-temp/
-www/
+*.egg
+*.egg-info
+.DS_Store
+__pycache__
+
+temp
+www
 .earwigbot
 rewrite.script
+toolserver/preconfig.py

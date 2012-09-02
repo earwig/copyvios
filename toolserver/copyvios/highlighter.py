@@ -34,41 +34,43 @@ def highlight_delta(context, chain, delta):
     return u"<br /><br />".join(processed)
 
 def _highlight_word(word, before, after, is_first, is_last):
-    word = escape(word)
     if before and after:
         # Word is in the middle of a highlighted block, so don't change
-        # anything unless this is the first word (force block to start) or
-        # the last word (force block to end):
-        res = word
+        # anything unless this is the first word (force block to start) or the
+        # last word (force block to end):
+        res = escape(word)
         if is_first:
             res = u'<span class="cv-hl">' + res
         if is_last:
             res += u'</span>'
     elif before:
-        # Word is the last in a highlighted block, so fade it out and then
-        # end the block; force open a block before the word if this is the
-        # first word:
+        # Word is the last in a highlighted block, so fade it out and then end
+        # the block; force open a block before the word if this is the first
+        # word:
         res = _fade_word(word, u"out") + u"</span>"
         if is_first:
             res = u'<span class="cv-hl">' + res
     elif after:
-        # Word is the first in a highlighted block, so start the block and
-        # then fade it in; force close the block after the word if this is
-        # the last word:
+        # Word is the first in a highlighted block, so start the block and then
+        # fade it in; force close the block after the word if this is the last
+        # word:
         res = u'<span class="cv-hl">' + _fade_word(word, u"in")
         if is_last:
             res += u"</span>"
     else:
         # Word is completely outside of a highlighted block, so do nothing:
-        res = word
+        res = escape(word)
     return res
 
 def _fade_word(word, dir):
     if len(word) <= 4:
-        return u'<span class="cv-hl-{0}">{1}</span>'.format(dir, word)
+        return u'<span class="cv-hl-{0}">{1}</span>'.format(dir, escape(word))
     if dir == u"out":
-        return u'{0}<span class="cv-hl-out">{1}</span>'.format(word[:-4], word[-4:])
-    return u'<span class="cv-hl-in">{0}</span>{1}'.format(word[:4], word[4:])
+        base = u'{0}<span class="cv-hl-out">{1}</span>'
+        return base.format(escape(word[:-4]), escape(word[-4:]))
+    else:
+        base = u'<span class="cv-hl-in">{0}</span>{1}'
+        return base.format(escape(word[:4]), escape(word[4:]))
 
 def _strip_word(word):
     return sub("[^\w\s-]", "", word.lower(), flags=UNICODE)

@@ -8,7 +8,6 @@ from .sites import get_sites
 
 def main(context, environ, headers, cookies):
     query = Query(environ, method="POST")
-
     if query.action == "set":
         status = _do_set(query, headers, cookies)
     elif query.action == "delete":
@@ -46,7 +45,7 @@ def _do_set(query, headers, cookies):
 def _do_delete(query, headers, cookies):
     if query.cookie in cookies:
         delete_cookie(headers, cookies, query.cookie.encode("utf8"))
-        template = "Deleted cookie <b><tt>{0}</tt></b>."
+        template = u"Deleted cookie <b><tt>{0}</tt></b>."
         return template.format(escape(query.cookie))
     elif query.all:
         number = len(cookies)

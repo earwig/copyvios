@@ -2,7 +2,7 @@
 
 from re import sub, UNICODE
 
-# TODO: escape if input contains pseudo-HTML
+from markupsafe import escape
 
 def highlight_delta(context, chain, delta):
     processed = []
@@ -34,6 +34,7 @@ def highlight_delta(context, chain, delta):
     return u"<br /><br />".join(processed)
 
 def _highlight_word(word, before, after, is_first, is_last):
+    word = escape(word)
     if before and after:
         # Word is in the middle of a highlighted block, so don't change
         # anything unless this is the first word (force block to start) or

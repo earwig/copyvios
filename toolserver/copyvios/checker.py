@@ -31,12 +31,11 @@ def get_results(bot, site, query):
 def _get_cached_results(page, conn):
     query1 = "DELETE FROM cache WHERE cache_time < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)"
     query2 = "SELECT cache_url, cache_time, cache_queries, cache_process_time FROM cache WHERE cache_id = ? AND cache_hash = ?"
-    pageid = page.pageid()
     shahash = sha256(page.get()).hexdigest()
 
     with conn.cursor() as cursor:
         cursor.execute(query1)
-        cursor.execute(query2, (pageid, shahash))
+        cursor.execute(query2, (page.pageid, shahash))
         results = cursor.fetchall()
         if not results:
             return None
@@ -59,7 +58,7 @@ def _format_date(cache_time):
     return "{0} seconds".format(diff.seconds)
 
 def _cache_result(page, result, conn):
-    pageid = page.pageid()
+    pageid = page.pageid
     shahash = sha256(page.get()).hexdigest()
     query1 = "SELECT 1 FROM cache WHERE cache_id = ?"
     query2 = "DELETE FROM cache WHERE cache_id = ?"

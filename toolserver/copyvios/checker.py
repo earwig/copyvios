@@ -30,15 +30,13 @@ def get_results(bot, site, query):
     mci = MarkovChainIntersection(mc1, mc2)
     result = CopyvioCheckResult(True, 0.67123, "http://example.com/", 7, mc1, (mc2, mci))
     result.cached = False
-    result.tdiff = time() - tstart
+    result.time = time() - tstart
     # END TEST BLOCK
     return page, result
 
 def _get_url_specific_results(page, url):
-    t_start = time()
     result = page.copyvio_compare(url)
     result.cached = False
-    result.tdiff = time() - t_start
     return result
 
 def _get_cached_results(page, conn):
@@ -46,7 +44,6 @@ def _get_cached_results(page, conn):
     query2 = "SELECT cache_url, cache_time, cache_queries, cache_process_time FROM cache WHERE cache_id = ? AND cache_hash = ?"
     pageid = page.pageid()
     hash = sha256(page.get()).hexdigest()
-    t_start = time()
 
     with conn.cursor() as cursor:
         cursor.execute(query1)
@@ -55,12 +52,11 @@ def _get_cached_results(page, conn):
         if not results:
             return None
 
-    url, cache_time, num_queries, original_tdiff = results[0]
+    url, cache_time, num_queries, original_time = results[0]
     result = page.copyvio_compare(url)
     result.cached = True
     result.queries = num_queries
-    result.tdiff = time() - t_start
-    result.original_tdiff = original_tdiff
+    result.original_time = original_time
     result.cache_time = cache_time.strftime("%b %d, %Y %H:%M:%S UTC")
     result.cache_age = _format_date(cache_time)
     return result
@@ -74,10 +70,8 @@ def _format_date(cache_time):
     return "{0} seconds".format(diff.seconds)
 
 def _get_fresh_results(page, conn):
-    t_start = time()
     result = page.copyvio_check(max_queries=10, max_time=45)
     result.cached = False
-    result.tdiff = time() - t_start
     _cache_result(page, result, conn)
     return result
 
@@ -92,4 +86,4 @@ def _cache_result(page, result, conn):
         if cursor.fetchall():
             cursor.execute(query2, (pageid,))
         cursor.execute(query3, (pageid, hash, result.url, result.queries,
-                                result.tdiff))
+                                result.time))

@@ -91,7 +91,7 @@
                                 <span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URL of the "violated" source, but neither its content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span>
                             </a> from ${result.cache_time} (${result.cache_age} ago). <a href="${environ['REQUEST_URI'] | h}&amp;nocache=1">Bypass the cache.</a></li>
                         % else:
-                            <li>Results generated in <tt>${round(result.tdiff, 3)}</tt> seconds using <tt>${result.queries}</tt> queries.</li>
+                            <li>Results generated in <tt>${round(result.time, 3)}</tt> seconds using <tt>${result.queries}</tt> queries.</li>
                         % endif
                         % if "EarwigCVShowDetails" in cookies and cookies["EarwigCVShowDetails"].value == "True":
                             <li><a id="cv-result-detail-link" href="#cv-result-detail" onclick="copyvio_toggle_details()">Hide details:</a></li>
@@ -108,9 +108,9 @@
                             <li>Trigrams: <i>Article:</i> <tt>${result.article_chain.size()}</tt> / <i>Source:</i> <tt>${result.source_chain.size()}</tt> / <i>Delta:</i> <tt>${result.delta_chain.size()}</tt></li>
                             % if result.cached:
                                 % if result.queries:
-                                    <li>Retrieved from cache in <tt>${round(result.tdiff, 3)}</tt> seconds (originally generated in <tt>${round(result.original_tdiff, 3)}</tt>s using <tt>${result.queries}</tt> queries; <tt>${round(result.original_tdiff - result.tdiff, 3)}</tt>s saved).</li>
+                                    <li>Retrieved from cache in <tt>${round(result.time, 3)}</tt> seconds (originally generated in <tt>${round(result.original_time, 3)}</tt>s using <tt>${result.queries}</tt> queries; <tt>${round(result.original_time - result.time, 3)}</tt>s saved).</li>
                                 % else:
-                                    <li>Retrieved from cache in <tt>${round(result.tdiff, 3)}</tt> seconds (originally generated in <tt>${round(result.original_tdiff, 3)}</tt>s; <tt>${round(result.original_tdiff - result.tdiff, 3)}</tt>s saved).</li>
+                                    <li>Retrieved from cache in <tt>${round(result.time, 3)}</tt> seconds (originally generated in <tt>${round(result.original_time, 3)}</tt>s; <tt>${round(result.original_time - result.time, 3)}</tt>s saved).</li>
                                 % endif
                             % endif
                             % if result.queries:

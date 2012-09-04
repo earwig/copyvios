@@ -42,10 +42,9 @@
                     </tr>
                     <%
                         background_options = [
-                            ("plain-brown", "Use a plain tiled background (brown version)."),
-                            ("plain-blue", "Use a plain tiled background (blue version)."),
+                            ("plain", "Use a plain tiled background (default)"),
                             ("potd", 'Use the current <a href="//commons.wikimedia.org/">Wikimedia Commons</a> <a href="//commons.wikimedia.org/wiki/Commons:Picture_of_the_day">Picture of the Day</a>, unfiltered. Certain POTDs may be unsuitable as backgrounds due to their aspect ratio or subject matter (generally portraits do not work well).'),
-                            ("list", 'Randomly select from <a href="http://commons.wikimedia.org/wiki/User:The_Earwig/POTD">a subset of previous Commons Pictures of the Day</a> that work well as widescreen backgrounds, refreshed daily (default).'),
+                            ("list", 'Randomly select from <a href="http://commons.wikimedia.org/wiki/User:The_Earwig/POTD">a subset of previous Commons Pictures of the Day</a> that work well as widescreen backgrounds, refreshed daily.'),
                         ]
                         selected = cookies["EarwigBackground"].value if "EarwigBackground" in cookies else "list"
                     %>\

@@ -29,9 +29,9 @@
             <script src="${root}/static/js/${filename}" type="text/javascript"></script>
         % endfor
     </head>
-    <% selected = cookies["EarwigBackground"].value if "EarwigBackground" in cookies else "list" %>\
-    % if selected in ["plain-brown", "plain-blue"]:
-        <body style="background-image: url('${root}/static/images/background-${selected[6:]}.png');">
+    <% selected = cookies["EarwigBackground"].value if "EarwigBackground" in cookies else "plain" %>\
+    % if selected == "plain":
+        <body style="background-image: url('${root}/static/images/background.png');">
     % else:
         <% bg_url = set_background(cookies, selected) %>\
         <body onload="update_screen_size()" style="background-image: url('${bg_url | h}'); background-size: cover;">

@@ -25,11 +25,14 @@ def highlight_delta(context, chain, delta):
     for paragraph in chain.text.split("\n"):
         words = []
         for i, word in enumerate(paragraph.split(), i):
-            before = highlights[i - 1]
-            after = highlights[i + 1]
-            first = i == degree
-            last = i - degree + 1 == numwords
-            words.append(_highlight_word(word, before, after, first, last))
+            if highlights[i]:
+                before = highlights[i - 1]
+                after = highlights[i + 1]
+                first = i == degree
+                last = i - degree + 1 == numwords
+                words.append(_highlight_word(word, before, after, first, last))
+            else:
+                words.append(unicode(escape(word)))
         processed.append(u" ".join(words))
         i += 1
 
@@ -37,30 +40,23 @@ def highlight_delta(context, chain, delta):
 
 def _highlight_word(word, before, after, first, last):
     if before and after:
-        # Word is in the middle of a highlighted block, so don't change
-        # anything unless this is the first word (force block to start) or the
-        # last word (force block to end):
+        # Word is in the middle of a highlighted block:
         res = unicode(escape(word))
         if first:
             res = u'<span class="cv-hl">' + res
         if last:
             res += u'</span>'
-    elif before:
-        # Word is the last in a highlighted block, so fade it out and then end
-        # the block; force open a block before the word if this is the first
-        # word:
-        res = _fade_word(word, u"out") + u"</span>"
-        if first:
-            res = u'<span class="cv-hl">' + res
     elif after:
-        # Word is the first in a highlighted block, so start the block and then
-        # fade it in; force close the block after the word if this is the last
-        # word:
+        # Word is the first in a highlighted block:
         res = u'<span class="cv-hl">' + _fade_word(word, u"in")
         if last:
             res += u"</span>"
+    elif before:
+        # Word is the last in a highlighted block:
+        res = _fade_word(word, u"out") + u"</span>"
+        if first:
+            res = u'<span class="cv-hl">' + res
     else:
-        # Word is completely outside of a highlighted block, so do nothing:
         res = unicode(escape(word))
     return res
 

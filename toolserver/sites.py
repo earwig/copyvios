@@ -108,6 +108,9 @@ def _synchronize_sites_with_db(cursor, updates, q_list, q_rmv, q_update):
     removals = []
     cursor.execute(q_list)
     for site in cursor:
-        updates.remove(site) if site in updates else removals.append(site)
+        if site in updates:
+            updates.remove(site)
+        else:
+            removals.append(site)
     cursor.executemany(q_rmv, removals)
     cursor.executemany(q_update, updates)

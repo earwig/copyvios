@@ -2,7 +2,6 @@
 
 from datetime import datetime
 from hashlib import sha256
-from time import time
 
 from earwigbot import exceptions
 
@@ -16,7 +15,7 @@ def get_results(bot, site, query):
         return page, None
 
     if query.url:
-        result = page.copyvio_compare(url)
+        result = page.copyvio_compare(query.url)
         result.cached = False
     else:
         conn = open_sql_connection(bot, "copyvioCache")
@@ -33,11 +32,11 @@ def _get_cached_results(page, conn):
     query1 = "DELETE FROM cache WHERE cache_time < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)"
     query2 = "SELECT cache_url, cache_time, cache_queries, cache_process_time FROM cache WHERE cache_id = ? AND cache_hash = ?"
     pageid = page.pageid()
-    hash = sha256(page.get()).hexdigest()
+    shahash = sha256(page.get()).hexdigest()
 
     with conn.cursor() as cursor:
         cursor.execute(query1)
-        cursor.execute(query2, (pageid, hash))
+        cursor.execute(query2, (pageid, shahash))
         results = cursor.fetchall()
         if not results:
             return None
@@ -61,7 +60,7 @@ def _format_date(cache_time):
 
 def _cache_result(page, result, conn):
     pageid = page.pageid()
-    hash = sha256(page.get()).hexdigest()
+    shahash = sha256(page.get()).hexdigest()
     query1 = "SELECT 1 FROM cache WHERE cache_id = ?"
     query2 = "DELETE FROM cache WHERE cache_id = ?"
     query3 = "INSERT INTO cache VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?, ?)"
@@ -69,5 +68,5 @@ def _cache_result(page, result, conn):
         cursor.execute(query1, (pageid,))
         if cursor.fetchall():
             cursor.execute(query2, (pageid,))
-        cursor.execute(query3, (pageid, hash, result.url, result.queries,
+        cursor.execute(query3, (pageid, shahash, result.url, result.queries,
                                 result.time))

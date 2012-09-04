@@ -75,7 +75,7 @@ def _format_date(cache_time):
 
 def _get_fresh_results(page, conn):
     t_start = time()
-    result = page.copyvio_check(max_queries=10)
+    result = page.copyvio_check(max_queries=10, max_time=45)
     result.cached = False
     result.tdiff = time() - t_start
     _cache_result(page, result, conn)

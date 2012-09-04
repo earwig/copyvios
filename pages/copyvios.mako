@@ -85,7 +85,7 @@
                         <h2 id="cv-result-header">No violations detected in <a href="${page.url}">${page.title | h}</a>.</h2>
                     % endif
                     <ul id="cv-result-list">
-                        % if not result.violation:
+                        % if not result.violation and not query.url:
                             <li>Best match: <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</li>
                         % endif
                         <li><b><tt>${round(result.confidence * 100, 1)}%</tt></b> confidence of a violation.</li>

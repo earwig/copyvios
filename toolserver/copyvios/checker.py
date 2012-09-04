@@ -15,29 +15,19 @@ def get_results(bot, site, query):
     except (exceptions.PageNotFoundError, exceptions.InvalidPageError):
         return page, None
 
-    # if query.url:
-    #     result = _get_url_specific_results(page, query.url)
-    # else:
-    #     conn = open_sql_connection(bot, "copyvioCache")
-    #     if not query.nocache:
-    #         result = _get_cached_results(page, conn)
-    #     if query.nocache or not result:
-    #         result = _get_fresh_results(page, conn)
-    tstart = time()
-    from earwigbot.wiki.copyvios import MarkovChain, MarkovChainIntersection, CopyvioCheckResult
-    mc1 = MarkovChain(page.get())
-    mc2 = MarkovChain(u"This is some random textual content for a page.")
-    mci = MarkovChainIntersection(mc1, mc2)
-    result = CopyvioCheckResult(True, 0.67123, "http://example.com/", 7, mc1, (mc2, mci))
-    result.cached = False
-    result.time = time() - tstart
-    # END TEST BLOCK
-    return page, result
+    if query.url:
+        result = page.copyvio_compare(url)
+        result.cached = False
+    else:
+        conn = open_sql_connection(bot, "copyvioCache")
+        if not query.nocache:
+            result = _get_cached_results(page, conn)
+        if query.nocache or not result:
+            result = page.copyvio_check(max_queries=10, max_time=45)
+            result.cached = False
+            _cache_result(page, result, conn)
 
-def _get_url_specific_results(page, url):
-    result = page.copyvio_compare(url)
-    result.cached = False
-    return result
+    return page, result
 
 def _get_cached_results(page, conn):
     query1 = "DELETE FROM cache WHERE cache_time < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)"
@@ -68,12 +58,6 @@ def _format_date(cache_time):
     if diff.seconds > 60:
         return "{0} minutes".format(diff.seconds / 60)
     return "{0} seconds".format(diff.seconds)
-
-def _get_fresh_results(page, conn):
-    result = page.copyvio_check(max_queries=10, max_time=45)
-    result.cached = False
-    _cache_result(page, result, conn)
-    return result
 
 def _cache_result(page, result, conn):
     pageid = page.pageid()

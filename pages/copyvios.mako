@@ -122,8 +122,8 @@
                         </ul>
                         <table id="cv-chain-table">
                             <tr>
-                                <td>Article: <div class="cv-chain-detail"><p>${highlight_delta(result.article_chain, result.delta_chain)}</p></div></td>
-                                <td>Source: <div class="cv-chain-detail"><p>${highlight_delta(result.source_chain, result.delta_chain)}</p></div></td>
+                                <td>Article: <div class="cv-chain-detail">${highlight_delta(result.article_chain, result.delta_chain)}</div></td>
+                                <td>Source: <div class="cv-chain-detail">${highlight_delta(result.source_chain, result.delta_chain)}</div></td>
                             </tr>
                         </table>
                     </div>

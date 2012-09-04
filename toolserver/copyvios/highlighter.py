@@ -40,7 +40,7 @@ def highlight_delta(context, chain, delta):
             prev = sword
         processed.append(u" ".join(processed_words))
         i += 1
-    return u"<br /><br />".join(processed)
+    return u"<p>" + u"</p>\n<p>".join(processed) + u"</p>"
 
 def _highlight_word(word, before, after, is_first, is_last):
     if before and after:

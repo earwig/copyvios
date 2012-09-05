@@ -11,6 +11,7 @@
                     <p>The given page doesn't seem to exist: <a href="${page.url}">${page.title | h}</a>.</p>
                 </div>
             % elif query.project and query.lang and query.title and query.url and page and result == "bad URI":
+                <% result = None %>
                 <div class="red-box">
                     <p>Unsupported URI scheme: <a href="${query.url | h}">${query.url | h}</a>.</p>
                 </div>

@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
 rewrite_script_src = """match URL into $ with ^/~earwig/{0}(\?.*?)?$
 if matched then
-    set URL = /~earwig/www/{0}.fcgi$1
+    set URL = /~earwig/www/{1}.fcgi$1
     goto END
 endif
 """
@@ -138,8 +138,9 @@ class Builder(object):
 
         logger.debug("build rewrite.script")
         with open(target, "w") as fp:
+            fp.write(rewrite_script_src.format("", "index"))
             for page in self._pages:
-                fp.write(rewrite_script_src.format(page))
+                fp.write(rewrite_script_src.format(page, page))
 
     def build(self):
         self._enable_logging()

@@ -5,10 +5,14 @@
         ("Home", "home", "index", True, None),
         ("Settings", "settings", "settings", True, None),
         ("DIVIDER"),
-        ("Copyvio Detector", "copyvios", "copyvios", True, "Blah"),
-        ("EarwigBot Status", "earwigbot", "earwigbot", True, "Blah"),
-        ("Contribution Surveyor", "surveyor", "surveyor", False, "Blah"),
-        ("SWMT Helper", "swmt", "swmt", False, "Blah"),
+        ("Copyvio Detector", "copyvios", "copyvios", True,
+            'Try to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles by searching the web for page content, or compare an article to a specific URL.'),
+        ("EarwigBot Status", "earwigbot", "earwigbot", True,
+            'View <a href="//en.wikipedia.org/wiki/User:EarwigBot">EarwigBot</a>\'s current status and read its IRC-based mini-wiki.'),
+        ("Contribution Surveyor", "surveyor", "surveyor", False,
+            "Nothing to see here yet!"),
+        ("SWMT Helper", "swmt", "swmt", False,
+            "Nothing to see here yet!"),
     ]
 %>\
 <%

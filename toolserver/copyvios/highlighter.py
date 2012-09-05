@@ -22,9 +22,10 @@ def highlight_delta(context, chain, delta):
     i = degree
     numwords = len(chain.text.split())
     processed = []
-    for paragraph in chain.text.split("\n"):
+    paragraphs = chain.text.split("\n")
+    while paragraphs:
         words = []
-        for i, word in enumerate(paragraph.split(), i):
+        for i, word in enumerate(_get_next(paragraphs), i):
             if highlights[i]:
                 before = highlights[i - 1]
                 after = highlights[i + 1]
@@ -37,6 +38,19 @@ def highlight_delta(context, chain, delta):
         i += 1
 
     return u"<p>" + u"</p>\n<p>".join(processed) + u"</p>"
+
+def _get_next(paragraphs):
+    paragraph = paragraphs.pop(0)
+    body = paragraph.split()
+    if len(body) == 1:
+        while paragraphs:
+            next = paragraphs[0].split()
+            if len(next) == 1:
+                body += next
+                paragraphs.pop(0)
+            else:
+                break
+    return body
 
 def _highlight_word(word, before, after, first, last):
     if before and after:

@@ -42,10 +42,10 @@ def highlight_delta(context, chain, delta):
 def _get_next(paragraphs):
     paragraph = paragraphs.pop(0)
     body = paragraph.split()
-    if len(body) == 1:
+    if len(body) <= 3:
         while paragraphs:
             next = paragraphs[0].split()
-            if len(next) == 1:
+            if len(next) <= 3:
                 body += next
                 paragraphs.pop(0)
             else:

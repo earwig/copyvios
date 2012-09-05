@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from hashlib import sha256
+from urlparse import urlparse
 
 from earwigbot import exceptions
 
@@ -15,6 +16,8 @@ def get_results(bot, site, query):
         return page, None
 
     if query.url:
+        if urlparse(query.url).scheme not in ["http", "https"]:
+            return page, "bad URI"
         result = page.copyvio_compare(query.url)
         result.cached = False
     else:

@@ -10,6 +10,10 @@
                 <div class="red-box">
                     <p>The given page doesn't seem to exist: <a href="${page.url}">${page.title | h}</a>.</p>
                 </div>
+            % elif query.project and query.lang and query.title and query.url and page and result == "bad URI":
+                <div class="red-box">
+                    <p>Unsupported URI scheme: <a href="${query.url | h}">${query.url | h}</a>.</p>
+                </div>
             % endif
             <h1>Copyvio Detector</h1>
             <p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. Simply give the title of the page you want to check and hit Submit. The tool will then search for its content elsewhere on the web and display a report if a similar webpage is found. If you also provide a URL, it will not query any search engines and instead display a report comparing the article to that particular webpage, like the <a href="//toolserver.org/~dcoetzee/duplicationdetector/">Duplication Detector</a>. Check out the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/FAQ">FAQ</a> for more information and technical details.</p>

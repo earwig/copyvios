@@ -91,7 +91,11 @@
                     % endif
                     <ul id="cv-result-list">
                         % if not result.violation and not query.url:
-                            <li>Best match: <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</li>
+                            % if result.url:
+                                <li>Best match: <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</li>
+                            % else:
+                                <li>No matches found.</li>
+                            % endif
                         % endif
                         <li><b><tt>${round(result.confidence * 100, 1)}%</tt></b> confidence of a violation.</li>
                         % if result.cached:

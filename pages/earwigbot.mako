@@ -1,5 +1,5 @@
 <%include file="/support/header.mako" args="environ=environ, cookies=cookies, title='EarwigBot Status'"/>\
-<%namespace module="toolserver.earwigbot" import="collect_status_info"/>\
+<%namespace module="toolserver.eb_inter" import="collect_status_info"/>\
 <%def name="get_status()" filter="trim">
     <% status, since, uptime, host = collect_status_info() %>
     ${"has been" if status == "online" else "is"} <span class="${status}">${status}</span>

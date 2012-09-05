@@ -12,7 +12,8 @@ ul, ol {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    margin-top: 0.30em;
+    margin-top: 0.20em;
+    margin-bottom: 0.20em;
 }
 
 div#header {
@@ -24,7 +25,7 @@ div#header {
 
 div#container {
     line-height: 1.25;
-    margin: 0 60px 100px 60px;
+    margin: 0 60px 80px 60px;
     padding: 15px 15px 15px 15px;
     border: 1px solid #777;
     background-color: #FFF;
@@ -53,15 +54,15 @@ div#foot-divider {
 }
 
 p#heading {
-    font-size: 3em;
+    font-size: 2.5em;
     font-weight: bold;
-    margin: 15px 0 12px 0;
+    margin: 8px 0 8px 0;
 }
 
 p#links {
-    font-size: 1.65em;
+    font-size: 1.5em;
     font-weight: bold;
-    margin: 8px 0 14px 0;
+    margin: 8px 0 10px 0;
 }
 
 table#footer-box {

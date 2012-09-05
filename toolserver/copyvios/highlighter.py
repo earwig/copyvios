@@ -37,7 +37,7 @@ def highlight_delta(context, chain, delta):
         processed.append(u" ".join(words))
         i += 1
 
-    return u"<p>" + u"</p>\n<p>".join(processed) + u"</p>"
+    return u"<br /><br />".join(processed)
 
 def _get_next(paragraphs):
     paragraph = paragraphs.pop(0)

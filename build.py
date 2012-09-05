@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
 rewrite_script_src = """match URL into $ with ^/~earwig/{0}(\?.*?)?$
 if matched then
-    set URL = /~earwig/rewrite/{0}.fcgi$1
+    set URL = /~earwig/www/{0}.fcgi$1
     goto END
 endif
 """

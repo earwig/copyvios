@@ -63,6 +63,11 @@ div.cv-chain-detail {
     border: 1px solid #BBB;
 }
 
+td.cv-chain-cell {
+    width: 50%;
+    vertical-align: top;
+}
+
 span.cv-hl {
     background: #FAA;
 }

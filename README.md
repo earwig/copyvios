@@ -1,6 +1,8 @@
-This is a from-scratch rewrite of
-[my Toolserver site](https://toolserver.org/~earwig) to interface well with my
-[EarwigBot rewrite](https://github.com/earwig/earwigbot).
+This is a [copyright violation](https://en.wikipedia.org/wiki/WP:COPYVIO)
+detector running on [Wikimedia Labs](https://tools.wmflabs.org/copyvios).
+
+It works by searching the web for page content, or comparing an article to a
+specific URL.
 
 Dependencies
 ============

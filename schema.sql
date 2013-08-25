@@ -1,11 +1,11 @@
 -- MySQL dump 10.13  Distrib 5.5.12, for solaris10 (i386)
 --
--- Host: sql    Database: u_earwig_toolserver
+-- Host: sql    Database: u_earwig_copyvios
 -- ------------------------------------------------------
 -- Server version       5.1.59
 
 
-CREATE DATABASE `u_earwig_toolserver`
+CREATE DATABASE `u_earwig_copyvios`
   DEFAULT CHARACTER SET utf8
   DEFAULT COLLATE utf8_unicode_ci;
 

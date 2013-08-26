@@ -28,17 +28,7 @@
         <body onload="update_screen_size()" style="background-image: url('${bg_url | h}'); background-size: cover;">
     % endif
         <div id="header">
-            <p id="heading"><a class="dark" href="${pretty}">earwig</a><span class="light">@</span><a class="mid" href="https://wiki.toolserver.org/">toolserver</a><span class="light">:</span><a class="dark" href="${this}">${slug}</a></p>
-            <p id="links"><span class="light">&gt;</span>
-                % for num, tool in enumerate(tools, 1):
-                    % if tool != "DIVIDER":
-                        <% name, tool, link, complete, desc = tool %>\
-                        <abbr title="${name}${' (incomplete)' if not complete else ''}"><a class="${'dark' if complete else 'mid'}" href="${pretty}/${link}">${tool}</a></abbr>
-                    % endif
-                    % if num < len(tools):
-                        <span class="light">&#124;</span>
-                    % endif
-                % endfor
-            </p>
+            <p id="heading"><a class="dark" href="${pretty}">Earwig's Copyvio Detector</a></p>
+            <p id="links"><a class="mid" href="${pretty}/settings">Settings</a></p>
         </div>
         <div id="container">

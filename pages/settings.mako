@@ -64,6 +64,7 @@
                             <input type="hidden" name="action" value="set"/>
                             <button type="submit">Save</button>
                         </td>
+                        <td></td>
                     </tr>
                 </table>
             </form>

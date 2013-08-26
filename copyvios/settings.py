@@ -45,7 +45,7 @@ def _do_set(query, headers, cookies):
 def _do_delete(query, headers, cookies):
     if query.cookie in cookies:
         delete_cookie(headers, cookies, query.cookie.encode("utf8"))
-        template = u"Deleted cookie <b><span class="mono">{0}</span></b>."
+        template = u'Deleted cookie <b><span class="mono">{0}</span></b>.'
         return template.format(escape(query.cookie))
     elif query.all:
         number = len(cookies)

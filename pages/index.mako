@@ -78,6 +78,7 @@
                     % endif
                     <tr>
                         <td><button type="submit">Submit</button></td>
+                        <td></td>
                     </tr>
                 </table>
             </form>

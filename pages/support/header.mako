@@ -9,8 +9,8 @@
     pretty = path.split(root)[0]
     if not slug:
         slug = path.split(this)[1]
-        if slug.endswith(".fcgi"):
-            slug = slug[:-5]
+        if slug.endswith(".py"):
+            slug = slug[:-3]
 %>\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">

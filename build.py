@@ -69,7 +69,7 @@ class Builder(object):
         logger = base.getChild(page.rsplit(".", 1)[0])
         self._pages.append(page.rsplit(".", 1)[0])
         src = os.path.join(self.pages_dir, page)
-        dest = os.path.join(self.build_dir, page.replace(".mako", ".fcgi"))
+        dest = os.path.join(self.build_dir, page.replace(".mako", ".py"))
 
         logger.debug("build {0} -> {1}".format(src, dest))
         content = page_src.replace("{{src}}", src)

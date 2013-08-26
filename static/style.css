@@ -53,6 +53,27 @@ div#foot-divider {
     border-bottom: 1px solid #777;
 }
 
+div#cv-result-yes {
+    padding: 5px 10px 0 10px;
+    margin: 0 5px 10px 5px;
+    background-color: #FEE;
+    border: 1px solid #F77;
+}
+
+div#cv-result-no {
+    padding: 5px 10px 0 10px;
+    margin: 0 5px 10px 5px;
+    background-color: #EFE;
+    border: 1px solid #7F7;
+}
+
+div#cv-result-detail {
+    padding: 0 10px 0 10px;
+    margin: 10px 10px 20px 10px;
+    background-color: #F3F3F3;
+    border: 1px solid #AAA;
+}
+
 p#heading {
     font-size: 2.5em;
     font-weight: bold;
@@ -68,6 +89,40 @@ p#links {
 table#footer-box {
     width: 100%;
     height: 100%;
+}
+
+table#cv-chain-table {
+    width: 100%;
+    border-spacing: 10px;
+}
+
+h2#cv-result-header {
+    margin-bottom: 0;
+}
+
+ul#cv-result-list {
+    margin-top: 0.5em;
+}
+
+ul#cv-result-detail-list {
+    margin-bottom: 0;
+}
+
+a#cv-cached {
+    position: relative;
+}
+
+a#cv-cached span {
+    display: none;
+    position: absolute;
+    top: 20px;
+    left: -50px;
+    width: 500px;
+    padding: 5px;
+    z-index: 1;
+    background: #F3F3F3;
+    border: 1px solid #AAA;
+    color: black;
 }
 
 div.toolbox {
@@ -101,6 +156,12 @@ div.indentable {
     white-space: pre-wrap;
 }
 
+div.cv-chain-detail {
+    padding: 0 10px 0 10px;
+    background-color: #FFF;
+    border: 1px solid #BBB;
+}
+
 p.toolname {
     font-size: 18px;
     margin: 6px 0 6px 0;
@@ -119,6 +180,35 @@ span.offline {
 span.online {
     color: #090;
     font-weight: bold;
+}
+
+td.cv-chain-cell {
+    width: 50%;
+    vertical-align: top;
+}
+
+span.cv-hl {
+    background: #FAA;
+}
+
+span.cv-hl-in {
+    background: #FCC;
+    background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(#FFF), to(#FAA)); /* Chrome, Safari 4+ */
+    background: -webkit-linear-gradient(left, #FFF, #FAA); /* Chrome 10+, Safari 5+ */
+    background: -moz-linear-gradient(left, #FFF, #FAA); /* Firefox 3.6+ */
+    background: -ms-linear-gradient(left, #FFF, #FAA); /* IE 10+ */
+    background: -o-linear-gradient(left, #FFF, #FAA); /* Opera 11.10+ */
+    background: linear-gradient(left, #FFF, #FAA);
+}
+
+span.cv-hl-out {
+    background: #FCC;
+    background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(#FAA), to(#FFF)); /* Chrome, Safari 4+ */
+    background: -webkit-linear-gradient(left, #FAA, #FFF); /* Chrome 10+, Safari 5+ */
+    background: -moz-linear-gradient(left, #FAA, #FFF); /* Firefox 3.6+ */
+    background: -ms-linear-gradient(left, #FAA, #FFF); /* IE 10+ */
+    background: -o-linear-gradient(left, #FAA, #FFF); /* Opera 11.10+ */
+    background: linear-gradient(left, #FAA, #FFF);
 }
 
 span.light  { color: #CCC; }
@@ -143,3 +233,7 @@ a.mid:link    { color: #AAA; }
 a.mid:visited { color: #AAA; }
 a.mid:hover   { color: #888; }
 a.mid:active  { color: #666; }
+
+a:active#cv-cached     { color: #040; text-decoration: none; }
+a:hover#cv-cached      { text-decoration: none; }
+a:hover#cv-cached span { display: block; }

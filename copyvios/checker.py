@@ -21,7 +21,7 @@ def get_results(bot, site, query):
         result = page.copyvio_compare(query.url)
         result.cached = False
     else:
-        conn = open_sql_connection(bot, "copyvioCache")
+        conn = open_sql_connection(bot, "cache")
         if not query.nocache:
             result = _get_cached_results(page, conn)
         if query.nocache or not result:

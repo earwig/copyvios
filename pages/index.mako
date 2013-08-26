@@ -1,4 +1,4 @@
-<%include file="/support/header.mako" args="environ=environ, cookies=cookies, title='Earwig's Copyvio Detector'"/>\
+<%include file="/support/header.mako" args="environ=environ, cookies=cookies, title='Earwig\'s Copyvio Detector'"/>\
 <%namespace module="copyvios" import="main, highlight_delta"/>\
 <%namespace module="copyvios.misc" import="urlstrip"/>\
 <% query, bot, all_langs, all_projects, page, result = main(environ) %>\

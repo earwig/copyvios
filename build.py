@@ -17,7 +17,7 @@ sys.path.insert(0, ".")
 from mako.template import Template
 from mako.lookup import TemplateLookup
 
-from toolserver.cookies import parse_cookies
+from copyvios.cookies import parse_cookies
 
 def main(environ, start_response):
     lookup = TemplateLookup(directories=["{{pages_dir}}"],

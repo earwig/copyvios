@@ -6,7 +6,7 @@ from urlparse import urlparse
 
 from earwigbot import exceptions
 
-from ..misc import open_sql_connection
+from .misc import open_sql_connection
 
 def get_results(bot, site, query):
     page = site.get_page(query.title)

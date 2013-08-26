@@ -2,8 +2,8 @@
 
 from .checker import get_results
 from .highlighter import highlight_delta
-from ..misc import get_bot, Query
-from ..sites import get_site, get_sites
+from .misc import get_bot, Query
+from .sites import get_site, get_sites
 
 def main(context, environ):
     query = Query(environ)

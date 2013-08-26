@@ -8,6 +8,8 @@ Dependencies
 ============
 
 * [earwigbot](https://github.com/earwig/earwigbot) >= 0.1
+* [mwparserfromhell](https://github.com/earwig/mwparserfromhell) >= 0.3
+* [flup](http://trac.saddi.com/flup) >= 1.0.3
 * [mako](http://www.makotemplates.org/) >= 0.7.2
 * [oursql](http://packages.python.org/oursql/) >= 0.9.3.1
 * [uglifyjs](https://github.com/mishoo/UglifyJS/) >= 1.3.3

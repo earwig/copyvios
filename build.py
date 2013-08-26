@@ -6,7 +6,7 @@ import os
 import shutil
 import subprocess
 
-page_src = """#! /usr/bin/env python
+page_src = """#! /data/project/copyvios/env/bin/python
 # -*- coding: utf-8  -*-
 import os
 import sys
@@ -36,13 +36,6 @@ if __name__ == "__main__":
     WSGIServer(main).run()
 """
 
-rewrite_script_src = """match URL into $ with ^/~earwig/{0}(\?.*?)?$
-if matched then
-    set URL = /~earwig/www/{1}.fcgi$1
-    goto END
-endif
-"""
-
 class Builder(object):
     def __init__(self):
         self.build_dir = "www"
@@ -50,7 +43,6 @@ class Builder(object):
         self.pages_dir = "pages"
         self.support_dir = "pages/support"
         self.temp_dir = "temp"
-        self.rs_file = "rewrite.script"
 
         self.root = logging.getLogger("builder")
         self.root.addHandler(logging.NullHandler())
@@ -123,27 +115,12 @@ class Builder(object):
                 continue
             self._gen_page(page, logger)
 
-    def gen_zws(self):
-        logger = self.root.getChild("zws")
-        target = self.rs_file
-
-        if os.path.exists(target):
-            logger.debug("rm {0}".format(target))
-            os.remove(target)
-
-        logger.debug("build rewrite.script")
-        with open(target, "w") as fp:
-            fp.write(rewrite_script_src.format("", "index"))
-            for page in self._pages:
-                fp.write(rewrite_script_src.format(page, page))
-
     def build(self):
         self._enable_logging()
         self.root.info("Building project...")
         self.clean()
         self.gen_static()
         self.gen_pages()
-        self.gen_zws()
         self.root.info("Done!")
 
 

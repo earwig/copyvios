@@ -15,7 +15,7 @@ class Query(object):
         if method == "GET":
             parsed = parse_qs(environ["QUERY_STRING"])
         elif method == "POST":
-            size = environ.get("CONTENT_LENGTH", 0)
+            size = int(environ.get("CONTENT_LENGTH", 0))
             parsed = parse_qs(environ["wsgi.input"].read(size))
         else:
             parsed = {}

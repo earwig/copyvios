@@ -22,17 +22,17 @@ def main(context, environ, headers, cookies):
 def _do_set(query, headers, cookies):
     changes = set()
     if query.lang:
-        key = "EarwigDefaultLang"
+        key = "CopyviosDefaultLang"
         if key not in cookies or cookies[key].value != query.lang:
             set_cookie(headers, cookies, key, query.lang, 1095)
             changes.add("site")
     if query.project:
-        key = "EarwigDefaultProject"
+        key = "CopyviosDefaultProject"
         if key not in cookies or cookies[key].value != query.project:
             set_cookie(headers, cookies, key, query.project, 1095)
             changes.add("site")
     if query.background:
-        key = "EarwigBackground"
+        key = "CopyviosBackground"
         if key not in cookies or cookies[key].value != query.background:
             set_cookie(headers, cookies, key, query.background, 1095)
             delete_cookie(headers, cookies, "EarwigBackgroundCache")

@@ -14,11 +14,6 @@ import sys
 os.chdir("..")
 sys.path.insert(0, ".")
 
-try:
-    from toolserver import preconfig
-except ImportError:
-    pass
-
 from mako.template import Template
 from mako.lookup import TemplateLookup
 

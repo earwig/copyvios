@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from os import path
 
 class _CookieManager(SimpleCookie):
-    MAGIC = "--ets1"
+    MAGIC = "--cpv2"
 
     def __init__(self, environ):
         self._path = path.split(environ["PATH_INFO"])[0]

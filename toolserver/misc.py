@@ -47,9 +47,11 @@ def get_bot():
 def open_sql_connection(bot, dbname):
     if dbname in _connections:
         return _connections[dbname]
-    conn_args = bot.config.wiki["_toolserverSQL"][dbname]
+    conn_args = bot.config.wiki["_copyviosSQL"][dbname]
     if "read_default_file" not in conn_args and "user" not in conn_args and "passwd" not in conn_args:
         conn_args["read_default_file"] = expanduser("~/.my.cnf")
+    elif "read_default_file" in args:
+        args["read_default_file"] = expanduser(args["read_default_file"])
     if "autoping" not in conn_args:
         conn_args["autoping"] = True
     if "autoreconnect" not in conn_args:

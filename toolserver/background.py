@@ -15,8 +15,8 @@ _descurl = None
 def set_background(context, cookies, selected):
     global _descurl
     conn = open_sql_connection(get_bot(), "globals")
-    if "EarwigScreenCache" in cookies:
-        cache = cookies["EarwigScreenCache"].value
+    if "CopyviosScreenCache" in cookies:
+        cache = cookies["CopyviosScreenCache"].value
         try:
             screen = loads(cache)
             int(screen["width"])

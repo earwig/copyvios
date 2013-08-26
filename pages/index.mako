@@ -4,7 +4,7 @@
 <% query, bot, all_langs, all_projects, page, result = main(environ) %>\
             % if query.project and query.lang and query.title and not page:
                 <div class="red-box">
-                    <p>The given site (project=<b><tt>${query.project | h}</tt></b>, language=<b><tt>${query.lang | h}</tt></b>) doesn't seem to exist. It may also be closed or private. <a href="//${query.lang | h}.${query.project | h}.org/">Confirm its URL.</a></p>
+                    <p>The given site (project=<b><span class="mono">${query.project | h}</span></b>, language=<b><span class="mono">${query.lang | h}</span></b>) doesn't seem to exist. It may also be closed or private. <a href="//${query.lang | h}.${query.project | h}.org/">Confirm its URL.</a></p>
                 </div>
             % elif query.project and query.lang and query.title and page and not result:
                 <div class="red-box">
@@ -23,7 +23,7 @@
                     <tr>
                         <td>Site:</td>
                         <td>
-                            <tt>http://</tt>
+                            <span class="mono">http://</span>
                             <select name="lang">
                                 <% selected_lang = query.orig_lang if query.orig_lang else cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in cookies else bot.wiki.get_site().lang %>\
                                 % for code, name in all_langs:
@@ -34,7 +34,7 @@
                                     % endif
                                 % endfor
                             </select>
-                            <tt>.</tt>
+                            <span class="mono">.</span>
                             <select name="project">
                                 <% selected_project = query.project if query.project else cookies["CopyviosDefaultProject"].value if "CopyviosDefaultProject" in cookies else bot.wiki.get_site().project %>\
                                 % for code, name in all_projects:
@@ -45,7 +45,7 @@
                                     % endif
                                 % endfor
                             </select>
-                            <tt>.org</tt>
+                            <span class="mono">.org</span>
                         </td>
                     </tr>
                     <tr>
@@ -97,13 +97,13 @@
                                 <li>No matches found.</li>
                             % endif
                         % endif
-                        <li><b><tt>${round(result.confidence * 100, 1)}%</tt></b> confidence of a violation.</li>
+                        <li><b><span class="mono">${round(result.confidence * 100, 1)}%</span></b> confidence of a violation.</li>
                         % if result.cached:
                             <li>Results are <a id="cv-cached" href="#">cached
                                 <span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URL of the "violated" source, but neither its content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span>
                             </a> from ${result.cache_time} (${result.cache_age} ago). <a href="${environ['REQUEST_URI'] | h}&amp;nocache=1">Bypass the cache.</a></li>
                         % else:
-                            <li>Results generated in <tt>${round(result.time, 3)}</tt> seconds using <tt>${result.queries}</tt> queries.</li>
+                            <li>Results generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries.</li>
                         % endif
                         % if "CopyviosShowDetails" in cookies and cookies["CopyviosShowDetails"].value == "True":
                             <li><a id="cv-result-detail-link" href="#cv-result-detail" onclick="copyvio_toggle_details()">Hide details:</a></li>
@@ -117,12 +117,12 @@
                         <div id="cv-result-detail" style="display: none;">
                     % endif
                         <ul id="cv-result-detail-list">
-                            <li>Trigrams: <i>Article:</i> <tt>${result.article_chain.size()}</tt> / <i>Source:</i> <tt>${result.source_chain.size()}</tt> / <i>Delta:</i> <tt>${result.delta_chain.size()}</tt></li>
+                            <li>Trigrams: <i>Article:</i> <span class="mono">${result.article_chain.size()}</span> / <i>Source:</i> <span class="mono">${result.source_chain.size()}</span> / <i>Delta:</i> <span class="mono">${result.delta_chain.size()}</span></li>
                             % if result.cached:
                                 % if result.queries:
-                                    <li>Retrieved from cache in <tt>${round(result.time, 3)}</tt> seconds (originally generated in <tt>${round(result.original_time, 3)}</tt>s using <tt>${result.queries}</tt> queries; <tt>${round(result.original_time - result.time, 3)}</tt>s saved).</li>
+                                    <li>Retrieved from cache in <span class="mono">${round(result.time, 3)}</span> seconds (originally generated in <span class="mono">${round(result.original_time, 3)}</span>s using <span class="mono">${result.queries}</span> queries; <span class="mono">${round(result.original_time - result.time, 3)}</span>s saved).</li>
                                 % else:
-                                    <li>Retrieved from cache in <tt>${round(result.time, 3)}</tt> seconds (originally generated in <tt>${round(result.original_time, 3)}</tt>s; <tt>${round(result.original_time - result.time, 3)}</tt>s saved).</li>
+                                    <li>Retrieved from cache in <span class="mono">${round(result.time, 3)}</span> seconds (originally generated in <span class="mono">${round(result.original_time, 3)}</span>s; <span class="mono">${round(result.original_time - result.time, 3)}</span>s saved).</li>
                                 % endif
                             % endif
                             % if result.queries:

@@ -159,16 +159,6 @@ p.tooldesc {
     margin: 6px 0 6px 0;
 }
 
-span.offline {
-    color: #900;
-    font-weight: bold;
-}
-
-span.online {
-    color: #090;
-    font-weight: bold;
-}
-
 td.cv-chain-cell {
     width: 50%;
     vertical-align: top;
@@ -198,6 +188,7 @@ span.cv-hl-out {
     background: linear-gradient(left, #FAA, #FFF);
 }
 
+span.mono   { font-family: monospace; }
 span.light  { color: #CCC; }
 span.medium { color: #AAA; }
 

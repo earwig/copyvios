@@ -14,7 +14,7 @@
                     <tr>
                         <td>Default site:</td>
                         <td>
-                            <tt>http://</tt>
+                            <span class="mono">http://</span>
                             <select name="lang">
                                 <% selected_lang = cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in cookies else bot.wiki.get_site().lang %>\
                                 % for code, name in langs:
@@ -25,7 +25,7 @@
                                     % endif
                                 % endfor
                             </select>
-                            <tt>.</tt>
+                            <span class="mono">.</span>
                             <select name="project">
                                 <% selected_project = cookies["CopyviosDefaultProject"].value if "CopyviosDefaultProject" in cookies else bot.wiki.get_site().project %>\
                                 % for code, name in projects:
@@ -36,7 +36,7 @@
                                     % endif
                                 % endfor
                             </select>
-                            <tt>.org</tt>
+                            <span class="mono">.org</span>
                         </td>
                     </tr>
                     <%
@@ -74,16 +74,16 @@
                 % for key in [key for key in cookie_order if key in cookies]:
                     <% cookie = cookies[key] %>\
                     <tr>
-                        <td><b><tt>${key | h}</tt></b></td>
+                        <td><b><span class="mono">${key | h}</span></b></td>
                         % try:
                             <% lines = dumps(loads(cookie.value), indent=4).splitlines() %>\
                             <td>
                                 % for line in lines:
-                                    <tt><div class="indentable">${line | h}</div></tt>
+                                    <span class="mono"><div class="indentable">${line | h}</div></span>
                                 % endfor
                             </td>
                         % except ValueError:
-                            <td><tt>${cookie.value | h}</tt></td>
+                            <td><span class="mono">${cookie.value | h}</span></td>
                         % endtry
                         <td>
                             <form action="${environ['PATH_INFO']}" method="post">

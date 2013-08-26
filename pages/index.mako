@@ -18,7 +18,7 @@
             % endif
             <h1>Copyvio Detector</h1>
             <p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. Simply give the title of the page you want to check and hit Submit. The tool will then search for its content elsewhere on the web and display a report if a similar webpage is found. If you also provide a URL, it will not query any search engines and instead display a report comparing the article to that particular webpage, like the <a href="//toolserver.org/~dcoetzee/duplicationdetector/">Duplication Detector</a>. Check out the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/FAQ">FAQ</a> for more information and technical details.</p>
-            <p><i>Note:</i> The tool is still in its earliest beta stages. You are completely welcome to use it and provide <a href="//en.wikipedia.org/wiki/User_talk:The_Earwig">feedback</a>, but be aware that it may produce strange or broken results.</p>
+            <p><i>Note:</i> The tool is still in beta. You are completely welcome to use it and provide <a href="//en.wikipedia.org/wiki/User_talk:The_Earwig">feedback</a>, but be aware that it may produce strange or broken results.</p>
             <form action="${environ['PATH_INFO']}" method="get">
                 <table>
                     <tr>
@@ -26,7 +26,7 @@
                         <td>
                             <tt>http://</tt>
                             <select name="lang">
-                                <% selected_lang = query.orig_lang if query.orig_lang else cookies["EarwigDefaultLang"].value if "EarwigDefaultLang" in cookies else bot.wiki.get_site().lang %>\
+                                <% selected_lang = query.orig_lang if query.orig_lang else cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in cookies else bot.wiki.get_site().lang %>\
                                 % for code, name in all_langs:
                                     % if code == selected_lang:
                                         <option value="${code | h}" selected="selected">${name}</option>
@@ -37,7 +37,7 @@
                             </select>
                             <tt>.</tt>
                             <select name="project">
-                                <% selected_project = query.project if query.project else cookies["EarwigDefaultProject"].value if "EarwigDefaultProject" in cookies else bot.wiki.get_site().project %>\
+                                <% selected_project = query.project if query.project else cookies["CopyviosDefaultProject"].value if "CopyviosDefaultProject" in cookies else bot.wiki.get_site().project %>\
                                 % for code, name in all_projects:
                                     % if code == selected_project:
                                         <option value="${code | h}" selected="selected">${name}</option>
@@ -106,13 +106,13 @@
                         % else:
                             <li>Results generated in <tt>${round(result.time, 3)}</tt> seconds using <tt>${result.queries}</tt> queries.</li>
                         % endif
-                        % if "EarwigCVShowDetails" in cookies and cookies["EarwigCVShowDetails"].value == "True":
+                        % if "CopyviosShowDetails" in cookies and cookies["CopyviosShowDetails"].value == "True":
                             <li><a id="cv-result-detail-link" href="#cv-result-detail" onclick="copyvio_toggle_details()">Hide details:</a></li>
                         % else:
                             <li><a id="cv-result-detail-link" href="#cv-result-detail" onclick="copyvio_toggle_details()">Show details:</a></li>
                         % endif
                     </ul>
-                    % if "EarwigCVShowDetails" in cookies and cookies["EarwigCVShowDetails"].value == "True":
+                    % if "CopyviosShowDetails" in cookies and cookies["CopyviosShowDetails"].value == "True":
                         <div id="cv-result-detail" style="display: block;">
                     % else:
                         <div id="cv-result-detail" style="display: none;">

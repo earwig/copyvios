@@ -1,11 +1,9 @@
 <%page args="environ, cookies, title, slug=None, add_css=(), add_js=()"/>\
-<%namespace module="toolserver.background" import="set_background"/>\
-<%namespace name="index" file="/index.mako" import="get_tools"/>\
+<%namespace module="copyvios.background" import="set_background"/>\
 <%!
     from os import path
 %>\
 <%
-    tools = get_tools()
     root = path.dirname(environ["SCRIPT_NAME"])
     this = environ["PATH_INFO"]
     pretty = path.split(root)[0]
@@ -18,20 +16,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <title>${title} - earwig@toolserver</title>
-        <link rel="stylesheet" href="${root}/static/css/main.css" type="text/css" />
-        % for filename in add_css:
-            <link rel="stylesheet" href="${root}/static/css/${filename}" type="text/css" />
-        % endfor
-        <script src="${root}/static/js/cookies.js" type="text/javascript"></script>
-        <script src="${root}/static/js/potd.js" type="text/javascript"></script>
-        % for filename in add_js:
-            <script src="${root}/static/js/${filename}" type="text/javascript"></script>
-        % endfor
+        <title>${title}</title>
+        <link rel="stylesheet" href="${root}/static/style.css" type="text/css" />
+        <script src="${root}/static/script.js" type="text/javascript"></script>
     </head>
-    <% selected = cookies["EarwigBackground"].value if "EarwigBackground" in cookies else "plain" %>\
+    <% selected = cookies["CopyviosBackground"].value if "CopyviosBackground" in cookies else "plain" %>\
     % if selected == "plain":
-        <body style="background-image: url('${root}/static/images/background.png');">
+        <body style="background-image: url('${root}/static/background.png');">
     % else:
         <% bg_url = set_background(cookies, selected) %>\
         <body onload="update_screen_size()" style="background-image: url('${bg_url | h}'); background-size: cover;">

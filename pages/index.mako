@@ -83,6 +83,7 @@
                 </table>
             </form>
             % if page and result:
+                <% show_details = "CopyviosShowDetails" in cookies and cookies["CopyviosShowDetails"].value == "True" %>
                 <div class="divider"></div>
                 <div id="cv-result-${'yes' if result.violation else 'no'}">
                     % if result.violation:
@@ -106,16 +107,9 @@
                         % else:
                             <li>Results generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries.</li>
                         % endif
-                        % if "CopyviosShowDetails" in cookies and cookies["CopyviosShowDetails"].value == "True":
-                            <li><a id="cv-result-detail-link" href="#cv-result-detail" onclick="copyvio_toggle_details()">Hide details:</a></li>
-                        % else:
-                            <li><a id="cv-result-detail-link" href="#cv-result-detail" onclick="copyvio_toggle_details()">Show details:</a></li>
-                        % endif
+                        <li><a id="cv-result-detail-link" href="#cv-result-detail" onclick="copyvio_toggle_details()">${"Hide" if show_details else "Show"} details:</a></li>
                     </ul>
-                    % if "CopyviosShowDetails" in cookies and cookies["CopyviosShowDetails"].value == "True":
-                        <div id="cv-result-detail" style="display: block;">
-                    % else:
-                        <div id="cv-result-detail" style="display: none;">
+                    <div id="cv-result-detail" style="display: ${'block' if show_details else 'none'};">
                     % endif
                         <ul id="cv-result-detail-list">
                             <li>Trigrams: <i>Article:</i> <span class="mono">${result.article_chain.size()}</span> / <i>Source:</i> <span class="mono">${result.source_chain.size()}</span> / <i>Delta:</i> <span class="mono">${result.delta_chain.size()}</span></li>

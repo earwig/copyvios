@@ -78,9 +78,30 @@ p#links {
     margin: 8px 0 10px 0;
 }
 
+table#cv-form {
+    width: 750px;
+}
+
 table#cv-chain-table {
     width: 100%;
     border-spacing: 10px;
+}
+
+td#cv-col1 {
+    width: 15%;
+}
+
+td#cv-col2 {
+    width: 55%;
+}
+
+td#cv-col3 {
+    width: 15%;
+    text-align: center;
+}
+
+td#cv-col4 {
+    width: 15%;
 }
 
 h2#cv-result-header {
@@ -149,19 +170,13 @@ div.cv-chain-detail {
     border: 1px solid #BBB;
 }
 
-p.toolname {
-    font-size: 18px;
-    margin: 6px 0 6px 0;
-    background-color: #E7E7E7;
-}
-
-p.tooldesc {
-    margin: 6px 0 6px 0;
-}
-
 td.cv-chain-cell {
     width: 50%;
     vertical-align: top;
+}
+
+input.cv-text {
+    width: 100%;
 }
 
 span.cv-hl {

@@ -19,10 +19,10 @@
             <p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. Simply give the title of the page or ID of the revision you want to check and hit Submit. The tool will search for similar content elsewhere on the web and display a report if a match is found. If you also provide a URL, it will not query any search engines and instead display a report comparing the article to that particular webpage, like the <a href="//toolserver.org/~dcoetzee/duplicationdetector/">Duplication Detector</a>. Check out the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/FAQ">FAQ</a> for more information and technical details.</p>
             <p><i>Note:</i> The tool is still in beta. You are completely welcome to use it and provide <a href="//en.wikipedia.org/wiki/User_talk:The_Earwig">feedback</a>, but be aware that it may produce strange or broken results.</p>
             <form action="${environ['SCRIPT_URL']}" method="get">
-                <table>
+                <table id="cv-form">
                     <tr>
                         <td>Site:</td>
-                        <td>
+                        <td colspan="3">
                             <span class="mono">http://</span>
                             <select name="lang">
                                 <% selected_lang = query.orig_lang if query.orig_lang else cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in cookies else bot.wiki.get_site().lang %>\
@@ -49,36 +49,51 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Page title:</td>
-                        % if page:
-                            <td><input type="text" name="title" size="60" value="${page.title | h}" /></td>
-                        % elif query.title:
-                            <td><input type="text" name="title" size="60" value="${query.title | h}" /></td>
-                        % else:
-                            <td><input type="text" name="title" size="60" /></td>
-                        % endif
+                        <td id="cv-col1">Page&nbsp;title:</td>
+                        <td id="cv-col2">
+                            % if page:
+                                <input class="cv-text" type="text" name="title" value="${page.title | h}" />
+                            % elif query.title:
+                                <input class="cv-text" type="text" name="title" value="${query.title | h}" />
+                            % else:
+                                <input class="cv-text" type="text" name="title" />
+                            % endif
+                        </td>
+                        <td id="cv-col3">or&nbsp;revision&nbsp;ID:</td>
+                        <td id="cv-col4">
+                            % if query.oldid:
+                                <input class="cv-text" type="text" name="oldid" value="${query.oldid | h}" />
+                            % else:
+                                <input class="cv-text" type="text" name="oldid" />
+                            %endif
+                        </td>
                     </tr>
                     <tr>
-                        <td>URL (optional):</td>
-                        % if query.url:
-                            <td><input type="text" name="url" size="120" value="${query.url | h}" /></td>
-                        % else:
-                            <td><input type="text" name="url" size="120" /></td>
-                        % endif
+                        <td>URL&nbsp;(optional):</td>
+                        <td colspan="3">
+                            % if query.url:
+                                <input class="cv-text" type="text" name="url" value="${query.url | h}" />
+                            % else:
+                                <input class="cv-text" type="text" name="url" />
+                            % endif
+                        </td>
                     </tr>
                     % if query.nocache or (result and result.cached):
                         <tr>
-                            <td>Bypass cache:</td>
-                            % if query.nocache:
-                                <td><input type="checkbox" name="nocache" value="1" checked="checked" /></td>
-                            % else:
-                                <td><input type="checkbox" name="nocache" value="1" /></td>
-                            % endif
+                            <td>Bypass&nbsp;cache:</td>
+                            <td colspan="3">
+                                % if query.nocache:
+                                    <input type="checkbox" name="nocache" value="1" checked="checked" />
+                                % else:
+                                    <input type="checkbox" name="nocache" value="1" />
+                                % endif
+                            </td>
                         </tr>
                     % endif
                     <tr>
-                        <td><button type="submit">Submit</button></td>
-                        <td></td>
+                        <td colspan="4">
+                            <button type="submit">Submit</button>
+                        </td>
                     </tr>
                 </table>
             </form>

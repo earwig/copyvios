@@ -65,7 +65,7 @@
                                 <input class="cv-text" type="text" name="oldid" value="${query.oldid | h}" />
                             % else:
                                 <input class="cv-text" type="text" name="oldid" />
-                            %endif
+                            % endif
                         </td>
                     </tr>
                     <tr>
@@ -125,7 +125,6 @@
                         <li><a id="cv-result-detail-link" href="#cv-result-detail" onclick="copyvio_toggle_details()">${"Hide" if show_details else "Show"} details:</a></li>
                     </ul>
                     <div id="cv-result-detail" style="display: ${'block' if show_details else 'none'};">
-                    % endif
                         <ul id="cv-result-detail-list">
                             <li>Trigrams: <i>Article:</i> <span class="mono">${result.article_chain.size()}</span> / <i>Source:</i> <span class="mono">${result.source_chain.size()}</span> / <i>Delta:</i> <span class="mono">${result.delta_chain.size()}</span></li>
                             % if result.cached:

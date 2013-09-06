@@ -17,6 +17,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 div#header {
+    font-size: 2.5em;
+    font-weight: bold;
     margin: 30px 60px 30px 60px;
     padding: 2px 15px 2px 15px;
     border: 1px solid #777;
@@ -66,16 +68,8 @@ div#cv-result-detail {
     border: 1px solid #AAA;
 }
 
-p#heading {
-    font-size: 2.5em;
-    font-weight: bold;
-    margin: 8px 0 8px 0;
-}
-
-p#links {
-    font-size: 1.5em;
-    font-weight: bold;
-    margin: 8px 0 10px 0;
+table#heading {
+    width: 100%;
 }
 
 table#cv-form {
@@ -85,6 +79,10 @@ table#cv-form {
 table#cv-chain-table {
     width: 100%;
     border-spacing: 10px;
+}
+
+td#head-settings {
+    text-align: right;
 }
 
 td#cv-col1 {

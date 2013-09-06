@@ -21,7 +21,11 @@
         <body onload="update_screen_size()" style="background-image: url('${set_background(cookies, selected) | h}'); background-size: cover;">
     % endif
         <div id="header">
-            <p id="heading"><a class="dark" href="${root}">Earwig's Copyvio Detector</a></p>
-            <p id="links"><a class="mid" href="${root}/settings">Settings</a></p>
+            <table id="heading">
+                <tr>
+                    <td id="head-main"><a class="dark" href="${root}">Earwig's Copyvio Detector</a></td>
+                    <td id="head-settings"><a class="mid" href="${root}/settings">Settings</a></td>
+                </tr>
+            </table>
         </div>
         <div id="container">

@@ -3,16 +3,16 @@
 <%namespace module="copyvios.misc" import="urlstrip"/>\
 <% query, bot, all_langs, all_projects, page, result = main(environ) %>\
             % if query.project and query.lang and query.title and not page:
-                <div class="red-box">
+                <div id="info-box" class="red-box">
                     <p>The given site (project=<b><span class="mono">${query.project | h}</span></b>, language=<b><span class="mono">${query.lang | h}</span></b>) doesn't seem to exist. It may also be closed or private. <a href="//${query.lang | h}.${query.project | h}.org/">Confirm its URL.</a></p>
                 </div>
             % elif query.project and query.lang and query.title and page and not result:
-                <div class="red-box">
+                <div id="info-box" class="red-box">
                     <p>The given page doesn't seem to exist: <a href="${page.url}">${page.title | h}</a>.</p>
                 </div>
             % elif query.project and query.lang and query.title and query.url and page and result == "bad URI":
                 <% result = None %>
-                <div class="red-box">
+                <div id="info-box" class="red-box">
                     <p>Unsupported URI scheme: <a href="${query.url | h}">${query.url | h}</a>.</p>
                 </div>
             % endif
@@ -100,7 +100,7 @@
             % if page and result:
                 <% show_details = "CopyviosShowDetails" in cookies and cookies["CopyviosShowDetails"].value == "True" %>
                 <div class="divider"></div>
-                <div id="cv-result-${'yes' if result.violation else 'no'}">
+                <div id="cv-result" class="${'red' if result.violation else 'green'}-box">
                     % if result.violation:
                         <h2 id="cv-result-header"><a href="${page.url}">${page.title | h}</a> is a suspected violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</h2>
                     % else:

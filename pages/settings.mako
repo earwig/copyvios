@@ -41,11 +41,11 @@
                     </tr>
                     <%
                         background_options = [
-                            ("plain", "Use a plain tiled background (default)."),
-                            ("potd", 'Use the current <a href="//commons.wikimedia.org/">Wikimedia Commons</a> <a href="//commons.wikimedia.org/wiki/Commons:Picture_of_the_day">Picture of the Day</a>, unfiltered. Certain POTDs may be unsuitable as backgrounds due to their aspect ratio or subject matter (generally portraits do not work well).'),
-                            ("list", 'Randomly select from <a href="http://commons.wikimedia.org/wiki/User:The_Earwig/POTD">a subset of previous Commons Pictures of the Day</a> that work well as widescreen backgrounds, refreshed daily.'),
+                            ("list", 'Randomly select from <a href="http://commons.wikimedia.org/wiki/User:The_Earwig/POTD">a subset</a> of previous <a href="//commons.wikimedia.org/">Wikimedia Commons</a> <a href="//commons.wikimedia.org/wiki/Commons:Picture_of_the_day">Pictures of the Day</a> that work well as widescreen backgrounds, refreshed daily (default).'),
+                            ("potd", 'Use the current Commons Picture of the Day, unfiltered. Certain POTDs may be unsuitable as backgrounds due to their aspect ratio or subject matter.'),
+                            ("plain", "Use a plain background."),
                         ]
-                        selected = cookies["CopyviosBackground"].value if "CopyviosBackground" in cookies else "plain"
+                        selected = cookies["CopyviosBackground"].value if "CopyviosBackground" in cookies else "list"
                     %>\
                     % for i, (value, desc) in enumerate(background_options):
                         <tr>

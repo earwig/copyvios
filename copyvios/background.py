@@ -108,7 +108,7 @@ def _get_site():
 def _build_url(screen, filename, url, imgwidth, imgheight):
     width = screen["width"]
     if float(imgwidth) / imgheight > float(screen["width"]) / screen["height"]:
-        width = int(float(imgwidth) / imgheight * screen["width"])
+        width = int(float(imgwidth) / imgheight * screen["height"])
     if width >= imgwidth:
         return url
     url = url.replace("/commons/", "/commons/thumb/")

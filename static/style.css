@@ -40,11 +40,8 @@ div#footer {
     font-size: 0.85em;
     text-align: center;
     line-height: 1.5;
+    border-top: 1px solid #777;
     background: #DDDDDD;
-}
-
-div#foot-divider {
-    border-bottom: 1px solid #777;
 }
 
 div#cv-result-yes {
@@ -131,13 +128,6 @@ a#cv-cached span {
     color: black;
 }
 
-div.toolbox {
-    margin: 15px 0 15px 0;
-    padding: 0 6px 0 6px;
-    border: 1px solid #999;
-    background-color: #F5F5F5;
-}
-
 div.divider {
     border-bottom: 1px solid #AAA;
     margin-top: 15px;
@@ -210,20 +200,15 @@ a:visited { color: #373; text-decoration: none; }
 a:hover   { color: #040; text-decoration: underline; }
 a:active  { color: #404; text-decoration: underline; }
 
-a.black:link    { color: #000; }
-a.black:visited { color: #000; }
-a.black:hover   { color: #000; }
-a.black:active  { color: #000; }
+a:link#a-home    { color: #777; }
+a:visited#a-home { color: #777; }
+a:hover#a-home   { color: #777; }
+a:active#a-home  { color: #333; }
 
-a.dark:link    { color: #777; }
-a.dark:visited { color: #777; }
-a.dark:hover   { color: #777; }
-a.dark:active  { color: #333; }
-
-a.mid:link    { color: #AAA; }
-a.mid:visited { color: #AAA; }
-a.mid:hover   { color: #888; }
-a.mid:active  { color: #666; }
+a:link#a-settings    { color: #AAA; }
+a:visited#a-settings { color: #AAA; }
+a:hover#a-settings   { color: #888; }
+a:active#a-settings  { color: #666; }
 
 a:active#cv-cached     { color: #040; text-decoration: none; }
 a:hover#cv-cached      { text-decoration: none; }

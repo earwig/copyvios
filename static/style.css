@@ -20,15 +20,15 @@ div#header {
     font-size: 2.5em;
     font-weight: bold;
     margin: 30px 60px 30px 60px;
-    padding: 2px 15px 2px 15px;
+    padding: 10px 15px 10px 15px;
     border: 1px solid #777;
     background-color: #FFF;
 }
 
 div#container {
     line-height: 1.25;
-    margin: 0 60px 80px 60px;
-    padding: 15px 15px 15px 15px;
+    margin: 0 60px 45px 60px;
+    padding: 5px 15px 15px 15px;
     border: 1px solid #777;
     background-color: #FFF;
 }
@@ -202,7 +202,7 @@ a:active  { color: #404; text-decoration: underline; }
 
 a:link#a-home    { color: #777; }
 a:visited#a-home { color: #777; }
-a:hover#a-home   { color: #777; }
+a:hover#a-home   { color: #555; }
 a:active#a-home  { color: #333; }
 
 a:link#a-settings    { color: #AAA; }

@@ -2,7 +2,8 @@
 # -*- coding: utf-8  -*-
 
 from time import asctime
-from logging import DEBUG, TimedRotatingFileHandler
+from logging import DEBUG
+from logging.handlers import TimedRotatingFileHandler
 
 from flask import Flask, request
 from flask.ext.mako import render_template

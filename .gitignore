@@ -4,6 +4,6 @@
 .DS_Store
 __pycache__
 
-temp
-www
 .earwigbot
+*.min.js
+*.min.css

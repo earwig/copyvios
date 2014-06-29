@@ -1,151 +1,24 @@
 #! /usr/bin/env python
 # -*- coding: utf-8  -*-
 
-import logging
 import os
-import shutil
 import subprocess
 
-page_src = """#! /data/project/copyvios/env/bin/python
-# -*- coding: utf-8  -*-
-import os
-import sys
+def process(program, old_file, new_file):
+    print "%s: %s -> %s" % (program, old_file, new_file)
+    content = subprocess.check_output([program, old_file])
+    with open(new_file, "w") as fp:
+        fp.write(content)
 
-os.chdir("..")
-sys.path.insert(0, ".")
-
-from mako.template import Template
-from mako.lookup import TemplateLookup
-
-from copyvios.cookies import parse_cookies
-
-def main(environ, start_response):
-    lookup = TemplateLookup(directories=["{{pages_dir}}"],
-                            input_encoding="utf8")
-    template = Template(filename="{{src}}", module_directory="{{temp_dir}}",
-                        lookup=lookup, format_exceptions=True)
-    headers = [("Content-Type", "text/html")]
-    cookies = parse_cookies(environ)
-    page = template.render(environ=environ, headers=headers,
-                           cookies=cookies).encode("utf8")
-    start_response("200 OK", headers)
-    return [page]
+def main():
+    root = os.path.join(os.path.dirname(__file__), "static")
+    for dirpath, dirnames, filenames in os.walk(root):
+        for filename in filenames:
+            name = os.path.join(dirpath, filename)
+            if filename.endswith(".js") and ".min." not in filename:
+                process("uglifyjs", name, name.replace(".js", ".min.js"))
+            if filename.endswith(".css") and ".min." not in filename:
+                process("uglifycss", name, name.replace(".css", ".min.css"))
 
 if __name__ == "__main__":
-    from flup.server.fcgi import WSGIServer
-    WSGIServer(main).run()
-"""
-
-class Builder(object):
-    def __init__(self):
-        self.build_dir = "www"
-        self.static_dir = "static"
-        self.pages_dir = "pages"
-        self.support_dir = "pages/support"
-        self.temp_dir = "temp"
-
-        self.root = logging.getLogger("builder")
-        self.root.addHandler(logging.NullHandler())
-        self._pages = []
-
-    def _enable_logging(self):
-        handler = logging.StreamHandler()
-        handler.setFormatter(_LogFormatter())
-        self.root.addHandler(handler)
-        self.root.setLevel(logging.DEBUG)
-
-    def _replace_file(self, name, program, logger):
-        logger.debug("{0} {1}".format(program, name))
-        replacement = subprocess.check_output([program, name])
-        os.remove(name)
-        with open(name, "w") as fp:
-            fp.write(replacement)
-
-    def _gen_page(self, page, base):
-        if not page.endswith(".mako"):
-            base.warn("Skipping {0} (not endswith('.mako'))".format(page))
-            return
-
-        logger = base.getChild(page.rsplit(".", 1)[0])
-        self._pages.append(page.rsplit(".", 1)[0])
-        src = os.path.join(self.pages_dir, page)
-        dest = os.path.join(self.build_dir, page.replace(".mako", ".py"))
-
-        logger.debug("build {0} -> {1}".format(src, dest))
-        content = page_src.replace("{{src}}", src)
-        content = content.replace("{{pages_dir}}", self.pages_dir)
-        content = content.replace("{{temp_dir}}", self.temp_dir)
-        with open(dest, "w") as fp:
-            fp.write(content)
-
-        logger.debug("chmod 0755 {0}".format(dest))
-        os.chmod(dest, 0755)
-
-    def clean(self):
-        logger = self.root.getChild("clean")
-        targets = (self.build_dir, self.temp_dir)
-
-        for target in targets:
-            if os.path.exists(target):
-                logger.debug("rm -r {0}".format(target))
-                shutil.rmtree(target)
-
-            logger.debug("mkdir {0}".format(target))
-            os.mkdir(target)
-
-    def gen_static(self):
-        logger = self.root.getChild("static")
-        dest = os.path.join(self.build_dir, "static")
-
-        logger.debug("copytree {0} -> {1}".format(self.static_dir, dest))
-        shutil.copytree(self.static_dir, dest)
-        for dirpath, dirnames, filenames in os.walk(dest):
-            for filename in filenames:
-                name = os.path.join(dirpath, filename)
-                if name.endswith(".js"):
-                    self._replace_file(name, "uglifyjs", logger)
-                elif name.endswith(".css"):
-                    self._replace_file(name, "uglifycss", logger)
-
-    def gen_pages(self):
-        logger = self.root.getChild("pages")
-        pages = os.listdir(self.pages_dir)
-        for page in pages:
-            if not os.path.isfile(os.path.join(self.pages_dir, page)):
-                continue
-            self._gen_page(page, logger)
-
-    def build(self):
-        self._enable_logging()
-        self.root.info("Building project...")
-        self.clean()
-        self.gen_static()
-        self.gen_pages()
-        self.root.info("Done!")
-
-
-class _LogFormatter(logging.Formatter):
-    def __init__(self):
-        fmt = "[%(asctime)s %(lvl)s] %(name)s: %(message)s"
-        datefmt = "%Y-%m-%d %H:%M:%S"
-        _format = super(_LogFormatter, self).format
-        self.format = lambda record: _format(self.colorize(record))
-        super(_LogFormatter, self).__init__(fmt=fmt, datefmt=datefmt)
-
-    def colorize(self, record):
-        l = record.levelname.ljust(8)
-        if record.levelno == logging.DEBUG:
-            record.lvl = l.join(("\x1b[34m", "\x1b[0m"))  # Blue
-        if record.levelno == logging.INFO:
-            record.lvl = l.join(("\x1b[32m", "\x1b[0m"))  # Green
-        if record.levelno == logging.WARNING:
-            record.lvl = l.join(("\x1b[33m", "\x1b[0m"))  # Yellow
-        if record.levelno == logging.ERROR:
-            record.lvl = l.join(("\x1b[31m", "\x1b[0m"))  # Red
-        if record.levelno == logging.CRITICAL:
-            record.lvl = l.join(("\x1b[1m\x1b[31m", "\x1b[0m"))  # Bold red
-        return record
-
-
-if __name__ == "__main__":
-    Builder().build()
+    main()

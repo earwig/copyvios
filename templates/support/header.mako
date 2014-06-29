@@ -11,8 +11,8 @@
     <head>
         <meta charset="utf-8">
         <title>${title}</title>
-        <link rel="stylesheet" href="${root}/static/style.css" type="text/css" />
-        <script src="${root}/static/script.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="${root}/static/style.min.css" type="text/css" />
+        <script src="${root}/static/script.min.js" type="text/javascript"></script>
     </head>
     <% selected = cookies["CopyviosBackground"].value if "CopyviosBackground" in cookies else "list" %>\
     % if selected == "plain":

@@ -6,10 +6,11 @@ from logging import DEBUG
 from logging.handlers import TimedRotatingFileHandler
 
 from flask import Flask, request
-from flask.ext.mako import render_template
+from flask.ext.mako import MakoTemplates, render_template
 from flup.server.fcgi import WSGIServer
 
 app = Flask(__name__)
+MakoTemplates(app)
 
 app.logger.setLevel(DEBUG)
 app.logger.addHandler(TimedRotatingFileHandler("logs/app.log", when="D",

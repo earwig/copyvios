@@ -14,12 +14,10 @@ def main(context, environ):
     if query.project:
         query.project = query.project.lower()
 
-    bot = get_bot()
-    all_langs, all_projects = get_sites(bot)
-    page = result = None
+    query.bot = get_bot()
+    query.all_langs, query.all_projects = get_sites(query.bot)
     if query.lang and query.project and query.title:
-        site = get_site(bot, query, all_projects)
-        if site:
-            page, result = get_results(bot, site, query)
-
-    return query, bot, all_langs, all_projects, page, result
+        query.site = get_site(query)
+        if query.site:
+            get_results(query)
+    return query

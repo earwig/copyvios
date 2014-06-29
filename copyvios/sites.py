@@ -7,23 +7,24 @@ from earwigbot import exceptions
 
 from .misc import open_sql_connection
 
-def get_site(bot, query, all_projects):
+def get_site(query):
     lang, project, name = query.lang, query.project, query.name
-    if project not in [proj[0] for proj in all_projects]:
+    wiki = query.bot.wiki
+    if project not in [proj[0] for proj in query.all_projects]:
         return None
     if project == "wikimedia" and name:  # Special sites:
         try:
-            return bot.wiki.get_site(name=name)
+            return wiki.get_site(name=name)
         except exceptions.SiteNotFoundError:
             try:
-                return bot.wiki.add_site(lang=lang, project=project)
+                return wiki.add_site(lang=lang, project=project)
             except (exceptions.APIError, exceptions.LoginError):
                 return None
     try:
-        return bot.wiki.get_site(lang=lang, project=project)
+        return wiki.get_site(lang=lang, project=project)
     except exceptions.SiteNotFoundError:
         try:
-            return bot.wiki.add_site(lang=lang, project=project)
+            return wiki.add_site(lang=lang, project=project)
         except (exceptions.APIError, exceptions.LoginError):
             return None
 

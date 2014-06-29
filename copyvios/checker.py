@@ -8,28 +8,27 @@ from earwigbot import exceptions
 
 from .misc import open_sql_connection
 
-def get_results(bot, site, query):
-    page = site.get_page(query.title)
+def get_results(query):
+    page = query.page = query.site.get_page(query.title)
     try:
         page.get()  # Make sure that the page exists before we check it!
     except (exceptions.PageNotFoundError, exceptions.InvalidPageError):
-        return page, None
+        return
 
     if query.url:
         if urlparse(query.url).scheme not in ["http", "https"]:
-            return page, "bad URI"
-        result = page.copyvio_compare(query.url)
-        result.cached = False
+            query.result = "bad URI"
+            return
+        query.result = page.copyvio_compare(query.url)
+        query.result.cached = False
     else:
-        conn = open_sql_connection(bot, "cache")
+        conn = open_sql_connection(query.bot, "cache")
         if not query.nocache:
-            result = _get_cached_results(page, conn)
-        if query.nocache or not result:
-            result = page.copyvio_check(max_queries=10, max_time=45)
-            result.cached = False
-            _cache_result(page, result, conn)
-
-    return page, result
+            query.result = _get_cached_results(page, conn)
+        if not query.result:
+            query.result = page.copyvio_check(max_queries=10, max_time=45)
+            query.result.cached = False
+            _cache_result(page, query.result, conn)
 
 def _get_cached_results(page, conn):
     query1 = "DELETE FROM cache WHERE cache_time < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)"

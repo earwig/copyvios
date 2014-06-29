@@ -1,32 +1,43 @@
 <%include file="/support/header.mako" args="environ=environ, cookies=cookies, title='Earwig\'s Copyvio Detector'"/>\
 <%namespace module="copyvios" import="main, highlight_delta"/>\
 <%namespace module="copyvios.misc" import="urlstrip"/>\
-<% query, bot, all_langs, all_projects, page, result = main(environ) %>\
-            % if query.project and query.lang and query.title and not page:
-                <div id="info-box" class="red-box">
-                    <p>The given site (project=<b><span class="mono">${query.project | h}</span></b>, language=<b><span class="mono">${query.lang | h}</span></b>) doesn't seem to exist. It may also be closed or private. <a href="//${query.lang | h}.${query.project | h}.org/">Confirm its URL.</a></p>
-                </div>
-            % elif query.project and query.lang and query.title and page and not result:
-                <div id="info-box" class="red-box">
-                    <p>The given page doesn't seem to exist: <a href="${page.url}">${page.title | h}</a>.</p>
-                </div>
-            % elif query.project and query.lang and query.title and query.url and page and result == "bad URI":
-                <% result = None %>
-                <div id="info-box" class="red-box">
-                    <p>Unsupported URI scheme: <a href="${query.url | h}">${query.url | h}</a>.</p>
-                </div>
-            % endif
+<%
+    query = main(environ)
+    # Unpack query data:
+    lang, orig_lang, title, oldid, url, nocache = query.lang, query.orig_lang, query.title, query.oldid, query.url, query.nocache
+    bot, site, page, result = query.bot, query.site, query.page, query.result
+%>\
+            % if query.project and lang and (title or oldid):
+                % if not site:
+                    <div id="info-box" class="red-box">
+                        <p>The given site (project=<b><span class="mono">${query.project | h}</span></b>, language=<b><span class="mono">${lang | h}</span></b>) doesn't seem to exist. It may also be closed or private. <a href="//${lang | h}.${query.project | h}.org/">Confirm its URL.</a></p>
+                    </div>
+                % elif title and not result:
+                    <div id="info-box" class="red-box">
+                        <p>The given page doesn't seem to exist: <a href="${page.url}">${page.title | h}</a>.</p>
+                    </div>
+                % elif oldid and not result:
+                    <div id="info-box" class="red-box">
+                        <p>The given revision ID doesn't seem to exist: <a href="//${site.domain | h}/w/index.php?oldid=${oldid | h}">${oldid | h}</a>.</p>
+                    </div>
+                % elif url and result == "bad URI":
+                    <% result = None %>
+                    <div id="info-box" class="red-box">
+                        <p>Unsupported URI scheme: <a href="${url | h}">${url | h}</a>.</p>
+                    </div>
+                % endif
+            %endif
             <p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. Simply give the title of the page or ID of the revision you want to check and hit Submit. The tool will search for similar content elsewhere on the web and display a report if a match is found. If you also provide a URL, it will not query any search engines and instead display a report comparing the article to that particular webpage, like the <a href="//toolserver.org/~dcoetzee/duplicationdetector/">Duplication Detector</a>. Check out the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/FAQ">FAQ</a> for more information and technical details.</p>
             <p><i>Note:</i> The tool is still in beta. You are completely welcome to use it and provide <a href="//en.wikipedia.org/wiki/User_talk:The_Earwig">feedback</a>, but be aware that it may produce strange or broken results.</p>
-            <form action="${environ['SCRIPT_URL']}" method="get">
+            <form action="${environ['REQUEST_URI']}" method="get">
                 <table id="cv-form">
                     <tr>
                         <td>Site:</td>
                         <td colspan="3">
                             <span class="mono">http://</span>
                             <select name="lang">
-                                <% selected_lang = query.orig_lang if query.orig_lang else cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in cookies else bot.wiki.get_site().lang %>\
-                                % for code, name in all_langs:
+                                <% selected_lang = orig_lang if orig_lang else cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in cookies else bot.wiki.get_site().lang %>\
+                                % for code, name in query.all_langs:
                                     % if code == selected_lang:
                                         <option value="${code | h}" selected="selected">${name}</option>
                                     % else:
@@ -37,7 +48,7 @@
                             <span class="mono">.</span>
                             <select name="project">
                                 <% selected_project = query.project if query.project else cookies["CopyviosDefaultProject"].value if "CopyviosDefaultProject" in cookies else bot.wiki.get_site().project %>\
-                                % for code, name in all_projects:
+                                % for code, name in query.all_projects:
                                     % if code == selected_project:
                                         <option value="${code | h}" selected="selected">${name}</option>
                                     % else:
@@ -53,16 +64,16 @@
                         <td id="cv-col2">
                             % if page:
                                 <input class="cv-text" type="text" name="title" value="${page.title | h}" />
-                            % elif query.title:
-                                <input class="cv-text" type="text" name="title" value="${query.title | h}" />
+                            % elif title:
+                                <input class="cv-text" type="text" name="title" value="${title | h}" />
                             % else:
                                 <input class="cv-text" type="text" name="title" />
                             % endif
                         </td>
                         <td id="cv-col3">or&nbsp;revision&nbsp;ID:</td>
                         <td id="cv-col4">
-                            % if query.oldid:
-                                <input class="cv-text" type="text" name="oldid" value="${query.oldid | h}" />
+                            % if oldid:
+                                <input class="cv-text" type="text" name="oldid" value="${oldid | h}" />
                             % else:
                                 <input class="cv-text" type="text" name="oldid" />
                             % endif
@@ -71,18 +82,18 @@
                     <tr>
                         <td>URL&nbsp;(optional):</td>
                         <td colspan="3">
-                            % if query.url:
-                                <input class="cv-text" type="text" name="url" value="${query.url | h}" />
+                            % if url:
+                                <input class="cv-text" type="text" name="url" value="${url | h}" />
                             % else:
                                 <input class="cv-text" type="text" name="url" />
                             % endif
                         </td>
                     </tr>
-                    % if query.nocache or (result and result.cached):
+                    % if nocache or (result and result.cached):
                         <tr>
                             <td>Bypass&nbsp;cache:</td>
                             <td colspan="3">
-                                % if query.nocache:
+                                % if nocache:
                                     <input type="checkbox" name="nocache" value="1" checked="checked" />
                                 % else:
                                     <input type="checkbox" name="nocache" value="1" />
@@ -97,7 +108,7 @@
                     </tr>
                 </table>
             </form>
-            % if page and result:
+            % if result:
                 <% show_details = "CopyviosShowDetails" in cookies and cookies["CopyviosShowDetails"].value == "True" %>
                 <div class="divider"></div>
                 <div id="cv-result" class="${'red' if result.violation else 'green'}-box">
@@ -107,7 +118,7 @@
                         <h2 id="cv-result-header">No violations detected in <a href="${page.url}">${page.title | h}</a>.</h2>
                     % endif
                     <ul id="cv-result-list">
-                        % if not result.violation and not query.url:
+                        % if not result.violation and not url:
                             % if result.url:
                                 <li>Best match: <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</li>
                             % else:

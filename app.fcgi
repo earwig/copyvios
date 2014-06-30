@@ -9,6 +9,8 @@ from flask import Flask, request
 from flask.ext.mako import MakoTemplates, render_template
 from flup.server.fcgi import WSGIServer
 
+from copyvios.cookies import parse_cookies
+
 app = Flask(__name__)
 MakoTemplates(app)
 
@@ -25,15 +27,18 @@ def write_access_log(response):
 
 @app.route("/")
 def index():
-    return render_template("index.mako")
+    cookies = parse_cookies(request.environ)
+    return render_template("index.mako", environ=request.environ, cookies=cookies)
 
 @app.route("/settings")
 def settings():
-    return render_template("settings.mako")
+    cookies = parse_cookies(request.environ)
+    return render_template("settings.mako", environ=request.environ, cookies=cookies)
 
 @app.route("/debug")
 def debug():
-    return render_template("debug.mako")
+    cookies = parse_cookies(request.environ)
+    return render_template("debug.mako", environ=request.environ, cookies=cookies)
 
 if __name__ == '__main__':
     WSGIServer(app).run()

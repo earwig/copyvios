@@ -6,7 +6,7 @@ from logging import DEBUG
 from logging.handlers import TimedRotatingFileHandler
 
 from flask import Flask, g, request
-from flask.ext.mako import MakoTemplates, render_template
+from flask.ext.mako import MakoTemplates, render_template, TemplateError
 from flup.server.fcgi import WSGIServer
 
 from copyvios.cookies import parse_cookies
@@ -18,6 +18,14 @@ app.logger.setLevel(DEBUG)
 app.logger.addHandler(TimedRotatingFileHandler(
     "logs/app.log", when="D", interval=1, backupCount=7))
 app.logger.info(u"Flask server started " + asctime())
+
+def debug_exceptions(func):
+    def inner(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except TemplateError as exc:
+            return "<pre>" + exc.text + "</pre>"
+    return inner
 
 @app.before_request
 def prepare_cookies():
@@ -40,14 +48,17 @@ def write_access_log(response):
     return response
 
 @app.route("/")
+@debug_exceptions
 def index():
     return render_template("index.mako")
 
 @app.route("/settings", methods=["GET", "POST"])
+@debug_exceptions
 def settings():
     return render_template("settings.mako")
 
 @app.route("/debug")
+@debug_exceptions
 def debug():
     return render_template("debug.mako")
 

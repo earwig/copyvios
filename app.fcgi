@@ -69,10 +69,5 @@ def settings():
               "default_lang": default.lang, "default_project": default.project}
     return render_template("settings.mako", **kwargs)
 
-@app.route("/debug")
-@catch_errors
-def debug():
-    return render_template("debug.mako")
-
 if __name__ == '__main__':
     WSGIServer(app).run()

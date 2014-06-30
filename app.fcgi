@@ -1,9 +1,10 @@
 #! /data/project/copyvios/env/bin/python
 # -*- coding: utf-8  -*-
 
-from time import asctime
+from functools import wraps
 from logging import DEBUG
 from logging.handlers import TimedRotatingFileHandler
+from time import asctime
 
 from flask import Flask, g, request
 from flask.ext.mako import MakoTemplates, render_template, TemplateError
@@ -20,6 +21,7 @@ app.logger.addHandler(TimedRotatingFileHandler(
 app.logger.info(u"Flask server started " + asctime())
 
 def debug_exceptions(func):
+    @wraps(func)
     def inner(*args, **kwargs):
         try:
             return func(*args, **kwargs)

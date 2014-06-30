@@ -1,11 +1,13 @@
-<%!
-    from flask import g, request
-%>\
+<%! from flask import g, request %>\
 <%include file="/support/header.mako" args="title='Earwig\'s Copyvio Detector'"/>
 <%namespace module="copyvios.highlighter" import="highlight_delta"/>\
 <%namespace module="copyvios.misc" import="urlstrip"/>\
 % if query.project and query.lang and (query.title or query.oldid):
-    % if not query.site:
+    % if query.error == "bad URI":
+        <div id="info-box" class="red-box">
+            <p>Unsupported URI scheme: <a href="${query.url | h}">${query.url | h}</a>.</p>
+        </div>
+    % elif not query.site:
         <div id="info-box" class="red-box">
             <p>The given site (project=<b><span class="mono">${query.project | h}</span></b>, language=<b><span class="mono">${query.lang | h}</span></b>) doesn't seem to exist. It may also be closed or private. <a href="//${query.lang | h}.${query.project | h}.org/">Confirm its URL.</a></p>
         </div>
@@ -16,11 +18,6 @@
     % elif query.oldid and not result:
         <div id="info-box" class="red-box">
             <p>The given revision ID doesn't seem to exist: <a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>.</p>
-        </div>
-    % elif query.url and result == "bad URI":
-        <% result = None %>
-        <div id="info-box" class="red-box">
-            <p>Unsupported URI scheme: <a href="${query.url | h}">${query.url | h}</a>.</p>
         </div>
     % endif
 %endif

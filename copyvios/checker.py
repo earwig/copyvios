@@ -35,7 +35,7 @@ def _get_results(query):
 
     if query.url:
         if urlparse(query.url).scheme not in ["http", "https"]:
-            query.result = "bad URI"
+            query.error = "bad URI"
             return
         query.result = page.copyvio_compare(query.url)
         query.result.cached = False

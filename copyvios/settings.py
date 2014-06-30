@@ -4,10 +4,9 @@ from flask import g
 from markupsafe import escape
 
 from .cookies import set_cookie, delete_cookie
-from .misc import get_bot, Query
-from .sites import get_sites
+from .misc import Query
 
-def main():
+def process_settings():
     query = Query(method="POST")
     if query.action == "set":
         status = _do_set(query)
@@ -15,10 +14,7 @@ def main():
         status = _do_delete(query)
     else:
         status = None
-
-    bot = get_bot()
-    langs, projects = get_sites(bot)
-    return bot, status, langs, projects
+    return status
 
 def _do_set(query):
     cookies = g.cookies

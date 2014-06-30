@@ -5,12 +5,16 @@ from functools import wraps
 from logging import DEBUG
 from logging.handlers import TimedRotatingFileHandler
 from time import asctime
+from traceback import format_exc
 
 from flask import Flask, g, request
 from flask.ext.mako import MakoTemplates, render_template, TemplateError
 from flup.server.fcgi import WSGIServer
 
 from copyvios.cookies import parse_cookies
+from copyvios.misc import get_bot
+from copyvios.settings import process_settings
+from copyvios.sites import get_sites
 
 app = Flask(__name__)
 MakoTemplates(app)
@@ -20,13 +24,15 @@ app.logger.addHandler(TimedRotatingFileHandler(
     "logs/app.log", when="D", interval=1, backupCount=7))
 app.logger.info(u"Flask server started " + asctime())
 
-def debug_exceptions(func):
+def catch_errors(func):
     @wraps(func)
     def inner(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except TemplateError as exc:
-            return "<pre>" + exc.text + "</pre>"
+            return render_template("error.mako", traceback=exc.text)
+        except Exception:
+            return render_template("error.mako", traceback=format_exc())
     return inner
 
 @app.before_request
@@ -50,17 +56,23 @@ def write_access_log(response):
     return response
 
 @app.route("/")
-@debug_exceptions
+@catch_errors
 def index():
     return render_template("index.mako")
 
 @app.route("/settings", methods=["GET", "POST"])
-@debug_exceptions
+@catch_errors
 def settings():
-    return render_template("settings.mako")
+    status = process_settings() if request.method == "POST" else None
+    bot = get_bot()
+    langs, projects = get_sites(bot)
+    default = bot.wiki.get_site()
+    kwargs = {"status": status, "langs": langs, "projects": projects,
+              "default_lang": default.lang, "default_project": default.project}
+    return render_template("settings.mako", **kwargs)
 
 @app.route("/debug")
-@debug_exceptions
+@catch_errors
 def debug():
     return render_template("debug.mako")
 

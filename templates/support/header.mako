@@ -1,11 +1,6 @@
 <%page args="environ, cookies, title"/>\
 <%namespace module="copyvios.background" import="set_background"/>\
-<%!
-    from os import path
-%>\
-<%
-    root = path.dirname(environ["SCRIPT_NAME"])
-%>\
+<% root = environ["SCRIPT_NAME"] %>\
 <!DOCTYPE html>
 <html lang="en">
     <head>

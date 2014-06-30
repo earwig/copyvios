@@ -7,7 +7,7 @@ from .cookies import set_cookie, delete_cookie
 from .misc import get_bot, Query
 from .sites import get_sites
 
-def main(context):
+def main():
     query = Query(method="POST")
     if query.action == "set":
         status = _do_set(query)

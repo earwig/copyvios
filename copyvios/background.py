@@ -11,7 +11,7 @@ from flask import g
 
 from .misc import get_bot, open_sql_connection
 
-def set_background(context, selected):
+def set_background(selected):
     conn = open_sql_connection(get_bot(), "globals")
     if "CopyviosScreenCache" in g.cookies:
         cache = g.cookies["CopyviosScreenCache"].value

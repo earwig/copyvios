@@ -1,11 +1,10 @@
-<%page args="cookies"/>\
-<%namespace module="copyvios.background" import="get_desc_url"/>\
+<%! from flask import g %>\
         </div>
         <div id="footer">
             <p>Copyright &copy; 2009&ndash;2014 <a href="//en.wikipedia.org/wiki/User:The_Earwig">Ben Kurtovic</a> &bull; \
                 <a href="https://github.com/earwig/copyvios">View Source</a> &bull; \
-                % if ("CopyviosBackground" in cookies and cookies["CopyviosBackground"].value in ["potd", "list"]) or "CopyviosBackground" not in cookies:
-                    <a href="${get_desc_url() | h}">Background</a> &bull; \
+                % if ("CopyviosBackground" in g.cookies and g.cookies["CopyviosBackground"].value in ["potd", "list"]) or "CopyviosBackground" not in g.cookies:
+                    <a href="${g.descurl | h}">Background</a> &bull; \
                 % endif
                 <a href="http://validator.w3.org/check?uri=referer">Valid HTML5</a>
             </p>

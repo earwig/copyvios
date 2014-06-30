@@ -4,6 +4,8 @@ import base64
 from Cookie import CookieError, SimpleCookie
 from datetime import datetime, timedelta
 
+from flask import g
+
 class _CookieManager(SimpleCookie):
     MAGIC = "--cpv2"
 
@@ -40,14 +42,15 @@ class _CookieManager(SimpleCookie):
 def parse_cookies(path, cookies):
     return _CookieManager(path, cookies)
 
-def set_cookie(headers, cookies, key, value, days=0):
-    cookies[key] = value
+def set_cookie(key, value, days=0):
+    g.cookies[key] = value
     if days:
-        expires = datetime.utcnow() + timedelta(days=days)
-        cookies[key]["expires"] = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
-    cookies[key]["path"] = cookies.path
-    headers.append(("Set-Cookie", cookies[key].OutputString()))
+        expire_dt = datetime.utcnow() + timedelta(days=days)
+        expires = expire_dt.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        g.cookies[key]["expires"] = expires
+    g.cookies[key]["path"] = g.cookies.path
+    g.new_cookies.append(g.cookies[key].OutputString())
 
-def delete_cookie(headers, cookies, key):
-    set_cookie(headers, cookies, key, u"", days=-1)
-    del cookies[key]
+def delete_cookie(key):
+    set_cookie(key, u"", days=-1)
+    del g.cookies[key]

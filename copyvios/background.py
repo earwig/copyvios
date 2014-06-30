@@ -7,16 +7,14 @@ import re
 from time import time
 
 from earwigbot import exceptions
+from flask import g
 
 from .misc import get_bot, open_sql_connection
 
-_descurl = None
-
-def set_background(context, cookies, selected):
-    global _descurl
+def set_background(context, selected):
     conn = open_sql_connection(get_bot(), "globals")
-    if "CopyviosScreenCache" in cookies:
-        cache = cookies["CopyviosScreenCache"].value
+    if "CopyviosScreenCache" in g.cookies:
+        cache = g.cookies["CopyviosScreenCache"].value
         try:
             screen = loads(cache)
             int(screen["width"])
@@ -32,11 +30,8 @@ def set_background(context, cookies, selected):
         info = _update_url(conn, "background_list", 2, _get_fresh_list)
     filename, url, descurl, width, height = info
     bg_url = _build_url(screen, filename, url, width, height)
-    _descurl = descurl
+    g.descurl = descurl
     return bg_url
-
-def get_desc_url(context):
-    return _descurl
 
 def _update_url(conn, service, bg_id, callback):
     query1 = "SELECT update_time FROM updates WHERE update_service = ?"

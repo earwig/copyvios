@@ -4,19 +4,20 @@ from os.path import expanduser
 from urlparse import parse_qs
 
 from earwigbot.bot import Bot
+from flask import request
 import oursql
 
 _bot = None
 _connections = {}
 
 class Query(object):
-    def __init__(self, environ, method="GET"):
+    def __init__(self, method="GET"):
         self.query = {}
         if method == "GET":
-            parsed = parse_qs(environ["QUERY_STRING"])
+            parsed = parse_qs(request.environ["QUERY_STRING"])
         elif method == "POST":
-            size = int(environ.get("CONTENT_LENGTH", 0))
-            parsed = parse_qs(environ["wsgi.input"].read(size))
+            size = int(request.environ.get("CONTENT_LENGTH", 0))
+            parsed = parse_qs(request.environ["wsgi.input"].read(size))
         else:
             parsed = {}
         for key, value in parsed.iteritems():
@@ -50,8 +51,9 @@ def open_sql_connection(bot, dbname):
     conn_args = bot.config.wiki["_copyviosSQL"][dbname]
     if "read_default_file" not in conn_args and "user" not in conn_args and "passwd" not in conn_args:
         conn_args["read_default_file"] = expanduser("~/.my.cnf")
-    elif "read_default_file" in args:
-        args["read_default_file"] = expanduser(args["read_default_file"])
+    elif "read_default_file" in conn_args:
+        default_file = expanduser(conn_args["read_default_file"])
+        conn_args["read_default_file"] = default_file
     if "autoping" not in conn_args:
         conn_args["autoping"] = True
     if "autoreconnect" not in conn_args:

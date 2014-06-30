@@ -31,7 +31,7 @@ def index():
     cookies = parse_cookies(root, request.environ.get("HTTP_COOKIE"))
     return render_template("index.mako", root=root, environ=request.environ, cookies=cookies)
 
-@app.route("/settings")
+@app.route("/settings", methods=["GET", "POST"])
 def settings():
     root = request.environ["SCRIPT_NAME"]
     cookies = parse_cookies(root, request.environ.get("HTTP_COOKIE"))

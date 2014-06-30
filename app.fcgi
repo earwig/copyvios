@@ -11,6 +11,7 @@ from flask import Flask, g, request
 from flask.ext.mako import MakoTemplates, render_template, TemplateError
 from flup.server.fcgi import WSGIServer
 
+from copyvios.checker import do_check
 from copyvios.cookies import parse_cookies
 from copyvios.misc import get_bot
 from copyvios.settings import process_settings
@@ -56,7 +57,8 @@ def write_access_log(response):
 @app.route("/")
 @catch_errors
 def index():
-    return render_template("index.mako")
+    query = do_check()
+    return render_template("index.mako", query=query, result=query.result)
 
 @app.route("/settings", methods=["GET", "POST"])
 @catch_errors

@@ -27,10 +27,7 @@ class Query(object):
                 pass
 
     def __getattr__(self, key):
-        try:
-            return self.query[key]
-        except KeyError:
-            return None
+        return self.query.get(key)
 
     def __setattr__(self, key, value):
         if key == "query":

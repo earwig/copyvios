@@ -6,9 +6,27 @@ from urlparse import urlparse
 
 from earwigbot import exceptions
 
-from .misc import open_sql_connection
+from .misc import get_bot, Query, open_sql_connection
+from .sites import get_site, get_sites
 
-def get_results(query):
+def do_check():
+    query = Query()
+    if query.lang:
+        query.lang = query.orig_lang = query.lang.lower()
+        if "::" in query.lang:
+            query.lang, query.name = query.lang.split("::", 1)
+    if query.project:
+        query.project = query.project.lower()
+
+    query.bot = get_bot()
+    query.all_langs, query.all_projects = get_sites(query.bot)
+    if query.project and query.lang and query.title:  # TODO: and (query.title or query.oldid): ...
+        query.site = get_site(query)
+        if query.site:
+            _get_results(query)
+    return query
+
+def _get_results(query):
     page = query.page = query.site.get_page(query.title)
     try:
         page.get()  # Make sure that the page exists before we check it!

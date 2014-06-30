@@ -43,10 +43,8 @@ def prepare_cookies():
 
 @app.after_request
 def add_new_cookies(response):
-    if g.new_cookies:
-        if "Set-Cookie" in response.headers:
-            g.new_cookies.insert(0, response.headers["Set-Cookie"])
-        response.headers["Set-Cookie"] = "; ".join(g.new_cookies)
+    for cookie in g.new_cookies:
+        response.headers.add("Set-Cookie", cookie)
     return response
 
 @app.after_request

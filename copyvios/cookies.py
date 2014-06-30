@@ -3,16 +3,15 @@
 import base64
 from Cookie import CookieError, SimpleCookie
 from datetime import datetime, timedelta
-from os import path
 
 class _CookieManager(SimpleCookie):
     MAGIC = "--cpv2"
 
-    def __init__(self, environ):
-        self._path = path.dirname(environ["SCRIPT_NAME"])
+    def __init__(self, path, cookies):
+        self._path = path
         try:
-            super(_CookieManager, self).__init__(environ["HTTP_COOKIE"])
-        except (CookieError, KeyError):
+            super(_CookieManager, self).__init__(cookies)
+        except CookieError:
             super(_CookieManager, self).__init__()
         for cookie in self.keys():
             if self[cookie].value is False:
@@ -38,8 +37,8 @@ class _CookieManager(SimpleCookie):
         return self._path
 
 
-def parse_cookies(environ):
-    return _CookieManager(environ)
+def parse_cookies(path, cookies):
+    return _CookieManager(path, cookies)
 
 def set_cookie(headers, cookies, key, value, days=0):
     cookies[key] = value

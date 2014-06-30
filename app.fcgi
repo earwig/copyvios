@@ -27,18 +27,21 @@ def write_access_log(response):
 
 @app.route("/")
 def index():
-    cookies = parse_cookies(request.environ)
-    return render_template("index.mako", environ=request.environ, cookies=cookies)
+    root = request.environ["SCRIPT_NAME"]
+    cookies = parse_cookies(root, request.environ.get("HTTP_COOKIE"))
+    return render_template("index.mako", root=root, environ=request.environ, cookies=cookies)
 
 @app.route("/settings")
 def settings():
-    cookies = parse_cookies(request.environ)
-    return render_template("settings.mako", environ=request.environ, cookies=cookies)
+    root = request.environ["SCRIPT_NAME"]
+    cookies = parse_cookies(root, request.environ.get("HTTP_COOKIE"))
+    return render_template("settings.mako", root=root, environ=request.environ, cookies=cookies)
 
 @app.route("/debug")
 def debug():
-    cookies = parse_cookies(request.environ)
-    return render_template("debug.mako", environ=request.environ, cookies=cookies)
+    root = request.environ["SCRIPT_NAME"]
+    cookies = parse_cookies(root, request.environ.get("HTTP_COOKIE"))
+    return render_template("debug.mako", root=root, environ=request.environ, cookies=cookies)
 
 if __name__ == '__main__':
     WSGIServer(app).run()

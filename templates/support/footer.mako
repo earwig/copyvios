@@ -1,4 +1,4 @@
-<%page args="environ, cookies"/>\
+<%page args="cookies"/>\
 <%namespace module="copyvios.background" import="get_desc_url"/>\
         </div>
         <div id="footer">

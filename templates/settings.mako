@@ -1,6 +1,6 @@
 <%namespace module="copyvios.settings" import="main"/>\
 <% bot, status, langs, projects = main(environ, headers, cookies) %>\
-<%include file="/support/header.mako" args="environ=environ, cookies=cookies, title='Settings - Earwig\'s Copyvio Detector'"/>\
+<%include file="/support/header.mako" args="title='Settings - Earwig\'s Copyvio Detector', root=root, cookies=cookies"/>
 <%! from json import dumps, loads %>\
             % if status:
                 <div id="info-box" class="green-box">
@@ -106,4 +106,4 @@
             % else:
                 <p>No cookies!</p>
             % endif
-<%include file="/support/footer.mako" args="environ=environ, cookies=cookies"/>
+<%include file="/support/footer.mako" args="cookies=cookies"/>

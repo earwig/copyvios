@@ -1,4 +1,4 @@
-<%include file="/support/header.mako" args="environ=environ, cookies=cookies, title='Earwig\'s Copyvio Detector'"/>\
+<%include file="/support/header.mako" args="title='Earwig\'s Copyvio Detector', root=root, cookies=cookies"/>
 <%namespace module="copyvios" import="main, highlight_delta"/>\
 <%namespace module="copyvios.misc" import="urlstrip"/>\
 <%
@@ -158,4 +158,4 @@
                     </div>
                 </div>
             % endif
-<%include file="/support/footer.mako" args="environ=environ, cookies=cookies"/>
+<%include file="/support/footer.mako" args="cookies=cookies"/>

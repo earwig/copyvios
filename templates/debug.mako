@@ -1,4 +1,4 @@
-<%include file="/support/header.mako" args="environ=environ, cookies=cookies, title='Debug - Earwig\'s Copyvio Detector'"/>
+<%include file="/support/header.mako" args="title='Debug - Earwig\'s Copyvio Detector', root=root, cookies=cookies"/>
         <ul>
         % for key, value in environ.items():
             % if key not in ["wsgi.input", "wsgi.errors", "PATH"]:
@@ -8,4 +8,4 @@
             % endif
         % endfor
         </ul>
-<%include file="/support/footer.mako" args="environ=environ, cookies=cookies"/>
+<%include file="/support/footer.mako" args="cookies=cookies"/>

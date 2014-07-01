@@ -5,12 +5,12 @@ function copyvio_toggle_details(details) {
     if (link.innerHTML == "Show details:") {
         details.style.display = "block";
         link.innerHTML = "Hide details:";
-        set_cookie("CopyviosCVShowDetails", "True", 1095);
+        set_cookie("CopyviosShowDetails", "True", 1095);
     } else {
         details.style.display = "none";
         link.innerHTML = "Show details:";
-        if (get_cookie("CopyviosCVShowDetails")) {
-            delete_cookie("CopyviosCVShowDetails");
+        if (get_cookie("CopyviosShowDetails")) {
+            delete_cookie("CopyviosShowDetails");
         }
     }
 }

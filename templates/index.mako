@@ -23,7 +23,6 @@
 %endif
 <p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. Simply give the title of the page or ID of the revision you want to check and hit Submit. The tool will search for similar content elsewhere on the web using <a href="//info.yahoo.com/legal/us/yahoo/boss/pricing/">Yahoo! BOSS</a> and then display a report if a match is found. If you give a URL, it will skip the search engine step and directly display a report comparing the article to that particular webpage, like the <a href="//toolserver.org/~dcoetzee/duplicationdetector/">Duplication Detector</a>.</p>
 <p>Specific websites can be excluded from the check (for example, if their content is in the public domain) by being added to the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/Exclusions">excluded URL list</a>.</p>
-<p><i>Note:</i> The tool is still in beta. You are completely welcome to use it and provide <a href="//en.wikipedia.org/wiki/User_talk:The_Earwig">feedback</a>, but be aware that it may produce strange or broken results.</p>
 <form action="${request.base_url}" method="get">
     <table id="cv-form">
         <tr>

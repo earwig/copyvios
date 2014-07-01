@@ -1,7 +1,7 @@
 <%! from flask import g, request %>\
 <%include file="/support/header.mako" args="title='Earwig\'s Copyvio Detector'"/>
 <%namespace module="copyvios.highlighter" import="highlight_delta"/>\
-<%namespace module="copyvios.misc" import="urlstrip"/>\
+<%namespace module="copyvios.misc" import="httpsfix, urlstrip"/>\
 % if query.project and query.lang and (query.title or query.oldid):
     % if query.error == "bad URI":
         <div id="info-box" class="red-box">
@@ -17,13 +17,13 @@
         </div>
     % elif query.oldid and not result:
         <div id="info-box" class="red-box">
-            <p>The given revision ID doesn't seem to exist: <a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>.</p>
+            <p>The given revision ID doesn't seem to exist: <a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>. <i>Note:</i> searching by revision IDs isn't supported just yet, but it will be soon. Sorry for the inconvenience!</p>
         </div>
     % endif
 %endif
 <p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. Simply give the title of the page or ID of the revision you want to check and hit Submit. The tool will search for similar content elsewhere on the web using <a href="//info.yahoo.com/legal/us/yahoo/boss/pricing/">Yahoo! BOSS</a> and then display a report if a match is found. If you give a URL, it will skip the search engine step and directly display a report comparing the article to that particular webpage, like the <a href="//toolserver.org/~dcoetzee/duplicationdetector/">Duplication Detector</a>.</p>
 <p>Specific websites can be excluded from the check (for example, if their content is in the public domain) by being added to the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/Exclusions">excluded URL list</a>.</p>
-<form action="${request.base_url}" method="get">
+<form action="${request.script_root}" method="get">
     <table id="cv-form">
         <tr>
             <td>Site:</td>
@@ -123,7 +123,7 @@
             % if result.cached:
                 <li>Results are <a id="cv-cached" href="#">cached
                     <span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URL of the "violated" source, but neither its content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span>
-                </a> from ${result.cache_time} (${result.cache_age} ago). <a href="${request.url | h}&amp;nocache=1">Bypass the cache.</a></li>
+                </a> from ${result.cache_time} (${result.cache_age} ago). <a href="${request.url | httpsfix, h}&amp;nocache=1">Bypass the cache.</a></li>
             % else:
                 <li>Results generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries.</li>
             % endif

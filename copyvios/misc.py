@@ -59,6 +59,11 @@ def open_sql_connection(bot, dbname):
     _connections[dbname] = conn
     return conn
 
+def httpsfix(context, url):
+    if url.startswith("http://"):
+        url = url[len("http:"):]
+    return url
+
 def urlstrip(context, url):
     if url.startswith("http://"):
         url = url[7:]

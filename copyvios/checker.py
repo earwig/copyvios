@@ -20,10 +20,13 @@ def do_check():
 
     query.bot = get_bot()
     query.all_langs, query.all_projects = get_sites(query.bot)
-    if query.project and query.lang and query.title:  # TODO: and (query.title or query.oldid): ...
+    if query.project and query.lang and (query.title or query.oldid):
         query.site = get_site(query)
         if query.site:
-            _get_results(query)
+            if query.title:
+                _get_results(query)
+            elif query.oldid:
+                pass
     return query
 
 def _get_results(query):

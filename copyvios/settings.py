@@ -6,6 +6,8 @@ from markupsafe import escape
 from .cookies import set_cookie, delete_cookie
 from .misc import Query
 
+__all__ = ["process_settings"]
+
 def process_settings():
     query = Query(method="POST")
     if query.action == "set":

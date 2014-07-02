@@ -4,12 +4,15 @@ from time import time
 from urlparse import urlparse
 
 from earwigbot import exceptions
+from flask import g
 
-from .misc import open_sql_connection
+from .misc import get_globals_db
+
+__all__ = ["get_site", "get_sites"]
 
 def get_site(query):
     lang, project, name = query.lang, query.project, query.name
-    wiki = query.bot.wiki
+    wiki = g.bot.wiki
     if project not in [proj[0] for proj in query.all_projects]:
         return None
     if project == "wikimedia" and name:  # Special sites:
@@ -28,9 +31,9 @@ def get_site(query):
         except (exceptions.APIError, exceptions.LoginError):
             return None
 
-def get_sites(bot):
+def get_sites():
     max_staleness = 60 * 60 * 24 * 7
-    conn = open_sql_connection(bot, "globals")
+    conn = get_globals_db()
     query1 = "SELECT update_time FROM updates WHERE update_service = ?"
     query2 = "SELECT lang_code, lang_name FROM language"
     query3 = "SELECT project_code, project_name FROM project"
@@ -41,7 +44,7 @@ def get_sites(bot):
         except IndexError:
             time_since_update = time()
         if time_since_update > max_staleness:
-            _update_sites(bot.wiki.get_site(), cursor)
+            _update_sites(cursor)
         cursor.execute(query2)
         langs = []
         for code, name in cursor.fetchall():
@@ -52,7 +55,8 @@ def get_sites(bot):
         projects = cursor.fetchall()
     return langs, projects
 
-def _update_sites(site, cursor):
+def _update_sites(cursor):
+    site = g.bot.wiki.get_site()
     matrix = site.api_query(action="sitematrix")["sitematrix"]
     del matrix["count"]
     languages, projects = set(), set()

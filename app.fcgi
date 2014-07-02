@@ -7,13 +7,13 @@ from logging.handlers import TimedRotatingFileHandler
 from time import asctime
 from traceback import format_exc
 
+from earwigbot.bot import Bot
 from flask import Flask, g, request
 from flask.ext.mako import MakoTemplates, render_template, TemplateError
 from flup.server.fcgi import WSGIServer
 
 from copyvios.checker import do_check
 from copyvios.cookies import parse_cookies
-from copyvios.misc import get_bot
 from copyvios.settings import process_settings
 from copyvios.sites import get_sites
 
@@ -24,6 +24,8 @@ app.logger.setLevel(DEBUG)
 app.logger.addHandler(TimedRotatingFileHandler(
     "logs/app.log", when="D", interval=1, backupCount=7))
 app.logger.info(u"Flask server started " + asctime())
+
+bot = Bot(".earwigbot", 100)
 
 def catch_errors(func):
     @wraps(func)
@@ -37,9 +39,11 @@ def catch_errors(func):
     return inner
 
 @app.before_request
-def prepare_cookies():
-    cookie_string = request.environ.get("HTTP_COOKIE")
-    g.cookies = parse_cookies(request.script_root, cookie_string)
+def prepare_request():
+    g.bot = bot
+    g.globals_db = g.cache_db = None
+    g.cookies = parse_cookies(request.script_root,
+                              request.environ.get("HTTP_COOKIE"))
     g.new_cookies = []
 
 @app.after_request
@@ -54,6 +58,13 @@ def write_access_log(response):
     app.logger.debug(msg, asctime(), request.path, response.status_code)
     return response
 
+@app.teardown_appcontext
+def close_databases(error):
+    if g.globals_db:
+        g.globals_db.close()
+    if g.cache_db:
+        g.cache_db.close()
+
 @app.route("/")
 @catch_errors
 def index():
@@ -64,8 +75,7 @@ def index():
 @catch_errors
 def settings():
     status = process_settings() if request.method == "POST" else None
-    bot = get_bot()
-    langs, projects = get_sites(bot)
+    langs, projects = get_sites()
     default = bot.wiki.get_site()
     kwargs = {"status": status, "langs": langs, "projects": projects,
               "default_lang": default.lang, "default_project": default.project}

@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 
 from flask import g
 
+__all__ = ["parse_cookies", "set_cookie", "delete_cookie"]
+
 class _CookieManager(SimpleCookie):
     MAGIC = "--cpv2"
 

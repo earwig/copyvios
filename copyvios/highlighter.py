@@ -4,6 +4,8 @@ from re import sub, UNICODE
 
 from markupsafe import escape
 
+__all__ = ["highlight_delta"]
+
 def highlight_delta(context, chain, delta):
     degree = chain.degree - 1
     highlights = [False] * degree

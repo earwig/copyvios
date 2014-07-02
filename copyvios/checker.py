@@ -6,8 +6,10 @@ from urlparse import urlparse
 
 from earwigbot import exceptions
 
-from .misc import get_bot, Query, open_sql_connection
+from .misc import Query, get_cache_db
 from .sites import get_site, get_sites
+
+__all__ = ["do_check"]
 
 def do_check():
     query = Query()
@@ -18,8 +20,7 @@ def do_check():
     if query.project:
         query.project = query.project.lower()
 
-    query.bot = get_bot()
-    query.all_langs, query.all_projects = get_sites(query.bot)
+    query.all_langs, query.all_projects = get_sites()
     if query.project and query.lang and (query.title or query.oldid):
         query.site = get_site(query)
         if query.site:
@@ -43,7 +44,7 @@ def _get_results(query):
         query.result = page.copyvio_compare(query.url)
         query.result.cached = False
     else:
-        conn = open_sql_connection(query.bot, "cache")
+        conn = get_cache_db()
         if not query.nocache:
             query.result = _get_cached_results(page, conn)
         if not query.result:

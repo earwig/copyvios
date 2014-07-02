@@ -3,12 +3,13 @@
 from os.path import expanduser
 from urlparse import parse_qs
 
-from earwigbot.bot import Bot
-from flask import request
+from flask import g, request
 import oursql
+from sqlalchemy.pool import manage
 
-_bot = None
-_connections = {}
+oursql = manage(oursql)
+
+__all__ = ["Query", "get_globals_db", "get_cache_db", "httpsfix", "urlstrip"]
 
 class Query(object):
     def __init__(self, method="GET"):
@@ -36,28 +37,22 @@ class Query(object):
             self.query[key] = value
 
 
-def get_bot():
-    global _bot
-    if not _bot:
-        _bot = Bot(".earwigbot", 100)  # Don't print any logs to the console
-    return _bot
+def _connect_db(name):
+    args = g.bot.config.wiki["_copyviosSQL"][name]
+    args["read_default_file"] = expanduser("~/.my.cnf")
+    args["autoping"] = True
+    args["autoreconnect"] = True
+    return oursql.connect(**args)
 
-def open_sql_connection(bot, dbname):
-    if dbname in _connections:
-        return _connections[dbname]
-    conn_args = bot.config.wiki["_copyviosSQL"][dbname]
-    if "read_default_file" not in conn_args and "user" not in conn_args and "passwd" not in conn_args:
-        conn_args["read_default_file"] = expanduser("~/.my.cnf")
-    elif "read_default_file" in conn_args:
-        default_file = expanduser(conn_args["read_default_file"])
-        conn_args["read_default_file"] = default_file
-    if "autoping" not in conn_args:
-        conn_args["autoping"] = True
-    if "autoreconnect" not in conn_args:
-        conn_args["autoreconnect"] = True
-    conn = oursql.connect(**conn_args)
-    _connections[dbname] = conn
-    return conn
+def get_globals_db():
+    if not g.globals_db:
+        g.globals_db = _connect_db("globals")
+    return g.globals_db
+
+def get_cache_db():
+    if not g.cache_db:
+        g.cache_db = _connect_db("cache")
+    return g.cache_db
 
 def httpsfix(context, url):
     if url.startswith("http://"):

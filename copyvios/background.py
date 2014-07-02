@@ -9,10 +9,12 @@ from time import time
 from earwigbot import exceptions
 from flask import g
 
-from .misc import get_bot, open_sql_connection
+from .misc import get_globals_db
+
+__all__ = ["set_background"]
 
 def set_background(selected):
-    conn = open_sql_connection(get_bot(), "globals")
+    conn = get_globals_db()
     if "CopyviosScreenCache" in g.cookies:
         cache = g.cookies["CopyviosScreenCache"].value
         try:
@@ -94,11 +96,10 @@ def _load_file(site, filename):
     return filename.replace(" ", "_"), url, descurl, width, height
 
 def _get_site():
-    bot = get_bot()
     try:
-        return bot.wiki.get_site("commonswiki")
+        return g.bot.wiki.get_site("commonswiki")
     except exceptions.SiteNotFoundError:
-        return bot.wiki.add_site(project="wikimedia", lang="commons")
+        return g.bot.wiki.add_site(project="wikimedia", lang="commons")
 
 def _build_url(screen, filename, url, imgwidth, imgheight):
     width = screen["width"]

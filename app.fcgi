@@ -22,7 +22,7 @@ MakoTemplates(app)
 
 app.logger.setLevel(DEBUG)
 app.logger.addHandler(TimedRotatingFileHandler(
-    "logs/app.log", when="D", interval=1, backupCount=7))
+    "logs/app.log", when="midnight", backupCount=7))
 app.logger.info(u"Flask server started " + asctime())
 
 bot = Bot(".earwigbot", 100)

@@ -41,7 +41,11 @@ def _get_results(query):
         if urlparse(query.url).scheme not in ["http", "https"]:
             query.error = "bad URI"
             return
-        query.result = page.copyvio_compare(query.url)
+        result = page.copyvio_compare(query.url)
+        if result.source_chain is page.EMPTY:
+            query.error = "no data"
+            return
+        query.result = result
         query.result.cached = False
     else:
         conn = get_cache_db()

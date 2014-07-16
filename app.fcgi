@@ -25,7 +25,7 @@ app.logger.addHandler(TimedRotatingFileHandler(
     "logs/app.log", when="midnight", backupCount=7))
 app.logger.info(u"Flask server started " + asctime())
 
-bot = Bot(".earwigbot", 0)
+bot = Bot(".earwigbot", 100)
 
 def catch_errors(func):
     @wraps(func)

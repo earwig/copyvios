@@ -116,9 +116,9 @@
             % endif
         </%def>
         % if result.violation:
-            <h2 id="cv-result-header">${get_page_link()} is a suspected violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</h2>
+            <h2 id="cv-result-header">${get_page_link() | trim} is a suspected violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</h2>
         % else:
-            <h2 id="cv-result-header">No violations detected in ${get_page_link()}.</h2>
+            <h2 id="cv-result-header">No violations detected in ${get_page_link() | trim}.</h2>
         % endif
         <ul id="cv-result-list">
             % if not result.violation and not query.url:

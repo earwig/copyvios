@@ -105,7 +105,7 @@
     </table>
 </form>
 % if result:
-    <% show_details = "CopyviosShowDetails" in g.cookies and g.cookies["CopyviosShowDetails"].value == "True" %>
+    <% hide_comparison = "CopyviosHideComparison" in g.cookies and g.cookies["CopyviosHideComparison"].value == "True" %>
     <div class="divider"></div>
     <div id="cv-result" class="${'red' if result.violation else 'green'}-box">
         % if result.violation:
@@ -134,32 +134,25 @@
                 <li>Results are <a id="cv-cached" href="#">cached
                     <span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URL of the "violated" source, but neither its content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span>
                 </a> from ${result.cache_time} (${result.cache_age} ago). <a href="${request.url | httpsfix, h}&amp;nocache=1">Bypass the cache.</a></li>
+                % if result.queries:
+                    <li>Retrieved from cache in <span class="mono">${round(result.time, 3)}</span> seconds (originally generated in <span class="mono">${round(result.original_time, 3)}</span>s using <span class="mono">${result.queries}</span> queries; <span class="mono">${round(result.original_time - result.time, 3)}</span>s saved).</li>
+                % else:
+                    <li>Retrieved from cache in <span class="mono">${round(result.time, 3)}</span> seconds (originally generated in <span class="mono">${round(result.original_time, 3)}</span>s; <span class="mono">${round(result.original_time - result.time, 3)}</span>s saved).</li>
+                % endif
             % else:
                 <li>Results generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries.</li>
             % endif
-            <li><a id="cv-result-detail-link" href="#cv-result-detail" onclick="copyvio_toggle_details()">${"Hide" if show_details else "Show"} details:</a></li>
+            % if result.queries:
+                <li><i>Fun fact:</i> The Wikimedia Foundation paid Yahoo! Inc. <a href="http://info.yahoo.com/legal/us/yahoo/search/bosspricing/details.html">$${result.queries * 0.0008} USD</a> for these results.</li>
+            % endif
+            <li><a id="cv-chain-link" href="#cv-chain-table" onclick="copyvio_toggle_details()">${"Show" if hide_comparison else "Hide"} comparison:</a></li>
         </ul>
-        <div id="cv-result-detail" style="display: ${'block' if show_details else 'none'};">
-            <ul id="cv-result-detail-list">
-                <li>Trigrams: <i>Article:</i> <span class="mono">${result.article_chain.size()}</span> / <i>Source:</i> <span class="mono">${result.source_chain.size()}</span> / <i>Delta:</i> <span class="mono">${result.delta_chain.size()}</span></li>
-                % if result.cached:
-                    % if result.queries:
-                        <li>Retrieved from cache in <span class="mono">${round(result.time, 3)}</span> seconds (originally generated in <span class="mono">${round(result.original_time, 3)}</span>s using <span class="mono">${result.queries}</span> queries; <span class="mono">${round(result.original_time - result.time, 3)}</span>s saved).</li>
-                    % else:
-                        <li>Retrieved from cache in <span class="mono">${round(result.time, 3)}</span> seconds (originally generated in <span class="mono">${round(result.original_time, 3)}</span>s; <span class="mono">${round(result.original_time - result.time, 3)}</span>s saved).</li>
-                    % endif
-                % endif
-                % if result.queries:
-                    <li><i>Fun fact:</i> The Wikimedia Foundation paid Yahoo! Inc. <a href="http://info.yahoo.com/legal/us/yahoo/search/bosspricing/details.html">$${result.queries * 0.0008} USD</a> for these results.</li>
-                % endif
-            </ul>
-            <table id="cv-chain-table">
-                <tr>
-                    <td class="cv-chain-cell">Article: <div class="cv-chain-detail"><p>${highlight_delta(result.article_chain, result.delta_chain)}</p></div></td>
-                    <td class="cv-chain-cell">Source: <div class="cv-chain-detail"><p>${highlight_delta(result.source_chain, result.delta_chain)}</p></div></td>
-                </tr>
-            </table>
-        </div>
+        <table id="cv-chain-table" style="display: ${'none' if hide_comparison else 'table'};">
+            <tr>
+                <td class="cv-chain-cell">Article: <div class="cv-chain-detail"><p>${highlight_delta(result.article_chain, result.delta_chain)}</p></div></td>
+                <td class="cv-chain-cell">Source: <div class="cv-chain-detail"><p>${highlight_delta(result.source_chain, result.delta_chain)}</p></div></td>
+            </tr>
+        </table>
     </div>
 % endif
 <%include file="/support/footer.mako"/>

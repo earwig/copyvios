@@ -1,17 +1,16 @@
-function copyvio_toggle_details(details) {
-    link = document.getElementById("cv-result-detail-link");
-    details = document.getElementById("cv-result-detail");
+function copyvio_toggle_details() {
+    link = document.getElementById("cv-chain-link");
+    table = document.getElementById("cv-chain-table");
 
-    if (link.innerHTML == "Show details:") {
-        details.style.display = "block";
-        link.innerHTML = "Hide details:";
-        set_cookie("CopyviosShowDetails", "True", 1095);
+    if (link.innerHTML == "Hide comparison:") {
+        table.style.display = "none";
+        link.innerHTML = "Show comparison:";
+        set_cookie("CopyviosHideComparison", "True", 1095);
     } else {
-        details.style.display = "none";
-        link.innerHTML = "Show details:";
-        if (get_cookie("CopyviosShowDetails")) {
-            delete_cookie("CopyviosShowDetails");
-        }
+        table.style.display = "table";
+        link.innerHTML = "Hide comparison:";
+        if (get_cookie("CopyviosHideComparison"))
+            delete_cookie("CopyviosHideComparison");
     }
 }
 

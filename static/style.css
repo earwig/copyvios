@@ -54,13 +54,6 @@ div#cv-result {
     margin: 0 5px 10px 5px;
 }
 
-div#cv-result-detail {
-    padding: 0 10px 0 10px;
-    margin: 10px 10px 20px 10px;
-    background-color: #F3F3F3;
-    border: 1px solid #AAA;
-}
-
 table#heading {
     width: 100%;
 }
@@ -102,10 +95,6 @@ h2#cv-result-header {
 
 ul#cv-result-list {
     margin-top: 0.5em;
-}
-
-ul#cv-result-detail-list {
-    margin-bottom: 0;
 }
 
 a#cv-cached {

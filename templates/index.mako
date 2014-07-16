@@ -129,7 +129,9 @@
                     <li>No matches found.</li>
                 % endif
             % endif
-            <li><b><span class="mono">${round(result.confidence * 100, 1)}%</span></b> confidence of a violation.</li>
+            % if result.url:
+                <li><b><span class="mono">${round(result.confidence * 100, 1)}%</span></b> confidence of a violation.</li>
+            % endif
             % if query.redirected_from:
                 <li>Redirected from <a href="${query.redirected_from.url}">${query.redirected_from.title | h}</a>. <a href="${request.url | httpsfix, h}&amp;noredirect=1">Check the original page.</a></li>
             % endif

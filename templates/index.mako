@@ -108,17 +108,18 @@
     <% show_details = "CopyviosShowDetails" in g.cookies and g.cookies["CopyviosShowDetails"].value == "True" %>
     <div class="divider"></div>
     <div id="cv-result" class="${'red' if result.violation else 'green'}-box">
-        <%def name="get_page_link()">
-            % if query.oldid:
-                <a href="${query.page.url}">${query.page.title | h}</a> @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>
-            % else:
-                <a href="${query.page.url}">${query.page.title | h}</a>
-            % endif
-        </%def>
         % if result.violation:
-            <h2 id="cv-result-header">${get_page_link() | trim} is a suspected violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</h2>
+            % if query.oldid:
+                <h2 id="cv-result-header"><a href="${query.page.url}">${query.page.title | h}</a> @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a> is a suspected violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</h2>
+            % else:
+                <h2 id="cv-result-header"><a href="${query.page.url}">${query.page.title | h}</a> is a suspected violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</h2>
+            % endif
         % else:
-            <h2 id="cv-result-header">No violations detected in ${get_page_link() | trim}.</h2>
+            % if query.oldid:
+                <h2 id="cv-result-header">No violations detected in <a href="${query.page.url}">${query.page.title | h}</a> @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>.</h2>
+            % else:
+                <h2 id="cv-result-header">No violations detected in <a href="${query.page.url}">${query.page.title | h}</a>.</h2>
+            % endif
         % endif
         <ul id="cv-result-list">
             % if not result.violation and not query.url:

@@ -130,6 +130,9 @@
                 % endif
             % endif
             <li><b><span class="mono">${round(result.confidence * 100, 1)}%</span></b> confidence of a violation.</li>
+            % if query.redirected_from:
+                <li>Redirected from <a href="${query.redirected_from.url}">${query.redirected_from.title | h}</a>. <a href="${request.url | httpsfix, h}&amp;noredirect=1">Check the original page.</a></li>
+            % endif
             % if result.cached:
                 <li>
                     Results are <a id="cv-cached" href="#">cached<span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URL of the "violated" source, but neither its content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span></a> from <abbr title="${result.cache_time}">${result.cache_age} ago</abbr>. Retrieved in <span class="mono">${round(result.time, 3)}</span> seconds (originally generated in

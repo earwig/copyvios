@@ -24,10 +24,10 @@ def do_check():
     if query.project and query.lang and (query.title or query.oldid):
         query.site = get_site(query)
         if query.site:
-            _get_results(query)
+            _get_results(query, follow=query.noredirect is None)
     return query
 
-def _get_results(query):
+def _get_results(query, follow=True):
     if query.oldid:
         page = query.page = _get_page_by_revid(query.site, query.oldid)
         if not page:
@@ -38,6 +38,14 @@ def _get_results(query):
             page.get()  # Make sure that the page exists before we check it!
         except (exceptions.PageNotFoundError, exceptions.InvalidPageError):
             return
+        if page.is_redirect and follow:
+            try:
+                query.title = page.get_redirect_target()
+            except exceptions.RedirectError:
+                pass  # Something's wrong. Continue checking the original page.
+            else:
+                query.redirected_from = page
+                return _get_results(query, follow=False)
 
     if query.url:
         if urlparse(query.url).scheme not in ["http", "https"]:

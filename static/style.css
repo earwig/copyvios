@@ -64,6 +64,7 @@ table#cv-form {
 
 table#cv-chain-table {
     width: 100%;
+    margin-bottom: 10px;
     border-spacing: 10px 0;
 }
 

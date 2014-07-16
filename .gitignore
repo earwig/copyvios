@@ -7,4 +7,5 @@ __pycache__
 .earwigbot
 *.min.js
 *.min.css
-logs/*.log
+logs/*
+!logs/.gitinclude

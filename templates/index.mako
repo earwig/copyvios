@@ -21,7 +21,7 @@
         </div>
     % elif query.oldid and not result:
         <div id="info-box" class="red-box">
-            <p>The given revision ID doesn't seem to exist: <a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>. <i>Note:</i> searching by revision IDs isn't supported just yet, but it will be soon. Sorry for the inconvenience!</p>
+            <p>The given revision ID doesn't seem to exist: <a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>.</p>
         </div>
     % endif
 %endif
@@ -60,10 +60,8 @@
         <tr>
             <td id="cv-col1">Page&nbsp;title:</td>
             <td id="cv-col2">
-                % if query.page:
-                    <input class="cv-text" type="text" name="title" value="${query.page.title | h}" />
-                % elif query.title:
-                    <input class="cv-text" type="text" name="title" value="${query.title | h}" />
+                % if query.title:
+                    <input class="cv-text" type="text" name="title" value="${query.page.title if query.page else query.title | h}" />
                 % else:
                     <input class="cv-text" type="text" name="title" />
                 % endif

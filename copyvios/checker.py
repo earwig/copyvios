@@ -24,18 +24,20 @@ def do_check():
     if query.project and query.lang and (query.title or query.oldid):
         query.site = get_site(query)
         if query.site:
-            if query.title:
-                _get_results(query)
-            elif query.oldid:
-                pass
+            _get_results(query)
     return query
 
 def _get_results(query):
-    page = query.page = query.site.get_page(query.title)
-    try:
-        page.get()  # Make sure that the page exists before we check it!
-    except (exceptions.PageNotFoundError, exceptions.InvalidPageError):
-        return
+    if query.oldid:
+        page = query.page = _get_page_by_revid(query.site, query.oldid)
+        if not page:
+            return
+    else:
+        page = query.page = query.site.get_page(query.title)
+        try:
+            page.get()  # Make sure that the page exists before we check it!
+        except (exceptions.PageNotFoundError, exceptions.InvalidPageError):
+            return
 
     if query.url:
         if urlparse(query.url).scheme not in ["http", "https"]:
@@ -56,9 +58,30 @@ def _get_results(query):
             query.result.cached = False
             _cache_result(page, query.result, conn)
 
+def _get_page_by_revid(site, revid):
+    res = site.api_query(action="query", prop="info|revisions", revids=revid,
+                         rvprop="content|timestamp", inprop="protection|url")
+    try:
+        page_data = res["query"]["pages"].values()[0]
+        title = page_data["title"]
+        page_data["revisions"][0]["*"]  # Only need to check that these exist
+        page_data["revisions"][0]["timestamp"]
+    except KeyError:
+        return
+    page = site.get_page(title)
+
+    # EarwigBot doesn't understand old revisions of pages, so we use a somewhat
+    # dirty hack to make this work:
+    page._load_attributes(res)
+    page._load_content(res)
+    return page
+
 def _get_cached_results(page, conn):
-    query1 = "DELETE FROM cache WHERE cache_time < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)"
-    query2 = "SELECT cache_url, cache_time, cache_queries, cache_process_time FROM cache WHERE cache_id = ? AND cache_hash = ?"
+    query1 = """DELETE FROM cache
+                WHERE cache_time < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)"""
+    query2 = """SELECT cache_url, cache_time, cache_queries, cache_process_time
+                FROM cache
+                WHERE cache_id = ? AND cache_hash = ?"""
     shahash = sha256(page.get().encode("utf8")).hexdigest()
 
     with conn.cursor() as cursor:
@@ -86,14 +109,13 @@ def _format_date(cache_time):
     return "{0} seconds".format(diff.seconds)
 
 def _cache_result(page, result, conn):
-    pageid = page.pageid
+    query = """INSERT INTO cache
+               VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?, ?)
+               ON DUPLICATE KEY UPDATE
+               cache_url = ?, cache_time = CURRENT_TIMESTAMP,
+               cache_queries = ?, cache_process_time = ?"""
     shahash = sha256(page.get().encode("utf8")).hexdigest()
-    query1 = "SELECT 1 FROM cache WHERE cache_id = ?"
-    query2 = "DELETE FROM cache WHERE cache_id = ?"
-    query3 = "INSERT INTO cache VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?, ?)"
+    args = (page.pageid, shahash, result.url, result.queries, result.time,
+            result.url, result.queries, result.time)
     with conn.cursor() as cursor:
-        cursor.execute(query1, (pageid,))
-        if cursor.fetchall():
-            cursor.execute(query2, (pageid,))
-        cursor.execute(query3, (pageid, shahash, result.url, result.queries,
-                                result.time))
+        cursor.execute(query, args)

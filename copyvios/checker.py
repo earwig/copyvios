@@ -51,9 +51,10 @@ def _get_results(query, follow=True):
         if urlparse(query.url).scheme not in ["http", "https"]:
             query.error = "bad URI"
             return
-        result = page.copyvio_compare(query.url)
+        max_time = 30
+        result = page.copyvio_compare(query.url, max_time=max_time)
         if result.source_chain is page.EMPTY:
-            query.error = "no data"
+            query.error = "timeout" if result.time > max_time else "no data"
             return
         query.result = result
         query.result.cached = False

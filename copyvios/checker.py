@@ -51,17 +51,14 @@ def _get_results(query, follow=True):
         if urlparse(query.url).scheme not in ["http", "https"]:
             query.error = "bad URI"
             return
-        max_time = 30
-        result = page.copyvio_compare(query.url, max_time=max_time)
-        if result.source_chain is page.EMPTY:
-            query.error = "timeout" if result.time > max_time else "no data"
-            return
-        query.result = result
-        query.result.cached = False
+        result = _do_copyvio_compare(query, page, query.url)
+        if result:
+            query.result = result
+            query.result.cached = False
     else:
         conn = get_cache_db()
         if not query.nocache:
-            query.result = _get_cached_results(page, conn)
+            query.result = _get_cached_results(page, conn, query)
         if not query.result:
             query.result = page.copyvio_check(max_queries=10, max_time=45)
             query.result.cached = False
@@ -85,7 +82,7 @@ def _get_page_by_revid(site, revid):
     page._load_content(res)
     return page
 
-def _get_cached_results(page, conn):
+def _get_cached_results(page, conn, query):
     query1 = """DELETE FROM cache
                 WHERE cache_time < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)"""
     query2 = """SELECT cache_url, cache_time, cache_queries, cache_process_time
@@ -101,13 +98,20 @@ def _get_cached_results(page, conn):
             return None
 
     url, cache_time, num_queries, original_time = results[0]
-    result = page.copyvio_compare(url)
-    result.cached = True
-    result.queries = num_queries
-    result.original_time = original_time
-    result.cache_time = cache_time.strftime("%b %d, %Y %H:%M:%S UTC")
-    result.cache_age = _format_date(cache_time)
+    result = _do_copyvio_compare(query, page, url)
+    if result:
+        result.cached = True
+        result.queries = num_queries
+        result.original_time = original_time
+        result.cache_time = cache_time.strftime("%b %d, %Y %H:%M:%S UTC")
+        result.cache_age = _format_date(cache_time)
     return result
+
+def _do_copyvio_compare(query, page, url):
+    result = page.copyvio_compare(url, max_time=30)
+    if result.source_chain is not page.EMPTY:
+        return result
+    query.error = "timeout" if result.time > 30 else "no data"
 
 def _format_date(cache_time):
     diff = datetime.utcnow() - cache_time

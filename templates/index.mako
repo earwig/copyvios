@@ -113,20 +113,21 @@
     <% hide_comparison = "CopyviosHideComparison" in g.cookies and g.cookies["CopyviosHideComparison"].value == "True" %>
     <div class="divider"></div>
     <div id="cv-result" class="${'red' if result.confidence >= T_SUSPECT else 'yellow' if result.confidence >= T_POSSIBLE else 'green'}-box">
-        % if result.confidence >= T_POSSIBLE:
-            <% vio_type = "suspected" if result.confidence >= T_SUSPECT else "possible" %>
-            % if query.oldid:
-                <h2 id="cv-result-header"><a href="${query.page.url}">${query.page.title | h}</a> @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a> is a ${vio_type} violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</h2>
+        <h2 id="cv-result-header">
+            % if result.confidence >= T_POSSIBLE:
+                <a href="${query.page.url}">${query.page.title | h}</a>
+                % if query.oldid:
+                    @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>
+                % endif
+                is a ${"suspected" if result.confidence >= T_SUSPECT else "possible"} violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.
             % else:
-                <h2 id="cv-result-header"><a href="${query.page.url}">${query.page.title | h}</a> is a ${vio_type} violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</h2>
+                % if query.oldid:
+                    No violations detected in <a href="${query.page.url}">${query.page.title | h}</a> @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>.
+                % else:
+                    No violations detected in <a href="${query.page.url}">${query.page.title | h}</a>.
+                % endif
             % endif
-        % else:
-            % if query.oldid:
-                <h2 id="cv-result-header">No violations detected in <a href="${query.page.url}">${query.page.title | h}</a> @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>.</h2>
-            % else:
-                <h2 id="cv-result-header">No violations detected in <a href="${query.page.url}">${query.page.title | h}</a>.</h2>
-            % endif
-        % endif
+        </h2>
         <ul id="cv-result-list">
             % if result.confidence < T_POSSIBLE and not query.url:
                 % if result.url:

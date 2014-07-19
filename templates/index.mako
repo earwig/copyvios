@@ -1,6 +1,8 @@
-<%! from flask import g, request %>\
+<%!
+    from flask import g, request
+    from copyvios.checker import T_POSSIBLE, T_SUSPECT
+%>\
 <%include file="/support/header.mako" args="title='Earwig\'s Copyvio Detector'"/>
-<%namespace module="copyvios.checker" import="T_POSSIBLE, T_SUSPECT"/>\
 <%namespace module="copyvios.highlighter" import="highlight_delta"/>\
 <%namespace module="copyvios.misc" import="httpsfix, urlstrip"/>\
 % if query.project and query.lang and (query.title or query.oldid):

@@ -1,5 +1,6 @@
 <%! from flask import g, request %>\
 <%include file="/support/header.mako" args="title='Earwig\'s Copyvio Detector'"/>
+<%namespace module="copyvios.checker" import="T_POSSIBLE, T_SUSPECT"/>\
 <%namespace module="copyvios.highlighter" import="highlight_delta"/>\
 <%namespace module="copyvios.misc" import="httpsfix, urlstrip"/>\
 % if query.project and query.lang and (query.title or query.oldid):
@@ -111,12 +112,13 @@
 % if result:
     <% hide_comparison = "CopyviosHideComparison" in g.cookies and g.cookies["CopyviosHideComparison"].value == "True" %>
     <div class="divider"></div>
-    <div id="cv-result" class="${'red' if result.violation else 'green'}-box">
-        % if result.violation:
+    <div id="cv-result" class="${'red' if result.confidence >= T_SUSPECT else 'yellow' if result.confidence >= T_POSSIBLE else 'green'}-box">
+        % if result.confidence >= T_POSSIBLE:
+            <% vio_type = "suspected" if result.confidence >= T_SUSPECT else "possible" %>
             % if query.oldid:
-                <h2 id="cv-result-header"><a href="${query.page.url}">${query.page.title | h}</a> @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a> is a suspected violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</h2>
+                <h2 id="cv-result-header"><a href="${query.page.url}">${query.page.title | h}</a> @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a> is a ${vio_type} violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</h2>
             % else:
-                <h2 id="cv-result-header"><a href="${query.page.url}">${query.page.title | h}</a> is a suspected violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</h2>
+                <h2 id="cv-result-header"><a href="${query.page.url}">${query.page.title | h}</a> is a ${vio_type} violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</h2>
             % endif
         % else:
             % if query.oldid:
@@ -126,7 +128,7 @@
             % endif
         % endif
         <ul id="cv-result-list">
-            % if not result.violation and not query.url:
+            % if result.confidence < T_POSSIBLE and not query.url:
                 % if result.url:
                     <li>Best match: <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</li>
                 % else:

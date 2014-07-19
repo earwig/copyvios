@@ -9,7 +9,10 @@ from earwigbot import exceptions
 from .misc import Query, get_cache_db
 from .sites import get_site, get_sites
 
-__all__ = ["do_check"]
+__all__ = ["do_check", "T_POSSIBLE", "T_SUSPECT"]
+
+T_POSSIBLE = 0.3
+T_SUSPECT = 0.6
 
 def do_check():
     query = Query()
@@ -60,7 +63,8 @@ def _get_results(query, follow=True):
         if not query.nocache:
             query.result = _get_cached_results(page, conn, query)
         if not query.result:
-            query.result = page.copyvio_check(max_queries=10, max_time=45)
+            query.result = page.copyvio_check(
+                min_confidence=T_SUSPECT, max_queries=10, max_time=45)
             query.result.cached = False
             _cache_result(page, query.result, conn)
 
@@ -108,7 +112,7 @@ def _get_cached_results(page, conn, query):
     return result
 
 def _do_copyvio_compare(query, page, url):
-    result = page.copyvio_compare(url, max_time=30)
+    result = page.copyvio_compare(url, min_confidence=T_SUSPECT, max_time=30)
     if result.source_chain is not page.EMPTY:
         return result
     query.error = "timeout" if result.time > 30 else "no data"

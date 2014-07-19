@@ -126,6 +126,11 @@ div.green-box {
     border: 1px solid #7F7;
 }
 
+div.yellow-box {
+    background-color: #FFE;
+    border: 1px solid #FF7;
+}
+
 div.red-box {
     background-color: #FEE;
     border: 1px solid #F77;

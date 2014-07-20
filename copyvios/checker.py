@@ -5,6 +5,7 @@ from hashlib import sha256
 from urlparse import urlparse
 
 from earwigbot import exceptions
+from earwigbot.wiki.copyvios.markov import EMPTY
 
 from .misc import Query, get_cache_db
 from .sites import get_site, get_sites
@@ -113,7 +114,7 @@ def _get_cached_results(page, conn, query):
 
 def _do_copyvio_compare(query, page, url):
     result = page.copyvio_compare(url, min_confidence=T_SUSPECT, max_time=30)
-    if result.source_chain is not page.EMPTY:
+    if result.source_chain is not EMPTY:
         return result
     query.error = "timeout" if result.time > 30 else "no data"
 

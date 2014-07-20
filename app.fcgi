@@ -54,8 +54,9 @@ def add_new_cookies(response):
 
 @app.after_request
 def write_access_log(response):
-    msg = u"%s %s -> %s"
-    app.logger.debug(msg, asctime(), request.path, response.status_code)
+    msg = u"%s %s %s %s -> %s"
+    app.logger.debug(msg, asctime(), request.method, request.path,
+                     request.values.to_dict(), response.status_code)
     return response
 
 @app.teardown_appcontext

@@ -1,0 +1,9 @@
+{
+    "name" : "copyvios",
+    "title" : "Copyvios",
+    "description" : "Detects copyright violations in pages by searching for their contents online. Can also compare a page and a specific URL.",
+    "url" : "https://tools.wmflabs.org/copyvios",
+    "keywords" : "copyvios, copyright violations",
+    "author" : "The Earwig",
+    "repository" : "https://github.com/earwig/copyvios"
+}

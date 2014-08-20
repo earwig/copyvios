@@ -52,7 +52,10 @@ def _get_results(query, follow=True):
                 return _get_results(query, follow=False)
 
     if query.url:
-        if urlparse(query.url).scheme not in ["http", "https"]:
+        scheme = urlparse(query.url).scheme
+        if not scheme and query.url[0] not in ":/":
+            query.url = "http://" + query.url
+        elif scheme not in ["http", "https"]:
             query.error = "bad URI"
             return
         result = _do_copyvio_compare(query, page, query.url)

@@ -12,7 +12,7 @@ from .sites import get_site, get_sites
 
 __all__ = ["do_check", "T_POSSIBLE", "T_SUSPECT"]
 
-T_POSSIBLE = 0.5
+T_POSSIBLE = 0.4
 T_SUSPECT = 0.75
 
 def do_check():

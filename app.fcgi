@@ -8,6 +8,7 @@ from time import asctime
 from traceback import format_exc
 
 from earwigbot.bot import Bot
+from earwigbot.wiki.copyvios import globalize
 from flask import Flask, g, request
 from flask.ext.mako import MakoTemplates, render_template, TemplateError
 from flup.server.fcgi import WSGIServer
@@ -40,6 +41,7 @@ def catch_errors(func):
 
 @app.before_request
 def prepare_request():
+    globalize()
     g.bot = bot
     g.globals_db = g.cache_db = None
     g.cookies = parse_cookies(request.script_root,

@@ -2,7 +2,7 @@
 # -*- coding: utf-8  -*-
 
 from functools import wraps
-from logging import DEBUG
+from logging import DEBUG, INFO, getLogger
 from logging.handlers import TimedRotatingFileHandler
 from time import asctime
 from traceback import format_exc
@@ -27,6 +27,8 @@ app.logger.addHandler(TimedRotatingFileHandler(
 app.logger.info(u"Flask server started " + asctime())
 
 bot = Bot(".earwigbot", 100)
+getLogger("earwigbot.wiki.cvworker").setLevel(INFO)
+globalize()
 
 def catch_errors(func):
     @wraps(func)
@@ -41,7 +43,6 @@ def catch_errors(func):
 
 @app.before_request
 def prepare_request():
-    globalize()
     g.bot = bot
     g.globals_db = g.cache_db = None
     g.cookies = parse_cookies(request.script_root,

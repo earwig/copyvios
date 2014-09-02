@@ -44,11 +44,11 @@
         </div>
     % endif
 %endif
-<p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. Simply give the title of the page or ID of the revision you want to check and hit Submit. The tool will search for similar content elsewhere on the web using <a href="//developer.yahoo.com/boss/search/">Yahoo! BOSS</a> and then display a report if a match is found. If you give a specific URL, it will skip the search engine step and directly display a report comparing the article to that particular webpage, like the <a href="//tools.wmflabs.org/dupdet/">Duplication Detector</a>.</p>
+<p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. In search mode, it will check for similar content elsewhere on the web using <a href="//developer.yahoo.com/boss/search/">Yahoo! BOSS</a> and/or external links present in the text of the page, depending on which options are selected. In comparison mode, the tool will skip the searching step and display a report comparing the article to the given webpage, like the <a href="//tools.wmflabs.org/dupdet/">Duplication Detector</a>.</p>
 <p>Running a full check can take up to 45 seconds if other websites are slow. Please be patient. If you get a timeout, wait a moment and refresh the page.</p>
 <p>Specific websites can be skipped (for example, if their content is in the public domain) by being added to the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/Exclusions">excluded URL list</a>.</p>
-<form action="${request.script_root}" method="get">
-    <table id="cv-form">
+<form id="cv-form" action="${request.script_root}" method="get">
+    <table id="cv-form-outer">
         <tr>
             <td>Site:</td>
             <td colspan="3">

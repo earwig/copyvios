@@ -108,7 +108,7 @@
                             <input type="hidden" name="use_engine" value="0" />
                             <input type="hidden" name="use_links" value="0" />
                             <input id="cv-cb-engine" type="checkbox" name="use_engine" value="1" ${'checked="checked"' if (query.use_engine != "0") else ""} />
-                            <label for"cv-cb-engine">Use&nbsp;search&nbsp;engine</label>
+                            <label for="cv-cb-engine">Use&nbsp;search&nbsp;engine</label>
                             <input id="cv-cb-links" type="checkbox" name="use_links" value="1" ${'checked="checked"' if (query.use_links != "0") else ""} />
                             <label for="cv-cb-links">Use&nbsp;links&nbsp;in&nbsp;page</label>
                         </td>

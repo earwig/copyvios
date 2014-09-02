@@ -105,11 +105,11 @@
                         </td>
                         <td id="cv-inner-col2"><label for="action-search">Copyvio&nbsp;search:</label></td>
                         <td id="cv-inner-col3">
-                            <input type="hidden" name="use_engine" value="0" />
-                            <input type="hidden" name="use_links" value="0" />
-                            <input id="cv-cb-engine" type="checkbox" name="use_engine" value="1" ${'checked="checked"' if (query.use_engine != "0") else ""} />
+                            <input class="cv-search" type="hidden" name="use_engine" value="0" />
+                            <input class="cv-search" type="hidden" name="use_links" value="0" />
+                            <input id="cv-cb-engine" class="cv-search" type="checkbox" name="use_engine" value="1" ${'checked="checked"' if (query.use_engine != "0") else ""} />
                             <label for="cv-cb-engine">Use&nbsp;search&nbsp;engine</label>
-                            <input id="cv-cb-links" type="checkbox" name="use_links" value="1" ${'checked="checked"' if (query.use_links != "0") else ""} />
+                            <input id="cv-cb-links" class="cv-search" type="checkbox" name="use_links" value="1" ${'checked="checked"' if (query.use_links != "0") else ""} />
                             <label for="cv-cb-links">Use&nbsp;links&nbsp;in&nbsp;page</label>
                         </td>
                     </tr>
@@ -119,7 +119,7 @@
                         </td>
                         <td><label for="action-compare">URL&nbsp;comparison:</label></td>
                         <td>
-                            <input id="url-box" class="cv-text" type="text" name="url"
+                            <input class="cv-compare cv-text" type="text" name="url"
                             % if query.url:
                                 value="${query.url | h}"
                             % endif

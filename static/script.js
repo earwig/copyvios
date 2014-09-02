@@ -90,14 +90,12 @@ function delete_cookie(name) {
 
 $(document).ready(function() {
     $("#action-search").change(function() {
-        $("#cv-cb-engine").prop("disabled", false);
-        $("#cv-cb-links").prop("disabled", false);
-        $("#url-box").prop("disabled", true);
+        $(".cv-search").prop("disabled", false);
+        $(".cv-compare").prop("disabled", true);
     });
     $("#action-compare").change(function() {
-        $("#cv-cb-engine").prop("disabled", true);
-        $("#cv-cb-links").prop("disabled", true);
-        $("#url-box").prop("disabled", false);
+        $(".cv-search").prop("disabled", true);
+        $(".cv-compare").prop("disabled", false);
     });
     if ($("#action-search" ).is(":checked")) $("#action-search" ).change();
     if ($("#action-compare").is(":checked")) $("#action-compare").change();

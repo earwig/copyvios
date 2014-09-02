@@ -14,7 +14,7 @@
         <tr>
             <td>Default site:</td>
             <td>
-                <span class="mono">http://</span>
+                <span class="mono">https://</span>
                 <select name="lang">
                     <% selected_lang = g.cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in g.cookies else default_lang %>\
                     % for code, name in langs:

@@ -18,15 +18,15 @@ h2 {
 div#header {
     font-size: 2.5em;
     font-weight: bold;
-    margin: 30px 60px 30px 60px;
-    padding: 10px 15px 10px 15px;
+    margin: 20px 60px;
+    padding: 10px 15px;
     border: 1px solid #777;
     background-color: #FFF;
 }
 
 div#container {
     line-height: 1.25;
-    margin: 0 60px 75px 60px;
+    margin: 0 60px 65px 60px;
     padding: 5px 15px 15px 15px;
     border: 1px solid #777;
     background-color: #FFF;
@@ -50,8 +50,8 @@ div#info-box {
 }
 
 div#cv-result {
-    padding: 5px 10px 0 10px;
-    margin: 0 5px 10px 5px;
+    padding: 10px;
+    margin: 15px 5px 10px 5px;
 }
 
 table#heading {
@@ -60,6 +60,11 @@ table#heading {
 
 table#cv-form {
     width: 750px;
+}
+
+table#cv-form-inner {
+    width: 100%;
+    border-spacing: 0;
 }
 
 table#cv-chain-table {
@@ -89,13 +94,24 @@ td#cv-col4 {
     width: 15%;
 }
 
+td#cv-inner-col1 {
+    width: 4%;
+}
+
+td#cv-inner-col2 {
+    width: 22%;
+}
+
+td#cv-inner-col3 {
+    width: 76%;
+}
+
 h2#cv-result-header {
-    margin-top: 0.2em;
-    margin-bottom: 0;
+    margin: 0;
 }
 
 ul#cv-result-list {
-    margin-top: 0.5em;
+    margin: 0.5em 0;
 }
 
 a#cv-cached {
@@ -113,12 +129,6 @@ a#cv-cached span {
     background: #F3F3F3;
     border: 1px solid #AAA;
     color: black;
-}
-
-div.divider {
-    border-bottom: 1px solid #AAA;
-    margin-top: 15px;
-    margin-bottom: 15px;
 }
 
 div.green-box {
@@ -153,6 +163,16 @@ td.cv-chain-cell {
 
 input.cv-text {
     width: 100%;
+}
+
+input#cv-cb-engine {
+    margin-left: 0;
+    margin-right: 5px;
+}
+
+input#cv-cb-links {
+    margin-left: 20px;
+    margin-right: 5px;
 }
 
 span.cv-hl {

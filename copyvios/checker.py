@@ -25,7 +25,8 @@ def do_check():
         query.project = query.project.lower()
 
     query.all_langs, query.all_projects = get_sites()
-    if query.project and query.lang and (query.title or query.oldid):
+    query.submitted = query.project and query.lang and (query.title or query.oldid)
+    if query.submitted:
         query.site = get_site(query)
         if query.site:
             _get_results(query, follow=query.noredirect is None)
@@ -51,7 +52,25 @@ def _get_results(query, follow=True):
                 query.redirected_from = page
                 return _get_results(query, follow=False)
 
-    if query.url:
+    if not query.action:
+        query.action = "compare" if query.url else "search"
+    if query.action == "search":
+        conn = get_cache_db()
+        use_engine = 1 if query.use_engine else 0
+        use_links = 1 if query.use_links else 0
+        mode = "{0}:{1}:".format(use_engine, use_links)
+        if not query.nocache:
+            query.result = _get_cached_results(page, conn, query, mode)
+        if not query.result:
+            query.result = page.copyvio_check(
+                min_confidence=T_SUSPECT, max_queries=10, max_time=45,
+                no_searches=not use_engine, no_links=not use_links)
+            query.result.cached = False
+            _cache_result(page, query.result, conn, mode)
+    elif query.action == "compare":
+        if not query.url:
+            query.error = "no URL"
+            return
         scheme = urlparse(query.url).scheme
         if not scheme and query.url[0] not in ":/":
             query.url = "http://" + query.url
@@ -63,14 +82,7 @@ def _get_results(query, follow=True):
             query.result = result
             query.result.cached = False
     else:
-        conn = get_cache_db()
-        if not query.nocache:
-            query.result = _get_cached_results(page, conn, query)
-        if not query.result:
-            query.result = page.copyvio_check(
-                min_confidence=T_SUSPECT, max_queries=10, max_time=45)
-            query.result.cached = False
-            _cache_result(page, query.result, conn)
+        query.error = "bad action"
 
 def _get_page_by_revid(site, revid):
     res = site.api_query(action="query", prop="info|revisions", revids=revid,
@@ -90,13 +102,13 @@ def _get_page_by_revid(site, revid):
     page._load_content(res)
     return page
 
-def _get_cached_results(page, conn, query):
+def _get_cached_results(page, conn, query, mode):
     query1 = """DELETE FROM cache
                 WHERE cache_time < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)"""
     query2 = """SELECT cache_url, cache_time, cache_queries, cache_process_time
                 FROM cache
                 WHERE cache_id = ? AND cache_hash = ?"""
-    shahash = sha256(page.get().encode("utf8")).hexdigest()
+    shahash = sha256(mode + page.get().encode("utf8")).hexdigest()
 
     with conn.cursor() as cursor:
         cursor.execute(query1)
@@ -129,13 +141,13 @@ def _format_date(cache_time):
         return "{0} minutes".format(diff.seconds / 60)
     return "{0} seconds".format(diff.seconds)
 
-def _cache_result(page, result, conn):
+def _cache_result(page, result, conn, mode):
     query = """INSERT INTO cache
                VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?, ?)
                ON DUPLICATE KEY UPDATE
                cache_url = ?, cache_time = CURRENT_TIMESTAMP,
                cache_queries = ?, cache_process_time = ?"""
-    shahash = sha256(page.get().encode("utf8")).hexdigest()
+    shahash = sha256(mode + page.get().encode("utf8")).hexdigest()
     args = (page.pageid, shahash, result.url, result.queries, result.time,
             result.url, result.queries, result.time)
     with conn.cursor() as cursor:

@@ -10,6 +10,10 @@
         <div id="info-box" class="red-box">
             <p>Unknown action: <b><span class="mono">${query.action | h}</span></b>.</p>
         </div>
+    % elif query.error == "no search method":
+        <div id="info-box" class="red-box">
+            <p>No copyvio search methods were selected. A check can only be made using a search engine, links present in the page, or both.</p>
+        </div>
     % elif query.error == "no URL":
         <div id="info-box" class="red-box">
             <p>URL comparison mode requires a URL to be entered. Enter one in the text box below, or choose copyvio search mode to look for content similar to the article elsewhere on the web.</p>
@@ -101,9 +105,9 @@
                         </td>
                         <td id="cv-inner-col2"><label for="action-search">Copyvio&nbsp;search:</label></td>
                         <td id="cv-inner-col3">
-                            <input id="cv-cb-engine" type="checkbox" name="use_engine" value="1" ${'checked="checked"' if (query.use_engine or not query.submitted) else ""} />
+                            <input id="cv-cb-engine" type="checkbox" name="use_engine" value="1" ${'checked="checked"' if (query.use_engine != "") else ""} />
                             <label for"cv-cb-engine">Use&nbsp;search&nbsp;engine</label>
-                            <input id="cv-cb-links" type="checkbox" name="use_links" value="1" ${'checked="checked"' if (query.use_links or not query.submitted) else ""} />
+                            <input id="cv-cb-links" type="checkbox" name="use_links" value="1" ${'checked="checked"' if (query.use_links != "") else ""} />
                             <label for="cv-cb-links">Use&nbsp;links&nbsp;in&nbsp;page</label>
                         </td>
                     </tr>

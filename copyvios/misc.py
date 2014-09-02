@@ -15,10 +15,12 @@ class Query(object):
     def __init__(self, method="GET"):
         self.query = {}
         if method == "GET":
-            parsed = parse_qs(request.environ["QUERY_STRING"])
+            parsed = parse_qs(request.environ["QUERY_STRING"],
+                              keep_blank_values=True)
         elif method == "POST":
             size = int(request.environ.get("CONTENT_LENGTH", 0))
-            parsed = parse_qs(request.environ["wsgi.input"].read(size))
+            parsed = parse_qs(request.environ["wsgi.input"].read(size),
+                              keep_blank_values=True)
         else:
             parsed = {}
         for key, value in parsed.iteritems():

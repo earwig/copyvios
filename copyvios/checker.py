@@ -56,8 +56,11 @@ def _get_results(query, follow=True):
         query.action = "compare" if query.url else "search"
     if query.action == "search":
         conn = get_cache_db()
-        use_engine = 1 if query.use_engine else 0
-        use_links = 1 if query.use_links else 0
+        use_engine = 1 if query.use_engine != "" else 0
+        use_links = 1 if query.use_links != "" else 0
+        if not use_engine and not use_links:
+            query.error = "no search method"
+            return
         mode = "{0}:{1}:".format(use_engine, use_links)
         if not query.nocache:
             query.result = _get_cached_results(page, conn, query, mode)

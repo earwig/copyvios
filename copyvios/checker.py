@@ -129,7 +129,7 @@ def _get_cached_results(page, conn, query, mode):
 
 def _do_copyvio_compare(query, page, url):
     result = page.copyvio_compare(url, min_confidence=T_SUSPECT, max_time=30)
-    if url and result.source_chain is not EMPTY:
+    if not url or result.source_chain is not EMPTY:
         return result
     query.error = "timeout" if result.time > 30 else "no data"
 

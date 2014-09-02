@@ -101,9 +101,9 @@
                         </td>
                         <td id="cv-inner-col2"><label for="action-search">Copyvio&nbsp;search:</label></td>
                         <td id="cv-inner-col3">
-                            <input id="cv-cb-engine" type="checkbox" name="use_engine" value="1" ${'checked="checked"' if query.use_engine or not query.submitted} />
+                            <input id="cv-cb-engine" type="checkbox" name="use_engine" value="1" ${'checked="checked"' if (query.use_engine or not query.submitted) else ""} />
                             <label for"cv-cb-engine">Use&nbsp;search&nbsp;engine</label>
-                            <input id="cv-cb-links" type="checkbox" name="use_links" value="1" ${'checked="checked"' if query.use_links or not query.submitted} />
+                            <input id="cv-cb-links" type="checkbox" name="use_links" value="1" ${'checked="checked"' if (query.use_links or not query.submitted) else ""} />
                             <label for="cv-cb-links">Use&nbsp;links&nbsp;in&nbsp;page</label>
                         </td>
                     </tr>

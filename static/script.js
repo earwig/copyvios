@@ -93,10 +93,12 @@ $(document).ready(function() {
         $("#cv-cb-engine").prop("disabled", false);
         $("#cv-cb-links").prop("disabled", false);
         $("#url-box").prop("disabled", true);
-    }).change();
+    });
     $("#action-compare").change(function() {
         $("#cv-cb-engine").prop("disabled", true);
         $("#cv-cb-links").prop("disabled", true);
         $("#url-box").prop("disabled", false);
     });
+    if ($("#action-search" ).is(":checked")) $("#action-search" ).change();
+    if ($("#action-compare").is(":checked")) $("#action-compare").change();
 });

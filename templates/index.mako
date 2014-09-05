@@ -163,15 +163,15 @@
             % endif
         </h2>
     </div>
+    % if result.action == "search":
+    <ul id="cv-result-sources" style="display: none;">
+        % for source in result.sources:
+            <li><a href="${source.url | h}">${source.url | h}</a>: ${round(source.confidence * 100, 1)}</li>
+        % endfor
+    </ul>
+    % endif
     <ul id="cv-result-list">
-        % if result.confidence < T_POSSIBLE and query.action == "search":
-            % if result.url:
-                <li>Best match: <a href="${result.url | h}">${result.url | urlstrip, h}</a>.</li>
-            % else:
-                <li>No matches found.</li>
-            % endif
-        % endif
-        % if result.url:
+        % if result.action == "compare":
             <li><b><span class="mono">${round(result.confidence * 100, 1)}%</span></b> confidence of a violation.</li>
         % endif
         % if query.redirected_from:

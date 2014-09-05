@@ -165,14 +165,14 @@
     </div>
     <% skips = False %>
     % if query.action == "search":
-        <table id="cv-result-sources" style="display: none;">
+        <table id="cv-result-sources">
             <tr>
                 <th>URL</th>
                 <th>Confidence</th>
             </tr>
             % for source in result.sources:
                 <tr>
-                    <td><a href="${source.url | h}">${source.url | h}</a> (<a href="${request.url | httpsfix, h}&amp;action=compare&amp;url=${source.url | u}">compare</a>)</td>
+                    <td><a href="${source.url | h}">${source.url | h}</a> (<a class="source-compare" href="${request.url | httpsfix, h}&amp;action=compare&amp;url=${source.url | u}">compare</a>)</td>
                     % if source.skipped:
                         <% skips = True %>
                         <td><span class="source-skipped">Skipped</span></td>

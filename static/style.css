@@ -67,6 +67,15 @@ table#cv-form-inner {
     border-spacing: 0;
 }
 
+table#cv-result-sources {
+    width: 100%;
+    background-color: #EEE;
+}
+
+table#cv-result-sources th {
+    text-align: center;
+}
+
 table#cv-chain-table {
     width: 100%;
     margin-bottom: 10px;
@@ -203,6 +212,12 @@ span.mono   { font-family: monospace; }
 span.light  { color: #CCC; }
 span.medium { color: #AAA; }
 
+span.source-confidence { font-weight: bold; }
+span.source-suspect    { color: #F77; }
+span.source-possible   { color: #EE5; }
+span.source-novio      { color: #7F7; }
+span.source-skipped    { font-style: italic; }
+
 a:link    { color: #373; text-decoration: none; }
 a:visited { color: #373; text-decoration: none; }
 a:hover   { color: #040; text-decoration: underline; }
@@ -221,3 +236,5 @@ a:active#a-settings  { color: #666; }
 a:active#cv-cached     { color: #040; text-decoration: none; }
 a:hover#cv-cached      { text-decoration: none; }
 a:hover#cv-cached span { display: block; }
+
+a.source-compare { font-weight: bold; }

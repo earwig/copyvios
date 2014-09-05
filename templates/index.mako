@@ -163,12 +163,25 @@
             % endif
         </h2>
     </div>
+    <% skips = False %>
     % if query.action == "search":
-    <ul id="cv-result-sources" style="display: none;">
-        % for source in result.sources:
-            <li><a href="${source.url | h}">${source.url | h}</a>: ${round(source.confidence * 100, 1)}</li>
-        % endfor
-    </ul>
+        <table id="cv-result-sources" style="display: none;">
+            <tr>
+                <th>URL</th>
+                <th>Confidence</th>
+            </tr>
+            % for source in result.sources:
+                <tr>
+                    <td><a href="${source.url | h}">${source.url | h}</a> (<a href="${request.url | httpsfix, h}&amp;action=compare&amp;url=${source.url | u}">compare</a>)</td>
+                    % if source.skipped:
+                        <% skips = True %>
+                        <td><span class="source-skipped">Skipped</span></td>
+                    % else:
+                        <td><span class="source-confidence ${"source-suspect" if source.confidence >= T_SUSPECT else "source-possible" if source.confidence >= T_POSSIBLE else "source-novio"}">${round(source.confidence * 100, 1)}%</span></td>
+                    % endif
+                </tr>
+            % endfor
+        </table>
     % endif
     <ul id="cv-result-list">
         % if query.action == "compare":
@@ -176,6 +189,9 @@
         % endif
         % if query.redirected_from:
             <li>Redirected from <a href="${query.redirected_from.url}">${query.redirected_from.title | h}</a>. <a href="${request.url | httpsfix, h}&amp;noredirect=1">Check the original page.</a></li>
+        % endif
+        % if skips:
+            <li>Since a suspected source was found with a high confidence value, some URLs were skipped. <a href="javascript:alert('Not implemented yet!');">Check all URLs.</a></li>
         % endif
         % if result.cached:
             <li>Results are <a id="cv-cached" href="#">cached<span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URLs of the checked sources, but neither their content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span></a> from <abbr title="${result.cache_time}">${result.cache_age} ago</abbr>. Originally generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries. <a href="${request.url | httpsfix, h}&amp;nocache=1">Bypass the cache.</a></li>

@@ -73,7 +73,7 @@ table#cv-result-sources {
 }
 
 table#cv-result-sources th {
-    text-align: center;
+    text-align: left;
 }
 
 table#cv-result-sources tr:nth-child(even) {
@@ -240,5 +240,3 @@ a:active#a-settings  { color: #666; }
 a:active#cv-cached     { color: #040; text-decoration: none; }
 a:hover#cv-cached      { text-decoration: none; }
 a:hover#cv-cached span { display: block; }
-
-a.source-compare { font-weight: bold; }

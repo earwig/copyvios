@@ -76,6 +76,10 @@ table#cv-result-sources th {
     text-align: center;
 }
 
+table#cv-result-sources tr:nth-child(even) {
+    background-color: #F0F0F0;
+}
+
 table#cv-chain-table {
     width: 100%;
     margin-bottom: 10px;
@@ -213,9 +217,9 @@ span.light  { color: #CCC; }
 span.medium { color: #AAA; }
 
 span.source-confidence { font-weight: bold; }
-span.source-suspect    { color: #F77; }
-span.source-possible   { color: #EE5; }
-span.source-novio      { color: #7F7; }
+span.source-suspect    { color: #900; }
+span.source-possible   { color: #990; }
+span.source-novio      { color: #090; }
 span.source-skipped    { font-style: italic; }
 
 a:link    { color: #373; text-decoration: none; }

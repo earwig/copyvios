@@ -168,11 +168,13 @@
         <table id="cv-result-sources">
             <tr>
                 <th>URL</th>
+                <th>Compare</th>
                 <th>Confidence</th>
             </tr>
             % for source in result.sources:
                 <tr>
-                    <td><a href="${source.url | h}">${source.url | h}</a> (<a class="source-compare" href="${request.url | httpsfix, h}&amp;action=compare&amp;url=${source.url | u}">compare</a>)</td>
+                    <td><a href="${source.url | h}">${source.url | h}</a></td>
+                    <td><a class="source-compare" href="${request.url | httpsfix, h}&amp;action=compare&amp;url=${source.url | u}">Compare</a></td>
                     % if source.skipped:
                         <% skips = True %>
                         <td><span class="source-skipped">Skipped</span></td>

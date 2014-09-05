@@ -190,9 +190,6 @@
         % else:
             <li>Results generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries.</li>
         % endif
-        % if result.queries:
-            <li><i>Fun fact:</i> The Wikimedia Foundation paid Yahoo! Inc. <a href="http://info.yahoo.com/legal/us/yahoo/search/bosspricing/details.html">$${result.queries * 0.0008} USD</a> for these results.</li>
-        % endif
         <li><a id="cv-chain-link" href="#cv-chain-table" onclick="copyvio_toggle_details()">${"Show" if hide_comparison else "Hide"} comparison:</a></li>
     </ul>
     <table id="cv-chain-table" style="display: ${'none' if hide_comparison else 'table'};">

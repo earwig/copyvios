@@ -65,11 +65,12 @@ def _get_results(query, follow=True):
             return
         mode = "{0}:{1}:".format(use_engine, use_links)
         if not query.nocache:
-            query.result = _get_cached_results(page, conn, mode)
+            query.result = _get_cached_results(page, conn, mode, query.noskip)
         if not query.result:
             query.result = page.copyvio_check(
                 min_confidence=T_SUSPECT, max_queries=10, max_time=45,
-                no_searches=not use_engine, no_links=not use_links)
+                no_searches=not use_engine, no_links=not use_links,
+                short_circuit=not query.noskip)
             query.result.cached = False
             _cache_result(page, query.result, conn, mode)
     elif query.action == "compare":
@@ -110,7 +111,7 @@ def _get_page_by_revid(site, revid):
     page._load_content(res)
     return page
 
-def _get_cached_results(page, conn, mode):
+def _get_cached_results(page, conn, mode, noskip):
     query1 = """DELETE FROM cache
                 WHERE cache_time < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)"""
     query2 = """SELECT cache_time, cache_queries, cache_process_time
@@ -147,6 +148,8 @@ def _get_cached_results(page, conn, mode):
         return None
 
     for url, confidence, skipped in data:
+        if noskip and skipped:
+            return None
         source = CopyvioSource(None, url)
         source.confidence = confidence
         source.skipped = bool(skipped)

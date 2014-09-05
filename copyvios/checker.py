@@ -5,7 +5,9 @@ from hashlib import sha256
 from urlparse import urlparse
 
 from earwigbot import exceptions
-from earwigbot.wiki.copyvios.markov import EMPTY
+from earwigbot.wiki.copyvios.markov import EMPTY, MarkovChain
+from earwigbot.wiki.copyvios.parsers import ArticleTextParser
+from earwigbot.wiki.copyvios.result import CopyvioSource, CopyvioCheckResult
 
 from .misc import Query, get_cache_db
 from .sites import get_site, get_sites
@@ -63,7 +65,7 @@ def _get_results(query, follow=True):
             return
         mode = "{0}:{1}:".format(use_engine, use_links)
         if not query.nocache:
-            query.result = _get_cached_results(page, conn, query, mode)
+            query.result = _get_cached_results(page, conn, mode)
         if not query.result:
             query.result = page.copyvio_check(
                 min_confidence=T_SUSPECT, max_queries=10, max_time=45,
@@ -80,10 +82,13 @@ def _get_results(query, follow=True):
         elif scheme not in ["http", "https"]:
             query.error = "bad URI"
             return
-        result = _do_copyvio_compare(query, page, query.url)
-        if result:
-            query.result = result
-            query.result.cached = False
+        result = page.copyvio_compare(query.url, min_confidence=T_SUSPECT,
+                                      max_time=30)
+        if result.best.chains[0] is EMPTY:
+            query.error = "timeout" if result.time > 30 else "no data"
+            return
+        query.result = result
+        query.result.cached = False
     else:
         query.error = "bad action"
 
@@ -105,36 +110,53 @@ def _get_page_by_revid(site, revid):
     page._load_content(res)
     return page
 
-def _get_cached_results(page, conn, query, mode):
+def _get_cached_results(page, conn, mode):
     query1 = """DELETE FROM cache
                 WHERE cache_time < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)"""
-    query2 = """SELECT cache_url, cache_time, cache_queries, cache_process_time
+    query2 = """SELECT cache_time, cache_queries, cache_process_time
                 FROM cache
-                WHERE cache_id = ? AND cache_hash = ?"""
-    shahash = sha256(mode + page.get().encode("utf8")).hexdigest()
+                WHERE cache_id = ?"""
+    query3 = """SELECT cdata_url, cdata_confidence, cdata_skipped
+                FROM cache_data
+                WHERE cdata_cache_id = ?"""
+    cache_id = sha256(mode + page.get().encode("utf8")).digest()
 
     with conn.cursor() as cursor:
         cursor.execute(query1)
-        cursor.execute(query2, (page.pageid, shahash))
+        cursor.execute(query2, (cache_id,))
         results = cursor.fetchall()
         if not results:
             return None
+        cache_time, queries, check_time = results[0]
+        cursor.execute(query3, (cache_id,))
+        data = cursor.fetchall()
 
-    url, cache_time, num_queries, original_time = results[0]
-    result = _do_copyvio_compare(query, page, url)
-    if result:
+    if not data:  # TODO: do something less hacky for this edge case
+        artchain = MarkovChain(ArticleTextParser(page.get()).strip())
+        result = CopyvioCheckResult(False, [], queries, check_time, artchain)
         result.cached = True
-        result.queries = num_queries
-        result.original_time = original_time
         result.cache_time = cache_time.strftime("%b %d, %Y %H:%M:%S UTC")
         result.cache_age = _format_date(cache_time)
-    return result
-
-def _do_copyvio_compare(query, page, url):
-    result = page.copyvio_compare(url, min_confidence=T_SUSPECT, max_time=30)
-    if not url or result.source_chain is not EMPTY:
         return result
-    query.error = "timeout" if result.time > 30 else "no data"
+
+    url, confidence, skipped = data.pop(0)
+    if skipped:  # Should be impossible: data must be bad; run a new check
+        return None
+    result = page.copyvio_compare(url, min_confidence=T_SUSPECT, max_time=30)
+    if result.confidence != confidence:
+        return None
+
+    for url, confidence, skipped in data:
+        source = CopyvioSource(None, url)
+        source.confidence = confidence
+        source.skipped = skipped
+        result.sources.append(source)
+    result.queries = queries
+    result.time = check_time
+    result.cached = True
+    result.cache_time = cache_time.strftime("%b %d, %Y %H:%M:%S UTC")
+    result.cache_age = _format_date(cache_time)
+    return result
 
 def _format_date(cache_time):
     diff = datetime.utcnow() - cache_time
@@ -145,13 +167,15 @@ def _format_date(cache_time):
     return "{0} seconds".format(diff.seconds)
 
 def _cache_result(page, result, conn, mode):
-    query = """INSERT INTO cache
-               VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?, ?)
-               ON DUPLICATE KEY UPDATE
-               cache_url = ?, cache_time = CURRENT_TIMESTAMP,
-               cache_queries = ?, cache_process_time = ?"""
-    shahash = sha256(mode + page.get().encode("utf8")).hexdigest()
-    args = (page.pageid, shahash, result.url, result.queries, result.time,
-            result.url, result.queries, result.time)
+    query1 = "DELETE FROM cache WHERE cache_id = ?"
+    query2 = "INSERT INTO cache VALUES (?, DEFAULT, ?, ?)"
+    query3 = "INSERT INTO cache_data VALUES (DEFAULT, ?, ?, ?, ?)"
+    cache_id = sha256(mode + page.get().encode("utf8")).digest()
+    data = [(cache_id, source.url, source.confidence, source.skipped)
+            for source in result.sources]
     with conn.cursor() as cursor:
-        cursor.execute(query, args)
+        cursor.execute("START TRANSACTION")
+        cursor.execute(query1, (cache_id,))
+        cursor.execute(query2, (cache_id, result.queries, result.time))
+        cursor.executemany(query3, data)
+        cursor.execute("COMMIT")

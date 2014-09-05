@@ -2,14 +2,17 @@
 
 from re import sub, UNICODE
 
+from earwigbot.wiki.copyvios.markov import EMPTY_INTERSECTION
 from markupsafe import escape
 
 __all__ = ["highlight_delta"]
 
-def highlight_delta(context, chain, delta):
+def highlight_delta(context, chain, delta=None):
     degree = chain.degree - 1
     highlights = [False] * degree
     block = [chain.START] * degree
+    if not delta:
+        delta = EMPTY_INTERSECTION
     for word in chain.text.split() + ([chain.END] * degree):
         word = _strip_word(chain, word)
         tblock = tuple(block)

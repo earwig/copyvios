@@ -178,15 +178,7 @@
             <li>Redirected from <a href="${query.redirected_from.url}">${query.redirected_from.title | h}</a>. <a href="${request.url | httpsfix, h}&amp;noredirect=1">Check the original page.</a></li>
         % endif
         % if result.cached:
-            <li>
-                Results are <a id="cv-cached" href="#">cached<span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URL of the "violated" source, but neither its content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span></a> from <abbr title="${result.cache_time}">${result.cache_age} ago</abbr>. Retrieved in <span class="mono">${round(result.time, 3)}</span> seconds (originally generated in
-                % if result.queries:
-                    <span class="mono">${round(result.original_time, 3)}</span>s using <span class="mono">${result.queries}</span> queries).
-                % else:
-                    <span class="mono">${round(result.original_time, 3)}</span>s).
-                % endif
-                <a href="${request.url | httpsfix, h}&amp;nocache=1">Bypass the cache.</a>
-            </li>
+            <li>Results are <a id="cv-cached" href="#">cached<span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URLs of the checked sources, but neither their content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span></a> from <abbr title="${result.cache_time}">${result.cache_age} ago</abbr>. Originally generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries. <a href="${request.url | httpsfix, h}&amp;nocache=1">Bypass the cache.</a></li>
         % else:
             <li>Results generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries.</li>
         % endif
@@ -194,8 +186,8 @@
     </ul>
     <table id="cv-chain-table" style="display: ${'none' if hide_comparison else 'table'};">
         <tr>
-            <td class="cv-chain-cell">Article: <div class="cv-chain-detail"><p>${highlight_delta(result.article_chain, result.delta_chain)}</p></div></td>
-            <td class="cv-chain-cell">Source: <div class="cv-chain-detail"><p>${highlight_delta(result.source_chain, result.delta_chain)}</p></div></td>
+            <td class="cv-chain-cell">Article: <div class="cv-chain-detail"><p>${highlight_delta(result.article_chain, result.best.chains[1] if result.best else None)}</p></div></td>
+            <td class="cv-chain-cell">Source: <div class="cv-chain-detail"><p>${highlight_delta(result.best.chains[0], result.best.chains[1]) if result.best else ""}</p></div></td>
         </tr>
     </table>
 % endif

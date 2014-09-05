@@ -119,16 +119,16 @@ def _get_cached_results(page, conn, mode):
     query3 = """SELECT cdata_url, cdata_confidence, cdata_skipped
                 FROM cache_data
                 WHERE cdata_cache_id = ?"""
-    cache_id = sha256(mode + page.get().encode("utf8")).digest()
+    cache_id = buffer(sha256(mode + page.get().encode("utf8")).digest())
 
     with conn.cursor() as cursor:
         cursor.execute(query1)
-        cursor.execute(query2, (buffer(cache_id),))
+        cursor.execute(query2, (cache_id,))
         results = cursor.fetchall()
         if not results:
             return None
         cache_time, queries, check_time = results[0]
-        cursor.execute(query3, (buffer(cache_id),))
+        cursor.execute(query3, (cache_id,))
         data = cursor.fetchall()
 
     if not data:  # TODO: do something less hacky for this edge case
@@ -143,13 +143,13 @@ def _get_cached_results(page, conn, mode):
     if skipped:  # Should be impossible: data must be bad; run a new check
         return None
     result = page.copyvio_compare(url, min_confidence=T_SUSPECT, max_time=30)
-    if result.confidence != confidence:
+    if result.confidence - confidence < 0.0001:
         return None
 
     for url, confidence, skipped in data:
         source = CopyvioSource(None, url)
         source.confidence = confidence
-        source.skipped = skipped
+        source.skipped = bool(skipped)
         result.sources.append(source)
     result.queries = queries
     result.time = check_time
@@ -170,12 +170,12 @@ def _cache_result(page, result, conn, mode):
     query1 = "DELETE FROM cache WHERE cache_id = ?"
     query2 = "INSERT INTO cache VALUES (?, DEFAULT, ?, ?)"
     query3 = "INSERT INTO cache_data VALUES (DEFAULT, ?, ?, ?, ?)"
-    cache_id = sha256(mode + page.get().encode("utf8")).digest()
-    data = [(buffer(cache_id), source.url, source.confidence, source.skipped)
+    cache_id = buffer(sha256(mode + page.get().encode("utf8")).digest())
+    data = [(cache_id, source.url, source.confidence, source.skipped)
             for source in result.sources]
     with conn.cursor() as cursor:
         cursor.execute("START TRANSACTION")
-        cursor.execute(query1, (buffer(cache_id),))
-        cursor.execute(query2, (buffer(cache_id), result.queries, result.time))
+        cursor.execute(query1, (cache_id,))
+        cursor.execute(query2, (cache_id, result.queries, result.time))
         cursor.executemany(query3, data)
         cursor.execute("COMMIT")

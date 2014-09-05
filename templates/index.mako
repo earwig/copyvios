@@ -163,7 +163,7 @@
             % endif
         </h2>
     </div>
-    % if result.action == "search":
+    % if query.action == "search":
     <ul id="cv-result-sources" style="display: none;">
         % for source in result.sources:
             <li><a href="${source.url | h}">${source.url | h}</a>: ${round(source.confidence * 100, 1)}</li>
@@ -171,7 +171,7 @@
     </ul>
     % endif
     <ul id="cv-result-list">
-        % if result.action == "compare":
+        % if query.action == "compare":
             <li><b><span class="mono">${round(result.confidence * 100, 1)}%</span></b> confidence of a violation.</li>
         % endif
         % if query.redirected_from:
@@ -179,7 +179,7 @@
         % endif
         % if result.cached:
             <li>Results are <a id="cv-cached" href="#">cached<span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URLs of the checked sources, but neither their content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span></a> from <abbr title="${result.cache_time}">${result.cache_age} ago</abbr>. Originally generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries. <a href="${request.url | httpsfix, h}&amp;nocache=1">Bypass the cache.</a></li>
-        % elif result.action == "compare":
+        % elif query.action == "compare":
             <li>Results generated in <span class="mono">${round(result.time, 3)}</span> seconds.</li>
         % else:
             <li>Results generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries.</li>

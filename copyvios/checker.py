@@ -143,7 +143,7 @@ def _get_cached_results(page, conn, mode):
     if skipped:  # Should be impossible: data must be bad; run a new check
         return None
     result = page.copyvio_compare(url, min_confidence=T_SUSPECT, max_time=30)
-    if result.confidence - confidence < 0.0001:
+    if abs(result.confidence - confidence) < 0.0001:
         return None
 
     for url, confidence, skipped in data:

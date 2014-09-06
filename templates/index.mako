@@ -165,6 +165,7 @@
     <% skips = False %>
     % if query.action == "search":
         <div id="sources-container">
+            <div id="sources-title">Checked Sources</div>
             <table id="cv-result-sources">
                 <tr>
                     <th>URL</th>
@@ -172,7 +173,7 @@
                     <th>Compare</th>
                 </tr>
                 % for i, source in enumerate(result.sources):
-                    <tr ${'class="source-default-hidden"' if i >= 10 else ""}>
+                    <tr ${'class="source-default-hidden"' if i >= 10 else 'id="source-row-selected"' if i == 0 else ""}>
                         <td><a ${'id="source-selected"' if i == 0 else ""} href="${source.url | h}">${source.url | h}</a></td>
                         <td>
                             % if source.skipped:

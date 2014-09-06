@@ -61,6 +61,12 @@ div#sources-container {
     border: 1px solid #BBB;
 }
 
+div#sources-title {
+    margin-bottom: -5px;
+    text-align: center;
+    font-weight: bold;
+}
+
 div#cv-additional {
     padding-bottom: 5px;
     display: none;
@@ -88,6 +94,10 @@ table#cv-result-sources th {
     text-align: left;
 }
 
+table#cv-result-sources th:nth-child(2) {
+    padding-right: 4px;
+}
+
 table#cv-result-sources tr:nth-child(even) {
     background-color: #E0E0E0;
 }
@@ -96,6 +106,10 @@ table#cv-chain-table {
     width: 100%;
     margin-bottom: 10px;
     border-spacing: 10px 0;
+}
+
+tr#source-row-selected {
+    background-color: #CFCFCF;
 }
 
 td#head-settings {

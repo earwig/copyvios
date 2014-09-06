@@ -145,7 +145,6 @@
     </table>
 </form>
 % if result:
-    <% hide_comparison = "CopyviosHideComparison" in g.cookies and g.cookies["CopyviosHideComparison"].value == "True" %>
     <div id="cv-result" class="${'red' if result.confidence >= T_SUSPECT else 'yellow' if result.confidence >= T_POSSIBLE else 'green'}-box">
         <h2 id="cv-result-header">
             % if result.confidence >= T_POSSIBLE:
@@ -169,25 +168,33 @@
             <table id="cv-result-sources">
                 <tr>
                     <th>URL</th>
-                    <th>Compare</th>
                     <th>Confidence</th>
+                    <th>Compare</th>
                 </tr>
                 % for i, source in enumerate(result.sources):
                     <tr ${'class="source-default-hidden"' if i >= 10 else ""}>
-                        <td><a href="${source.url | h}">${source.url | h}</a></td>
-                        <td><a href="${request.url | httpsfix, h}&amp;action=compare&amp;url=${source.url | u}">Compare</a></td>
-                        % if source.skipped:
-                            <% skips = True %>
-                            <td><span class="source-skipped">Skipped</span></td>
-                        % else:
-                            <td><span class="source-confidence ${"source-suspect" if source.confidence >= T_SUSPECT else "source-possible" if source.confidence >= T_POSSIBLE else "source-novio"}">${round(source.confidence * 100, 1)}%</span></td>
-                        % endif
+                        <td><a ${'id="source-selected"' if i == 0 else ""} href="${source.url | h}">${source.url | h}</a></td>
+                        <td>
+                            % if source.skipped:
+                                <% skips = True %>
+                                <span class="source-skipped">Skipped</span>
+                            % else:
+                                <span class="source-confidence ${"source-suspect" if source.confidence >= T_SUSPECT else "source-possible" if source.confidence >= T_POSSIBLE else "source-novio"}">${round(source.confidence * 100, 1)}%</span>
+                            % endif
+                        </td>
+                        <td>
+                            % if i == 0:
+                                <a href="#cv-chain-table">Compare</a>
+                            % else:
+                                <a href="${request.url | httpsfix, h}&amp;action=compare&amp;url=${source.url | u}">Compare</a>
+                            % endif
+                        </td>
                     </tr>
                 % endfor
             </table>
             % if len(result.sources) > 10:
                 <div id="cv-additional">
-                    ${len(result.sources) - 10} URL${"s" if len(result.sources) > 11 else ""} with lower confidence hidden. <a id="show-additional-sources" href="#">Show them.</a>
+                    <span id="cv-additional-text">${len(result.sources) - 10} URL${"s" if len(result.sources) > 11 else ""} with lower confidence hidden.</span> <a id="show-additional-sources" href="#">Show them.</a>
                 </div>
             % endif
         </div>
@@ -209,9 +216,8 @@
         % else:
             <li>Results generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries.</li>
         % endif
-        <li><a id="cv-chain-link" href="#cv-chain-table" onclick="copyvio_toggle_details()">${"Show" if hide_comparison else "Hide"} comparison:</a></li>
     </ul>
-    <table id="cv-chain-table" style="display: ${'none' if hide_comparison else 'table'};">
+    <table id="cv-chain-table">
         <tr>
             <td class="cv-chain-cell">Article: <div class="cv-chain-detail"><p>${highlight_delta(result.article_chain, result.best.chains[1] if result.best else None)}</p></div></td>
             <td class="cv-chain-cell">Source: <div class="cv-chain-detail"><p>${highlight_delta(result.best.chains[0], result.best.chains[1]) if result.best else ""}</p></div></td>

@@ -70,7 +70,7 @@
 <h2>Cookies</h2>
 % if g.cookies:
     <table>
-    <% cookie_order = ["CopyviosDefaultProject", "CopyviosDefaultLang", "CopyviosBackground", "CopyviosHideComparison", "CopyviosScreenCache"] %>\
+    <% cookie_order = ["CopyviosDefaultProject", "CopyviosDefaultLang", "CopyviosBackground", "CopyviosScreenCache"] %>\
     % for key in [key for key in cookie_order if key in g.cookies]:
         <% cookie = g.cookies[key] %>\
         <tr>

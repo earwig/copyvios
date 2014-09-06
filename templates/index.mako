@@ -165,25 +165,32 @@
     </div>
     <% skips = False %>
     % if query.action == "search":
-        <table id="cv-result-sources">
-            <tr>
-                <th>URL</th>
-                <th>Compare</th>
-                <th>Confidence</th>
-            </tr>
-            % for source in result.sources:
+        <div id="sources-container">
+            <table id="cv-result-sources">
                 <tr>
-                    <td><a href="${source.url | h}">${source.url | h}</a></td>
-                    <td><a href="${request.url | httpsfix, h}&amp;action=compare&amp;url=${source.url | u}">Compare</a></td>
-                    % if source.skipped:
-                        <% skips = True %>
-                        <td><span class="source-skipped">Skipped</span></td>
-                    % else:
-                        <td><span class="source-confidence ${"source-suspect" if source.confidence >= T_SUSPECT else "source-possible" if source.confidence >= T_POSSIBLE else "source-novio"}">${round(source.confidence * 100, 1)}%</span></td>
-                    % endif
+                    <th>URL</th>
+                    <th>Compare</th>
+                    <th>Confidence</th>
                 </tr>
-            % endfor
-        </table>
+                % for i, source in enumerate(result.sources):
+                    <tr ${'class="source-default-hidden"' if i >= 10 else ""}>
+                        <td><a href="${source.url | h}">${source.url | h}</a></td>
+                        <td><a href="${request.url | httpsfix, h}&amp;action=compare&amp;url=${source.url | u}">Compare</a></td>
+                        % if source.skipped:
+                            <% skips = True %>
+                            <td><span class="source-skipped">Skipped</span></td>
+                        % else:
+                            <td><span class="source-confidence ${"source-suspect" if source.confidence >= T_SUSPECT else "source-possible" if source.confidence >= T_POSSIBLE else "source-novio"}">${round(source.confidence * 100, 1)}%</span></td>
+                        % endif
+                    </tr>
+                % endfor
+            </table>
+            % if len(result.sources) > 10:
+                <div id="cv-additional">
+                    ${len(result.sources) - 10} additional sources hidden. <a id="show-additional-sources" href="#">Show them.</a>
+                </p>
+            % endif
+        </div>
     % endif
     <ul id="cv-result-list">
         % if query.action == "compare":

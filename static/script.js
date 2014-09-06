@@ -109,4 +109,14 @@ $(document).ready(function() {
                 $(".cv-search[type='hidden'][name='use_links'").prop("disabled", true);
         }
     });
+
+    if ($("#cv-additional").length) {
+        $("#cv-additional").css("display", "block");
+        $(".source-default-hidden").css("display", "none");
+        $("#show-additional-sources").click(function() {
+            $(".source-default-hidden").css("display", "");
+            $("#cv-additional").css("display", "none");
+            return false;
+        });
+    }
 });

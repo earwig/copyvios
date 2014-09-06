@@ -166,36 +166,42 @@
     % if query.action == "search":
         <div id="sources-container">
             <div id="sources-title">Checked Sources</div>
-            <table id="cv-result-sources">
-                <tr>
-                    <th>URL</th>
-                    <th>Confidence</th>
-                    <th>Compare</th>
-                </tr>
-                % for i, source in enumerate(result.sources):
-                    <tr ${'class="source-default-hidden"' if i >= 10 else 'id="source-row-selected"' if i == 0 else ""}>
-                        <td><a ${'id="source-selected"' if i == 0 else ""} href="${source.url | h}">${source.url | h}</a></td>
-                        <td>
-                            % if source.skipped:
-                                <% skips = True %>
-                                <span class="source-skipped">Skipped</span>
-                            % else:
-                                <span class="source-confidence ${"source-suspect" if source.confidence >= T_SUSPECT else "source-possible" if source.confidence >= T_POSSIBLE else "source-novio"}">${round(source.confidence * 100, 1)}%</span>
-                            % endif
-                        </td>
-                        <td>
-                            % if i == 0:
-                                <a href="#cv-chain-table">Compare</a>
-                            % else:
-                                <a href="${request.url | httpsfix, h}&amp;action=compare&amp;url=${source.url | u}">Compare</a>
-                            % endif
-                        </td>
+            % if result.sources:
+                <table id="cv-result-sources">
+                    <tr>
+                        <th>URL</th>
+                        <th>Confidence</th>
+                        <th>Compare</th>
                     </tr>
-                % endfor
-            </table>
+                    % for i, source in enumerate(result.sources):
+                        <tr ${'class="source-default-hidden"' if i >= 10 else 'id="source-row-selected"' if i == 0 else ""}>
+                            <td><a ${'id="source-selected"' if i == 0 else ""} href="${source.url | h}">${source.url | h}</a></td>
+                            <td>
+                                % if source.skipped:
+                                    <% skips = True %>
+                                    <span class="source-skipped">Skipped</span>
+                                % else:
+                                    <span class="source-confidence ${"source-suspect" if source.confidence >= T_SUSPECT else "source-possible" if source.confidence >= T_POSSIBLE else "source-novio"}">${round(source.confidence * 100, 1)}%</span>
+                                % endif
+                            </td>
+                            <td>
+                                % if i == 0:
+                                    <a href="#cv-chain-table">Compare</a>
+                                % else:
+                                    <a href="${request.url | httpsfix, h}&amp;action=compare&amp;url=${source.url | u}">Compare</a>
+                                % endif
+                            </td>
+                        </tr>
+                    % endfor
+                </table>
+            % else:
+                <div id="cv-no-sources">
+                    <span class="source-footer-text">No sources checked.</span>
+                </div>
+            % endif
             % if len(result.sources) > 10:
                 <div id="cv-additional">
-                    <span id="cv-additional-text">${len(result.sources) - 10} URL${"s" if len(result.sources) > 11 else ""} with lower confidence hidden.</span> <a id="show-additional-sources" href="#">Show them.</a>
+                    <span class="source-footer-text">${len(result.sources) - 10} URL${"s" if len(result.sources) > 11 else ""} with lower confidence hidden.</span> <a id="show-additional-sources" href="#">Show them.</a>
                 </div>
             % endif
         </div>

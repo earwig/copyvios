@@ -187,8 +187,8 @@
             </table>
             % if len(result.sources) > 10:
                 <div id="cv-additional">
-                    ${len(result.sources) - 10} additional sources hidden. <a id="show-additional-sources" href="#">Show them.</a>
-                </p>
+                    ${len(result.sources) - 10} URL${"s" if len(result.sources) > 11 else ""} with lower confidence hidden. <a id="show-additional-sources" href="#">Show them.</a>
+                </div>
             % endif
         </div>
     % endif

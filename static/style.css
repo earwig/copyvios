@@ -76,6 +76,10 @@ div#cv-additional {
     display: none;
 }
 
+div#cv-chain-container {
+    margin: 0 4px;
+}
+
 table#heading {
     width: 100%;
 }
@@ -109,7 +113,7 @@ table#cv-result-sources tr:nth-child(even) {
 table#cv-chain-table {
     width: 100%;
     margin-bottom: 10px;
-    border-spacing: 10px 0;
+    border-spacing: 0;
 }
 
 tr#source-row-selected {
@@ -206,6 +210,14 @@ div.cv-chain-detail {
 td.cv-chain-cell {
     width: 50%;
     vertical-align: top;
+}
+
+td.cv-chain-cell:first-child {
+    padding-right: 5px;
+}
+
+td.cv-chain-cell:last-child {
+    padding-left: 5px;
 }
 
 input.cv-text {

@@ -224,11 +224,13 @@
             <li>Results generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries.</li>
         % endif
     </ul>
-    <table id="cv-chain-table">
-        <tr>
-            <td class="cv-chain-cell">Article: <div class="cv-chain-detail"><p>${highlight_delta(result.article_chain, result.best.chains[1] if result.best else None)}</p></div></td>
-            <td class="cv-chain-cell">Source: <div class="cv-chain-detail"><p>${highlight_delta(result.best.chains[0], result.best.chains[1]) if result.best else ""}</p></div></td>
-        </tr>
-    </table>
+    <div id="cv-chain-container">
+        <table id="cv-chain-table">
+            <tr>
+                <td class="cv-chain-cell">Article: <div class="cv-chain-detail"><p>${highlight_delta(result.article_chain, result.best.chains[1] if result.best else None)}</p></div></td>
+                <td class="cv-chain-cell">Source: <div class="cv-chain-detail"><p>${highlight_delta(result.best.chains[0], result.best.chains[1]) if result.best else ""}</p></div></td>
+            </tr>
+        </table>
+    </div>
 % endif
 <%include file="/support/footer.mako"/>

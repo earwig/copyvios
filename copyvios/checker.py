@@ -67,10 +67,15 @@ def _get_results(query, follow=True):
         if not query.nocache:
             query.result = _get_cached_results(page, conn, mode, query.noskip)
         if not query.result:
-            query.result = page.copyvio_check(
-                min_confidence=T_SUSPECT, max_queries=10, max_time=45,
-                no_searches=not use_engine, no_links=not use_links,
-                short_circuit=not query.noskip)
+            try:
+                query.result = page.copyvio_check(
+                    min_confidence=T_SUSPECT, max_queries=10, max_time=45,
+                    no_searches=not use_engine, no_links=not use_links,
+                    short_circuit=not query.noskip)
+            except exceptions.SearchQueryError as exc:
+                query.error = "search error"
+                query.exception = exc
+                return
             query.result.cached = False
             _cache_result(page, query.result, conn, mode)
     elif query.action == "compare":

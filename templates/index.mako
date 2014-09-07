@@ -30,6 +30,10 @@
         <div id="info-box" class="red-box">
             <p>The URL <a href="${query.url | h}">${query.url | h}</a> timed out before any data could be retrieved.</p>
         </div>
+    % elif query.error == "search error"
+        <div id="info-box" class="red-box">
+            <p>An error occurred while using the search engine (${query.exception}). Try reloading the page. If the error persists, <a href="${request.url | httpsfix, h}&amp;use_engine=0">repeat the check without using the search engine</a>.</p>
+        </div>
     % elif not query.site:
         <div id="info-box" class="red-box">
             <p>The given site (project=<b><span class="mono">${query.project | h}</span></b>, language=<b><span class="mono">${query.lang | h}</span></b>) doesn't seem to exist. It may also be closed or private. <a href="//${query.lang | h}.${query.project | h}.org/">Confirm its URL.</a></p>

@@ -1,7 +1,6 @@
 # -*- coding: utf-8  -*-
 
 from os.path import expanduser
-from urlparse import parse_qs
 
 from flask import g, request
 import oursql
@@ -14,18 +13,9 @@ __all__ = ["Query", "get_globals_db", "get_cache_db", "httpsfix", "urlstrip"]
 class Query(object):
     def __init__(self, method="GET"):
         self.query = {}
-        if method == "GET":
-            parsed = parse_qs(request.environ["QUERY_STRING"])
-        elif method == "POST":
-            size = int(request.environ.get("CONTENT_LENGTH", 0))
-            parsed = parse_qs(request.environ["wsgi.input"].read(size))
-        else:
-            parsed = {}
-        for key, value in parsed.iteritems():
-            try:
-                self.query[key] = value[-1].decode("utf8")
-            except UnicodeDecodeError:
-                pass
+        data = request.form if method == "POST" else request.args
+        for key in data:
+            self.query[key] = data.getlist(key)[-1]
 
     def __getattr__(self, key):
         return self.query.get(key)

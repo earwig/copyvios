@@ -154,44 +154,42 @@
         % endif
     </div>
     <div id="cv-result" class="${'red' if result.confidence >= T_SUSPECT else 'yellow' if result.confidence >= T_POSSIBLE else 'green'}-box">
-        % if query.action == "search" and not result.sources:
-            <h2 id="cv-result-header">
-                % if query.oldid:
-                    No violations detected in <a href="${query.page.url}">${query.page.title | h}</a> @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>.
-                % else:
-                    No violations detected in <a href="${query.page.url}">${query.page.title | h}</a>.
-                % endif
-            </h2>
-        % else:
-            <table id="cv-result-head-table">
-                <tr>
-                    <td>
-                        <a href="${query.page.url}">${query.page.title | h}</a>
-                        % if query.oldid:
-                            @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>
+        <table id="cv-result-head-table">
+            <tr>
+                <td>
+                    <a href="${query.page.url}">${query.page.title | h}</a>
+                    % if query.oldid:
+                        @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>
+                    % endif
+                    % if query.redirected_from:
+                        <br />
+                        <span id="redirected-from">Redirected from <a href="//${query.site.domain | h}/w/index.php?title=${query.redirected_from.title | u}&amp;redirect=no">${query.redirected_from.title | h}</a>. <a href="${request.url | httpsfix, h}&amp;noredirect=1">Check original.</a></span>
+                    % endif
+                </td>
+                <td>
+                    <div>
+                        % if result.confidence >= T_SUSPECT:
+                            Violation&nbsp;Suspected
+                        % elif result.confidence >= T_POSSIBLE:
+                            Violation&nbsp;Possible
+                        % elif result.sources:
+                            Violation&nbsp;Unlikely
+                        % else:
+                            No&nbsp;Violation
                         % endif
-                        % if query.redirected_from:
-                            <br />
-                            <span id="redirected-from">Redirected from <a href="//${query.site.domain | h}/w/index.php?title=${query.redirected_from.title | u}&amp;redirect=no">${query.redirected_from.title | h}</a>. <a href="${request.url | httpsfix, h}&amp;noredirect=1">Check original.</a></span>
-                        % endif
-                    </td>
-                    <td>
-                        <div>
-                            % if result.confidence >= T_SUSPECT:
-                                Violation&nbsp;Suspected
-                            % elif result.confidence >= T_POSSIBLE:
-                                Violation&nbsp;Possible
-                            % else:
-                                Violation&nbsp;Unlikely
-                            % endif
-                        </div>
-                        <div>${round(result.confidence * 100, 1)}%</div>
-                        <div>confidence</div>
-                    </td>
-                    <td><a href="${result.url | h}">${result.url | urlstrip, h}</a></td>
-                </tr>
-            </table>
-        % endif
+                    </div>
+                    <div>${round(result.confidence * 100, 1)}%</div>
+                    <div>confidence</div>
+                </td>
+                <td>
+                    % if result.url:
+                        <a href="${result.url | h}">${result.url | urlstrip, h}</a>
+                    % else:
+                        <span id="result-head-no-sources">No matches found.</span>
+                    % endif
+                </td>
+            </tr>
+        </table>
     </div>
     % if query.action == "search":
         <% skips = False %>

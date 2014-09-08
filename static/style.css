@@ -193,6 +193,10 @@ span#redirected-from {
     font-style: italic;
 }
 
+span#result-head-no-sources {
+    font-style: italic;
+}
+
 a#source-selected {
     font-weight: bold;
 }

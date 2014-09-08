@@ -141,22 +141,56 @@
     </table>
 </form>
 % if result:
+    % if query.action == "compare":
+        <div id="generation-time">Results generated in <span class="mono">${round(result.time, 3)}</span> seconds.</div>
+    % endif
     <div id="cv-result" class="${'red' if result.confidence >= T_SUSPECT else 'yellow' if result.confidence >= T_POSSIBLE else 'green'}-box">
-        <h2 id="cv-result-header">
-            % if result.confidence >= T_POSSIBLE:
-                <a href="${query.page.url}">${query.page.title | h}</a>
-                % if query.oldid:
-                    @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>
-                % endif
-                is a ${"suspected" if result.confidence >= T_SUSPECT else "possible"} violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.
-            % else:
-                % if query.oldid:
-                    No violations detected in <a href="${query.page.url}">${query.page.title | h}</a> @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>.
+        % if query.action == "search":
+            <h2 id="cv-result-header">
+                % if result.confidence >= T_POSSIBLE:
+                    <a href="${query.page.url}">${query.page.title | h}</a>
+                    % if query.oldid:
+                        @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>
+                    % endif
+                    is a ${"suspected" if result.confidence >= T_SUSPECT else "possible"} violation of <a href="${result.url | h}">${result.url | urlstrip, h}</a>.
                 % else:
-                    No violations detected in <a href="${query.page.url}">${query.page.title | h}</a>.
+                    % if query.oldid:
+                        No violations detected in <a href="${query.page.url}">${query.page.title | h}</a> @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>.
+                    % else:
+                        No violations detected in <a href="${query.page.url}">${query.page.title | h}</a>.
+                    % endif
                 % endif
-            % endif
-        </h2>
+            </h2>
+        % elif query.action == "compare":
+            <table id="cv-result-head-table">
+                <tr>
+                    <td>
+                        <a href="${query.page.url}">${query.page.title | h}</a>
+                        % if query.oldid:
+                            @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>
+                        % endif
+                        % if query.redirected_from:
+                            <br />
+                            <span id="redirected-from">Redirected from <a href="${query.redirected_from.url}">${query.redirected_from.title | h}</a>. <a href="${request.url | httpsfix, h}&amp;noredirect=1">Check the original page.</a></span>
+                        % endif
+                    </td>
+                    <td>
+                        <div>
+                            % if result.confidence >= T_SUSPECT:
+                                Violation&nbsp;Suspected
+                            % elif result.confidence >= T_POSSIBLE:
+                                Violation&nbsp;Possible
+                            % else:
+                                Violation&nbsp;Unlikely
+                            % endif
+                        </div>
+                        <div>${round(result.confidence * 100, 1)}%</div>
+                        <div>confidence</div>
+                    </td>
+                    <td><a href="${result.url | h}">${result.url | urlstrip, h}</a></td>
+                </tr>
+            </table>
+        % endif
     </div>
     <% skips = False %>
     % if query.action == "search":
@@ -201,25 +235,20 @@
                 </div>
             % endif
         </div>
+        <ul id="cv-result-list">
+            % if query.redirected_from:
+                <li>Redirected from <a href="${query.redirected_from.url}">${query.redirected_from.title | h}</a>. <a href="${request.url | httpsfix, h}&amp;noredirect=1">Check the original page.</a></li>
+            % endif
+            % if skips:
+                <li>Since a suspected source was found with a high confidence value, some URLs were skipped. <a href="${request.url | httpsfix, h}&amp;noskip=1">Check all URLs.</a></li>
+            % endif
+            % if result.cached:
+                <li>Results are <a id="cv-cached" href="#">cached<span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URLs of the checked sources, but neither their content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span></a> from <abbr title="${result.cache_time}">${result.cache_age} ago</abbr>. Originally generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries. <a href="${request.url | httpsfix, h}&amp;nocache=1">Bypass the cache.</a></li>
+            % else:
+                <li>Results generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries.</li>
+            % endif
+        </ul>
     % endif
-    <ul id="cv-result-list">
-        % if query.action == "compare":
-            <li><b><span class="mono">${round(result.confidence * 100, 1)}%</span></b> confidence of a violation.</li>
-        % endif
-        % if query.redirected_from:
-            <li>Redirected from <a href="${query.redirected_from.url}">${query.redirected_from.title | h}</a>. <a href="${request.url | httpsfix, h}&amp;noredirect=1">Check the original page.</a></li>
-        % endif
-        % if skips:
-            <li>Since a suspected source was found with a high confidence value, some URLs were skipped. <a href="${request.url | httpsfix, h}&amp;noskip=1">Check all URLs.</a></li>
-        % endif
-        % if result.cached:
-            <li>Results are <a id="cv-cached" href="#">cached<span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URLs of the checked sources, but neither their content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span></a> from <abbr title="${result.cache_time}">${result.cache_age} ago</abbr>. Originally generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries. <a href="${request.url | httpsfix, h}&amp;nocache=1">Bypass the cache.</a></li>
-        % elif query.action == "compare":
-            <li>Results generated in <span class="mono">${round(result.time, 3)}</span> seconds.</li>
-        % else:
-            <li>Results generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries.</li>
-        % endif
-    </ul>
     <div id="cv-chain-container">
         <table id="cv-chain-table">
             <tr>

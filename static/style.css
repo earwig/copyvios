@@ -50,8 +50,8 @@ div#info-box {
 }
 
 div#cv-result {
-    padding: 10px;
-    margin: 15px 5px 10px 5px;
+    padding: 5px;
+    margin: 10px 5px;
 }
 
 div#sources-container {
@@ -74,6 +74,12 @@ div#cv-no-sources {
 div#cv-additional {
     padding-bottom: 5px;
     display: none;
+}
+
+div#generation-time {
+    margin-right: 5px;
+    text-align: right;
+    font-style: italic;
 }
 
 div#cv-chain-container {
@@ -108,6 +114,35 @@ table#cv-result-sources th:nth-child(2) {
 
 table#cv-result-sources tr:nth-child(even) {
     background-color: #E0E0E0;
+}
+
+table#cv-result-head-table {
+    width: 100%;
+    text-align: center;
+}
+
+table#cv-result-head-table td:nth-child(odd) {
+    width: 42.5%;
+    font-size: 1.25em;
+    font-weight: bold;
+}
+
+table#cv-result-head-table td:nth-child(2) {
+    width: 15%;
+}
+
+table#cv-result-head-table td:nth-child(2) div:nth-child(1) {
+    font-weight: bold;
+}
+
+table#cv-result-head-table td:nth-child(2) div:nth-child(2) {
+    font-size: 2.5em;
+    font-weight: bold;
+    line-height: 1;
+}
+
+table#cv-result-head-table td:nth-child(2) div:nth-child(3) {
+    font-size: 0.8em;
 }
 
 table#cv-chain-table {
@@ -159,6 +194,12 @@ h2#cv-result-header {
 
 ul#cv-result-list {
     margin: 0.5em 0;
+}
+
+span#redirected-from {
+    font-size: 0.75em;
+    font-weight: normal;
+    font-style: italic;
 }
 
 a#source-selected {

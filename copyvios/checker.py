@@ -167,12 +167,13 @@ def _get_cached_results(page, conn, mode, noskip):
     return result
 
 def _format_date(cache_time):
+    format = lambda n, w: "{0} {1}{2}".format(n, w, "" if n == 1 else "s")
     diff = datetime.utcnow() - cache_time
     if diff.seconds > 3600:
-        return "{0} hours".format(diff.seconds / 3600)
+        return format(diff.seconds / 3600, "hour")
     if diff.seconds > 60:
-        return "{0} minutes".format(diff.seconds / 60)
-    return "{0} seconds".format(diff.seconds)
+        return format(diff.seconds / 60, "minute")
+    return format(diff.seconds, "second")
 
 def _cache_result(page, result, conn, mode):
     query1 = "DELETE FROM cache WHERE cache_id = ?"

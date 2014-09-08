@@ -67,12 +67,7 @@ div#sources-title {
     font-weight: bold;
 }
 
-div#cv-no-sources {
-    padding-bottom: 5px;
-}
-
 div#cv-additional {
-    padding-bottom: 5px;
     display: none;
 }
 
@@ -192,10 +187,6 @@ h2#cv-result-header {
     margin: 0;
 }
 
-ul#cv-result-list {
-    margin: 0.5em 0;
-}
-
 span#redirected-from {
     font-size: 0.75em;
     font-weight: normal;
@@ -242,6 +233,15 @@ div.indentable {
     white-space: pre-wrap;
 }
 
+div.cv-source-footer {
+    padding-bottom: 5px;
+    font-style: italic;
+}
+
+div.cv-source-footer a {
+    font-style: normal;
+}
+
 div.cv-chain-detail {
     padding: 0 10px 0 10px;
     background-color: #FFF;
@@ -273,10 +273,6 @@ input#cv-cb-engine {
 input#cv-cb-links {
     margin-left: 20px;
     margin-right: 5px;
-}
-
-span.source-footer-text {
-    font-style: italic;
 }
 
 span.cv-hl {

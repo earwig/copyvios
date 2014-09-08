@@ -171,7 +171,7 @@
                         % endif
                         % if query.redirected_from:
                             <br />
-                            <span id="redirected-from">Redirected from <a href="${query.redirected_from.url}">${query.redirected_from.title | h}</a>. <a href="${request.url | httpsfix, h}&amp;noredirect=1">Check the original page.</a></span>
+                            <span id="redirected-from">Redirected from <a href="//${query.site.domain | h}/w/index.php?title=${query.redirected_from.title | u}&amp;redirect=no">${query.redirected_from.title | h}</a>. <a href="${request.url | httpsfix, h}&amp;noredirect=1">Check original.</a></span>
                         % endif
                     </td>
                     <td>

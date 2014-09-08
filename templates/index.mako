@@ -144,7 +144,7 @@
     <div id="generation-time">
         % if result.cached:
             Results <a id="cv-cached" href="#">cached<span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URLs of the checked sources, but neither their content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span></a> from <abbr title="${result.cache_time}">${result.cache_age} ago</abbr>. Originally generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries.
-        % elif result.action == "search":
+        % elif query.action == "search":
             Results generated in <span class="mono">${round(result.time, 3)}</span> seconds using <span class="mono">${result.queries}</span> queries.
         % else:
             Results generated in <span class="mono">${round(result.time, 3)}</span> seconds.

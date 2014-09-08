@@ -205,7 +205,7 @@
                     </tr>
                     % for i, source in enumerate(result.sources):
                         <tr ${'class="source-default-hidden"' if i >= 10 else 'id="source-row-selected"' if i == 0 else ""}>
-                            <td><a ${'id="source-selected"' if i == 0 else ""} href="${source.url | h}">${source.url | h}</a></td>
+                            <td><a ${'id="source-selected"' if i == 0 else ""} class="source-url" href="${source.url | h}">${source.url | h}</a></td>
                             <td>
                                 % if source.skipped:
                                     <% skips = True %>

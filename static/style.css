@@ -321,3 +321,8 @@ a:active#a-settings  { color: #666; }
 a:active#cv-cached     { color: #040; text-decoration: none; }
 a:hover#cv-cached      { text-decoration: none; }
 a:hover#cv-cached span { display: block; }
+
+a:link.source-url    { color: #357; }
+a:visited.source-url { color: #357; }
+a:hover.source-url   { color: #035; }
+a:active.source-url  { color: #404; }

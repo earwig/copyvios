@@ -212,6 +212,8 @@ a#cv-cached span {
     background: #F3F3F3;
     border: 1px solid #AAA;
     color: black;
+    font-style: normal;
+    text-align: left;
 }
 
 div.green-box {

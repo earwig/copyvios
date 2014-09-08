@@ -285,12 +285,12 @@ span.cv-hl {
 
 span.cv-hl-in {
     background: #FCC;
-    background: linear-gradient(left, #FFF, #FAA);
+    background: linear-gradient(to left, #FAA, #FFF);
 }
 
 span.cv-hl-out {
     background: #FCC;
-    background: linear-gradient(left, #FAA, #FFF);
+    background: linear-gradient(to right, #FAA, #FFF);
 }
 
 span.mono   { font-family: monospace; }

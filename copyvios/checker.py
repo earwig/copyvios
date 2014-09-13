@@ -17,8 +17,9 @@ __all__ = ["do_check", "T_POSSIBLE", "T_SUSPECT"]
 T_POSSIBLE = 0.4
 T_SUSPECT = 0.75
 
-def do_check():
-    query = Query()
+def do_check(query=None):
+    if not query:
+        query = Query()
     if query.lang:
         query.lang = query.orig_lang = query.lang.lower()
         if "::" in query.lang:

@@ -7,7 +7,7 @@ from markupsafe import escape
 
 __all__ = ["highlight_delta"]
 
-def highlight_delta(context, chain, delta=None):
+def highlight_delta(context, chain, delta):
     degree = chain.degree - 1
     highlights = [False] * degree
     block = [chain.START] * degree
@@ -26,7 +26,7 @@ def highlight_delta(context, chain, delta=None):
 
     i = degree
     numwords = len(chain.text.split())
-    processed = []
+    result = []
     paragraphs = chain.text.split("\n")
     while paragraphs:
         words = []
@@ -39,10 +39,10 @@ def highlight_delta(context, chain, delta=None):
                 words.append(_highlight_word(word, before, after, first, last))
             else:
                 words.append(unicode(escape(word)))
-        processed.append(u" ".join(words))
+        result.append(u" ".join(words))
         i += 1
 
-    return u"<br /><br />".join(processed)
+    return u"<br /><br />".join(result)
 
 def _get_next(paragraphs):
     paragraph = paragraphs.pop(0)

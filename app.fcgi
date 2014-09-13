@@ -2,6 +2,7 @@
 # -*- coding: utf-8  -*-
 
 from functools import wraps
+from json import dumps
 from logging import DEBUG, INFO, getLogger
 from logging.handlers import TimedRotatingFileHandler
 from time import asctime
@@ -9,10 +10,11 @@ from traceback import format_exc
 
 from earwigbot.bot import Bot
 from earwigbot.wiki.copyvios import globalize
-from flask import Flask, g, request
+from flask import Flask, g, make_response, request
 from flask.ext.mako import MakoTemplates, render_template, TemplateError
 from flup.server.fcgi import WSGIServer
 
+from copyvios.api import format_api_error, handle_api_request
 from copyvios.checker import do_check
 from copyvios.cookies import parse_cookies
 from copyvios.settings import process_settings
@@ -84,6 +86,27 @@ def settings():
     kwargs = {"status": status, "langs": langs, "projects": projects,
               "default_lang": default.lang, "default_project": default.project}
     return render_template("settings.mako", **kwargs)
+
+@app.route("/api.json")
+def api():
+    if not request.args:
+        return render_template("api.mako", help=True)
+
+    format = request.args.get("format", "json")
+    if format in ["json", "jsonfm"]:
+        try:
+            result = handle_api_request()
+        except Exception as exc:
+            result = format_api_error("unhandled_exception", exc)
+    else:
+        errmsg = u"Unknown format: '{0}'".format(format)
+        result = format_api_error("unknown_format", errmsg)
+
+    if format == "jsonfm":
+        return render_template("api.mako", help=False, result=result)
+    resp = make_response(dumps(result))
+    resp.mimetype = "application/json"
+    return resp
 
 if __name__ == '__main__':
     WSGIServer(app).run()

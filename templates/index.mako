@@ -30,13 +30,13 @@
         <div id="info-box" class="red-box">
             <p>The given site (project=<b><span class="mono">${query.project | h}</span></b>, language=<b><span class="mono">${query.lang | h}</span></b>) doesn't seem to exist. It may also be closed or private. <a href="//${query.lang | h}.${query.project | h}.org/">Confirm its URL.</a></p>
         </div>
-    % elif query.title and not result:
-        <div id="info-box" class="red-box">
-            <p>The given page doesn't seem to exist: <a href="${query.page.url}">${query.page.title | h}</a>.</p>
-        </div>
     % elif query.oldid and not result:
         <div id="info-box" class="red-box">
             <p>The given revision ID doesn't seem to exist: <a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>.</p>
+        </div>
+    % elif query.title and not result:
+        <div id="info-box" class="red-box">
+            <p>The given page doesn't seem to exist: <a href="${query.page.url}">${query.page.title | h}</a>.</p>
         </div>
     % endif
 %endif

@@ -6,12 +6,6 @@ from .sites import get_sites
 
 __all__ = ["format_api_error", "handle_api_request"]
 
-_HOOKS = {
-    "compare": _hook_check,
-    "search": _hook_check,
-    "sites": _hook_sites,
-}
-
 _CHECK_ERRORS = {
     "no search method": "Either 'use_engine' or 'use_links' must be true",
     "no URL": "The parameter 'url' is required for URL comparisons",
@@ -48,24 +42,6 @@ def format_api_error(code, info):
     elif isinstance(info, unicode):
         info = info.encode("utf8")
     return {"status": "error", "error": {"code": code, "info": info}}
-
-def handle_api_request():
-    query = Query()
-    if query.version:
-        try:
-            query.version = int(query.version)
-        except ValueError:
-            info = "The version string is invalid: {0}".format(query.version)
-            return format_api_error("invalid_version", info)
-    else:
-        query.version = 1
-
-    if query.version == 1:
-        action = query.action.lower() if query.action else ""
-        return _HOOKS.get(action, _hook_default)(query)
-
-    info = "The API version is unsupported: {0}".format(query.version)
-    return format_api_error("unsupported_version", info)
 
 def _hook_default(query):
     info = u"Unknown action: '{0}'".format(query.action.lower())
@@ -114,3 +90,27 @@ def _hook_check(query):
 def _hook_sites(query):
     langs, projects = get_sites()
     return {"status": "ok", "langs": langs, "projects": projects}
+
+_HOOKS = {
+    "compare": _hook_check,
+    "search": _hook_check,
+    "sites": _hook_sites,
+}
+
+def handle_api_request():
+    query = Query()
+    if query.version:
+        try:
+            query.version = int(query.version)
+        except ValueError:
+            info = "The version string is invalid: {0}".format(query.version)
+            return format_api_error("invalid_version", info)
+    else:
+        query.version = 1
+
+    if query.version == 1:
+        action = query.action.lower() if query.action else ""
+        return _HOOKS.get(action, _hook_default)(query)
+
+    info = "The API version is unsupported: {0}".format(query.version)
+    return format_api_error("unsupported_version", info)

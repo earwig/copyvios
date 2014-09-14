@@ -18,7 +18,7 @@
                 <p>The API responds to GET requests made to <span class="code">https://tools.wmflabs.org/copyvios/api.json</span>. Parameters are described in the tables below:</p>
                 <table class="parameters">
                     <tr>
-                        <th colspan="3">Always</th>
+                        <th colspan="4">Always</th>
                     </tr>
                     <tr>
                         <th>Parameter</th>
@@ -47,7 +47,7 @@
                 </table>
                 <table class="parameters">
                     <tr>
-                        <th colspan="3"><span class="code">compare</span> Mode</th>
+                        <th colspan="4"><span class="code">compare</span> Mode</th>
                     </tr>
                     <tr>
                         <th>Parameter</th>
@@ -88,7 +88,7 @@
                 </table>
                 <table class="parameters">
                     <tr>
-                        <th colspan="3"><span class="code">search</span> Mode</th>
+                        <th colspan="4"><span class="code">search</span> Mode</th>
                     </tr>
                     <tr>
                         <th>Parameter</th>
@@ -167,7 +167,7 @@
         "time":       (float) time to generate results, in seconds,
         "queries":    (int) number of search engine queries made,
         "cached":     (boolean) whether or not these results are cached from an earlier search (always false in the case of action=compare),
-        (only if cached=true) "cache_time": (float) time to generate the original, uncached results, in seconds
+        (only if cached=true) "cache_time": (string) human-readable time of the original search that the results are cached from
         "redirected": (boolean) whether or not a redirect was followed
     },
     "page": {
@@ -215,6 +215,58 @@
 }</pre>
                 <h2>Example</h2>
                 <p>GET https://tools.wmflabs.org/copyvios/api.json?version=1&amp;action=search&amp;project=wikipedia&amp;lang=en&amp;title=User:The_Earwig/Sandbox/CopyvioExample</p>
+<pre>
+{
+    "status": "ok",
+    "meta": {
+        "time": 2.2474379539489746,
+        "queries": 1,
+        "cached": false,
+        "redirected": false
+    },
+    "page": {
+        "title": "User:The Earwig/Sandbox/CopyvioExample",
+        "url": "https://en.wikipedia.org/wiki/User:The_Earwig/Sandbox/CopyvioExample"
+    },
+    "best": {
+        "url": "http://www.whitehouse.gov/administration/president-obama/",
+        "confidence": 0.9886608511242603,
+        "violation": "suspected"
+    }
+    "sources": [
+        {
+            "url": "http://www.whitehouse.gov/administration/president-obama/",
+            "confidence": 0.9886608511242603,
+            "violation": "suspected",
+            "skipped": false
+        },
+        {
+            "url": "http://maige2009.blogspot.com/2013/07/barack-h-obama-is-44th-president-of.html",
+            "confidence": 0.9864798816568047,
+            "violation": "suspected",
+            "skipped": false
+        },
+        {
+            "url": "http://jeuxdemonstre-apkdownload.rhcloud.com/luo-people-of-kenya-and-tanzania---wikipedia--the-free",
+            "confidence": 0.0,
+            "violation": "none",
+            "skipped": false
+        },
+        {
+            "url": "http://www.whitehouse.gov/about/presidents/barackobama",
+            "confidence": 0.0,
+            "violation": "none",
+            "skipped": true
+        },
+        {
+            "url": "http://jeuxdemonstre-apkdownload.rhcloud.com/president-barack-obama---the-white-house",
+            "confidence": 0.0,
+            "violation": "none",
+            "skipped": true
+        }
+    ]
+}
+</pre>
             </div>
         % endif
         % if result:

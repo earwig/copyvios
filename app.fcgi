@@ -87,8 +87,12 @@ def settings():
               "default_lang": default.lang, "default_project": default.project}
     return render_template("settings.mako", **kwargs)
 
-@app.route("/api.json")
+@app.route("/api")
 def api():
+    return render_template("api.mako", help=True)
+
+@app.route("/api.json")
+def api_json():
     if not request.args:
         return render_template("api.mako", help=True)
 

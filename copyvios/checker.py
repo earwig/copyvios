@@ -17,6 +17,9 @@ __all__ = ["do_check", "T_POSSIBLE", "T_SUSPECT"]
 T_POSSIBLE = 0.4
 T_SUSPECT = 0.75
 
+def _coerce_bool(val):
+    return val and val not in ("0", "false")
+
 def do_check(query=None):
     if not query:
         query = Query()
@@ -32,7 +35,7 @@ def do_check(query=None):
     if query.submitted:
         query.site = get_site(query)
         if query.site:
-            _get_results(query, follow=query.noredirect is None)
+            _get_results(query, follow=not _coerce_bool(query.noredirect))
     return query
 
 def _get_results(query, follow=True):
@@ -59,14 +62,15 @@ def _get_results(query, follow=True):
         query.action = "compare" if query.url else "search"
     if query.action == "search":
         conn = get_cache_db()
-        use_engine = 0 if query.use_engine == "0" else 1
-        use_links = 0 if query.use_links == "0" else 1
+        use_engine = 0 if query.use_engine in ("0", "false") else 1
+        use_links = 0 if query.use_links in ("0", "false") else 1
         if not use_engine and not use_links:
             query.error = "no search method"
             return
         mode = "{0}:{1}:".format(use_engine, use_links)
-        if not query.nocache:
-            query.result = _get_cached_results(page, conn, mode, query.noskip)
+        if not _coerce_bool(query.nocache):
+            query.result = _get_cached_results(
+                page, conn, mode, _coerce_bool(query.noskip))
         if not query.result:
             try:
                 query.result = page.copyvio_check(

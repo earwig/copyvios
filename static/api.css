@@ -1,3 +1,10 @@
-.code {
+span.code {
+    font-family: monospace;
+}
+
+table.parameters {
+}
+
+table.parameters td:first-child {
     font-family: monospace;
 }

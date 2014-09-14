@@ -13,10 +13,12 @@ span.code {
 
 span.param-key {
     color: #009;
+    font-weight: bold;
 }
 
 span.param-val {
     color: #900;
+    font-weight: bold;
 }
 
 table.parameters {
@@ -52,3 +54,8 @@ a:link    { color: #373; text-decoration: none; }
 a:visited { color: #373; text-decoration: none; }
 a:hover   { color: #040; text-decoration: underline; }
 a:active  { color: #404; text-decoration: underline; }
+
+a.no-color:link    { color: #000; text-decoration: none; }
+a.no-color:visited { color: #000; text-decoration: none; }
+a.no-color:hover   { color: #000; text-decoration: underline; }
+a.no-color:active  { color: #000; text-decoration: underline; }

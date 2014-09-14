@@ -35,7 +35,7 @@
                     <tr>
                         <td>format</td>
                         <td><span class="code">json</span>, <span class="code">jsonfm</span></td>
-                        <td>No (default: <span class="code">json</span>)</td>
+                        <td>No&nbsp;(default:&nbsp;<span class="code">json</span>)</td>
                         <td>The default output format is <a href="http://json.org/">JSON</a>. <span class="code">jsonfm</span> mode produces the same output, but renders it as a formatted HTML document for debugging.</td>
                     </tr>
                     <tr>
@@ -70,7 +70,7 @@
                     <tr>
                         <td>title</td>
                         <td>string</td>
-                        <td>Yes (either <span class="code">title</span> or <span class="code">oldid</span>)</td>
+                        <td>Yes&nbsp;(either&nbsp;<span class="code">title</span>&nbsp;or&nbsp;<span class="code">oldid</span>)</td>
                         <td>The title of the page or article to make a comparison against. Namespace must be included if the page isn't in the mainspace.</td>
                     </tr>
                     <tr>
@@ -111,7 +111,7 @@
                     <tr>
                         <td>title</td>
                         <td>string</td>
-                        <td>Yes (either <span class="code">title</span> or <span class="code">oldid</span>)</td>
+                        <td>Yes&nbsp;(either&nbsp;<span class="code">title</span>&nbsp;or&nbsp;<span class="code">oldid</span>)</td>
                         <td>The title of the page or article to make a check against. Namespace must be included if the page isn't in the mainspace.</td>
                     </tr>
                     <tr>

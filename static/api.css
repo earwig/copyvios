@@ -15,10 +15,12 @@ table.parameters {
     margin: 1em 0;
 }
 
-table.parameters th {
+table.parameters td, table.parameters th {
+    padding: 0.2em 0.5em;
 }
 
-table.parameters td {
+table.parameters th {
+    background-color: #F0F0F0;
 }
 
 table.parameters tr:first-child {
@@ -28,4 +30,12 @@ table.parameters tr:first-child {
 
 table.parameters td:first-child {
     font-family: monospace;
+}
+
+table.parameters tr:nth-child(2n + 3) {
+    background-color: #E0E0E0;
+}
+
+table.parameters tr:nth-child(2n + 4) {
+    background-color: #F0F0F0;
 }

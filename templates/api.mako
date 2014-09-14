@@ -59,13 +59,13 @@
                         <td>project</td>
                         <td>string</td>
                         <td>Yes</td>
-                        <td>The project name of the site the page lives on. Examples are <span class="code">wikipedia</span> and <span class="code">wiktionary</span>. A list of acceptable values can be retrieved using <span class="code">action=sites</span>.</td>
+                        <td>The project code of the site the page lives on. Examples are <span class="code">wikipedia</span> and <span class="code">wiktionary</span>. A list of acceptable values can be retrieved using <span class="code">action=sites</span>.</td>
                     </tr>
                     <tr>
                         <td>lang</td>
                         <td>string</td>
                         <td>Yes</td>
-                        <td>The language name of the site the page lives on. Examples are <span class="code">en</span> and <span class="code">de</span>. A list of acceptable values can be retrieved using <span class="code">action=sites</span>.</td>
+                        <td>The language code of the site the page lives on. Examples are <span class="code">en</span> and <span class="code">de</span>. A list of acceptable values can be retrieved using <span class="code">action=sites</span>.</td>
                     </tr>
                     <tr>
                         <td>title</td>
@@ -100,13 +100,13 @@
                         <td>project</td>
                         <td>string</td>
                         <td>Yes</td>
-                        <td>The project name of the site the page lives on. Examples are <span class="code">wikipedia</span> and <span class="code">wiktionary</span>. A list of acceptable values can be retrieved using <span class="code">action=sites</span>.</td>
+                        <td>The project code of the site the page lives on. Examples are <span class="code">wikipedia</span> and <span class="code">wiktionary</span>. A list of acceptable values can be retrieved using <span class="code">action=sites</span>.</td>
                     </tr>
                     <tr>
                         <td>lang</td>
                         <td>string</td>
                         <td>Yes</td>
-                        <td>The language name of the site the page lives on. Examples are <span class="code">en</span> and <span class="code">de</span>. A list of acceptable values can be retrieved using <span class="code">action=sites</span>.</td>
+                        <td>The language code of the site the page lives on. Examples are <span class="code">en</span> and <span class="code">de</span>. A list of acceptable values can be retrieved using <span class="code">action=sites</span>.</td>
                     </tr>
                     <tr>
                         <td>title</td>
@@ -152,9 +152,69 @@
                     </tr>
                 </table>
                 <h2>Responses</h2>
-                <p></p> <!-- List errors -->
+                <p>The JSON response object always contains a <span class="code">status</span> key, whose value is either <span class="code">ok</span> or <span class="code">error</span>. If an error has occurred, the response will look like this:</p>
+<pre>{
+    "status": "error",
+    "error": {
+        "code": (string) error code,
+        "info": (string) human-readable description of error
+    }
+}</pre>
+                <p>Valid responses for <span class="code">action=compare</span> and <span class="code">action=search</span> are formatted like this:</p>
+<pre>{
+    "status": "ok",
+    "meta": {
+        "time":       (float) time to generate results, in seconds,
+        "queries":    (int) number of search engine queries made,
+        "cached":     (boolean) whether or not these results are cached from an earlier search (always false in the case of action=compare),
+        (only if cached=true) "cache_time": (float) time to generate the original, uncached results, in seconds
+        "redirected": (boolean) whether or not a redirect was followed
+    },
+    "page": {
+        "title": (string) the normalized title of the page checked,
+        "url":   (string) the full URL of the page checked
+    },
+    (only if redirected=true) "original_page": {
+        "title": (string) the normalized title of the original page whose redirect was followed,
+        "url":   (string) the full URL of the original page whose redirect was followed
+    },
+    "best": {
+        "url":        (string) the URL of the best match found, or null if no matches were found,
+        "confidence": (float) the confidence of a violation in the best match, or 0.0 if no matches were found,
+        "violation":  (string) one of "suspected", "possible", or "none"
+    },
+    "sources": [
+        {
+            "url":        (string) the URL of the source,
+            "confidence": (float) the confidence of a violation in the source,
+            "violation":  (string) one of "suspected", "possible", or "none",
+            "skipped":    (boolean) whether or not the source was skipped due to the check finishing early (see note about noskip above)
+        },
+        ...
+    ]
+}</pre>
+                <p>In the case of <span class="code">action=search</span>, <span class="code">sources</span> will contain one entry for each source checked (or skipped if the check ends early), sorted in order of confidence, with skipped sources at the bottom.</p>
+                <p>In the case of <span class="code">action=compare</span>, <span class="code">best</span> will always contain information about the URL that was given, so <span class="code">response["best"]["url"]</span> will never be <span class="code">null</span>. Also, <span class="code">sources</span> will always contain one entry, with the same data as <span class="code">best</span>, since only one source is checked in comparison mode.</p>
+                <p>Valid responses for <span class="code">action=sites</span> are formatted like this:</p>
+<pre>{
+    "status": "ok",
+    "langs": [
+        [
+            (string) language code,
+            (string) human-readable language name
+        ],
+        ...
+    ],
+    "projects": [
+        [
+            (string) project code,
+            (string) human-readable project name
+        ],
+        ...
+    ]
+}</pre>
                 <h2>Example</h2>
-                <p></p>
+                <p>GET https://tools.wmflabs.org/copyvios/api.json?version=1&amp;action=search&amp;project=wikipedia&amp;lang=en&amp;title=User:The_Earwig/Sandbox/CopyvioExample</p>
             </div>
         % endif
         % if result:

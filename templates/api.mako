@@ -214,7 +214,7 @@
     ]
 }</pre>
                 <h2>Example</h2>
-                <p>GET https://tools.wmflabs.org/copyvios/api.json?version=1&amp;action=search&amp;project=wikipedia&amp;lang=en&amp;title=User:The_Earwig/Sandbox/CopyvioExample</p>
+                <p><a href="https://tools.wmflabs.org/copyvios/api.json?version=1&amp;action=search&amp;project=wikipedia&amp;lang=en&amp;title=User:The_Earwig/Sandbox/CopyvioExample"><span class="code">https://tools.wmflabs.org/copyvios/api.json?<span class="param-key">version</span>=<span class="param-value">1</span>&amp;<span class="param-key">action</span>=<span class="param-value">search</span>&amp;<span class="param-key">project</span>=<span class="param-value">wikipedia</span>&amp;<span class="param-key">lang</span>=<span class="param-value">en</span>&amp;<span class="param-key">title</span>=<span class="param-value">User:The_Earwig/Sandbox/CopyvioExample</span></span></a></p>
 <pre>
 {
     "status": "ok",
@@ -272,7 +272,7 @@
         % if result:
             <div id="result">
                 <p>You are using <span class="code">jsonfm</span> output mode, which renders JSON data as a formatted HTML document. This is intended for testing and debugging only.</p>
-                ${walk_json(result)}
+                <pre>${walk_json(result)}</pre>
             </div>
         % endif
     </body>

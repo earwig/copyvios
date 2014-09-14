@@ -11,6 +11,14 @@ span.code {
     font-family: monospace;
 }
 
+span.param-key {
+    color: #009;
+}
+
+span.param-val {
+    color: #900;
+}
+
 table.parameters {
     margin: 1em 0;
 }
@@ -39,3 +47,8 @@ table.parameters tr:nth-child(2n + 3) {
 table.parameters tr:nth-child(2n + 4) {
     background-color: #F0F0F0;
 }
+
+a:link    { color: #373; text-decoration: none; }
+a:visited { color: #373; text-decoration: none; }
+a:hover   { color: #040; text-decoration: underline; }
+a:active  { color: #404; text-decoration: underline; }

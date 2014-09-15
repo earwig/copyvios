@@ -1,3 +1,6 @@
+<%!
+    from json import dumps
+%>\
 <%def name="do_indent(size)">
     <br />
     % for i in xrange(size):
@@ -21,10 +24,8 @@
         % endfor
         ${do_indent(indent)}
         ]
-    % elif isinstance(obj, type("").__bases__[0]):
-        "${obj | h}"
     % else:
-        ${obj | h}
+        ${dumps(obj) | h}
     % endif
 </%def>\
 <!DOCTYPE html>

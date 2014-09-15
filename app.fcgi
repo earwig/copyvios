@@ -88,10 +88,12 @@ def settings():
     return render_template("settings.mako", **kwargs)
 
 @app.route("/api")
+@catch_errors
 def api():
     return render_template("api.mako", help=True)
 
 @app.route("/api.json")
+@catch_errors
 def api_json():
     if not request.args:
         return render_template("api.mako", help=True)

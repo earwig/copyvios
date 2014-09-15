@@ -11,6 +11,14 @@ div#help {
     max-width: 1200px;
 }
 
+div.json {
+    font-family: monospace;
+}
+
+div.indent {
+    width: 4em;
+}
+
 span.code {
     font-family: monospace;
 }

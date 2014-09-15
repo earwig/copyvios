@@ -1,7 +1,29 @@
-<%def name="walk_json(obj)">
-    <!-- TODO -->
-    ${obj | h}
-</%def>
+<%def name="do_indent(size)">
+    % for i in xrange(size):
+        <div class="indent"></div>
+    % endfor
+</%def>\
+<%def name="walk_json(obj, indent=0)">
+    % if isinstance(obj, dict):
+        {
+        % for key, value in obj.iteritems():
+            ${do_indent(indent + 1)}
+            "${key | h}": ${walk_json(key, indent + 1)}${"," if not loop.last else ""}
+        % endfor
+        ${do_indent(indent)}
+        }
+    % elif isinstance(obj, list):
+        [
+        % for member in obj:
+            ${do_indent(indent + 1)}
+            ${walk_json(member, indent + 1)}${"," if not loop.last else ""}
+        % endfor
+        ${do_indent(indent)}
+        ]
+    % else:
+        ${obj | h}
+    % endif
+</%def>\
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -276,7 +298,9 @@
         % if result:
             <div id="result">
                 <p>You are using <span class="code">jsonfm</span> output mode, which renders JSON data as a formatted HTML document. This is intended for testing and debugging only.</p>
-                <pre>${walk_json(result)}</pre>
+                <div class="json">
+                    ${walk_json(result)}
+                </div>
             </div>
         % endif
     </body>

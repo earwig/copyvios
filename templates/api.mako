@@ -167,14 +167,14 @@
         "time":       <span class="resp-dtype">float</span> <span class="resp-desc">time to generate results, in seconds</span>,
         "queries":    <span class="resp-dtype">int</span> <span class="resp-desc">number of search engine queries made</span>,
         "cached":     <span class="resp-dtype">boolean</span> <span class="resp-desc">whether or not these results are cached from an earlier search (always false in the case of action=compare)</span>,
-        (only if cached=true) "cache_time": <span class="resp-dtype">string</span> <span class="resp-desc">human-readable time of the original search that the results are cached from</span>,
+        <span class="resp-cond">only if cached=true</span> "cache_time": <span class="resp-dtype">string</span> <span class="resp-desc">human-readable time of the original search that the results are cached from</span>,
         "redirected": <span class="resp-dtype">boolean</span> <span class="resp-desc">whether or not a redirect was followed</span>
     },
     "page": {
         "title": <span class="resp-dtype">string</span> <span class="resp-desc">the normalized title of the page checked</span>,
         "url":   <span class="resp-dtype">string</span> <span class="resp-desc">the full URL of the page checked</span>
     },
-    (only if redirected=true) "original_page": {
+    <span class="resp-cond">only if redirected=true</span> "original_page": {
         "title": <span class="resp-dtype">string</span> <span class="resp-desc">the normalized title of the original page whose redirect was followed</span>,
         "url":   <span class="resp-dtype">string</span> <span class="resp-desc">the full URL of the original page whose redirect was followed</span>
     },

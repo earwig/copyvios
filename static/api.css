@@ -15,7 +15,7 @@ span.code {
     font-family: monospace;
 }
 
-span.resp-dtype, span.resp-desc {
+span.resp-dtype, span.resp-desc, span.resp-cond {
     padding: 0 0.25em;
     background-color: #EEE;
 }
@@ -24,16 +24,20 @@ span.resp-dtype {
     color: #009;
 }
 
-span.resp-dtype:before {
+span.resp-dtype:before, span.resp-cond:before {
     content: "(";
 }
 
-span.resp-dtype:after {
+span.resp-dtype:after, span.resp-cond:before {
     content: ")";
 }
 
 span.resp-desc {
     color: #050;
+}
+
+span.resp-cond {
+    color: #900;
 }
 
 span.param-key {

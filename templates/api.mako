@@ -4,7 +4,7 @@
     % endfor
 </%def>\
 <%def name="walk_json(obj, indent=0)">
-    % if isinstance(obj, dict):
+    % if isinstance(obj, __builtins__.dict):
         {
         % for key, value in obj.iteritems():
             ${do_indent(indent + 1)}
@@ -12,7 +12,7 @@
         % endfor
         ${do_indent(indent)}
         }
-    % elif isinstance(obj, list):
+    % elif isinstance(obj, __builtins__.list):
         [
         % for member in obj:
             ${do_indent(indent + 1)}

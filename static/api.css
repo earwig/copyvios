@@ -17,15 +17,23 @@ span.code {
 
 span.resp-dtype, span.resp-desc {
     padding: 0 0.25em;
-    background-color: #E5E5E5;
+    background-color: #EEE;
 }
 
 span.resp-dtype {
     color: #009;
 }
 
+span.resp-dtype:before {
+    content: "(";
+}
+
+span.resp-dtype:after {
+    content: ")";
+}
+
 span.resp-desc {
-    color: #090;
+    color: #050;
 }
 
 span.param-key {

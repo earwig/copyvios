@@ -21,20 +21,20 @@ _CHECK_ERRORS = {
 }
 
 def _serialize_page(page):
-    return OrderedDict(("title", page.title), ("url", page.url))
+    return OrderedDict((("title", page.title), ("url", page.url)))
 
 def _serialize_source(source, show_skip=True):
     if not source:
-        return OrderedDict(("url", None), ("confidence", 0.0),
-                           ("violation", "none"))
+        return OrderedDict((
+            ("url", None), ("confidence", 0.0), ("violation", "none")))
 
     conf = source.confidence
-    data = OrderedDict(
+    data = OrderedDict((
         ("url", source.url),
         ("confidence", conf),
         ("violation", "suspected" if conf >= T_SUSPECT else
                       "possible" if conf >= T_POSSIBLE else "none")
-    )
+    ))
     if show_skip:
         data["skipped"] = source.skipped
     return data
@@ -44,8 +44,8 @@ def format_api_error(code, info):
         info = type(info).__name__ + ": " + str(info)
     elif isinstance(info, unicode):
         info = info.encode("utf8")
-    error_inner = OrderedDict(("code", code), ("info", info))
-    return OrderedDict(("status", "error"), ("error", error_inner))
+    error_inner = OrderedDict((("code", code), ("info", info)))
+    return OrderedDict((("status", "error"), ("error", error_inner)))
 
 def _hook_default(query):
     info = u"Unknown action: '{0}'".format(query.action.lower())
@@ -73,16 +73,16 @@ def _hook_check(query):
             return format_api_error("bad_title", info.format(query.page.title))
 
     result = query.result
-    data = OrderedDict(
+    data = OrderedDict((
         ("status", "ok"),
-        ("meta", OrderedDict(
+        ("meta", OrderedDict((
             ("time", result.time),
             ("queries", result.queries),
             ("cached", result.cached),
             ("redirected", bool(query.redirected_from))
-        )),
+        ))),
         ("page", _serialize_page(query.page))
-    )
+    ))
     if result.cached:
         data["meta"]["cache_time"] = result.cache_time
     if query.redirected_from:
@@ -93,8 +93,8 @@ def _hook_check(query):
 
 def _hook_sites(query):
     langs, projects = get_sites()
-    return OrderedDict(("status", "ok"), ("langs", langs),
-                       ("projects", projects))
+    return OrderedDict((
+        ("status", "ok"), ("langs", langs), ("projects", projects)))
 
 _HOOKS = {
     "compare": _hook_check,

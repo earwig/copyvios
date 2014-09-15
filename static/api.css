@@ -16,7 +16,8 @@ div.json {
 }
 
 div.indent {
-    width: 4em;
+    display: inline-block;
+    padding-left: 4em;
 }
 
 span.code {

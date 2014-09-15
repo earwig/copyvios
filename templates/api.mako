@@ -1,4 +1,5 @@
 <%def name="do_indent(size)">
+    <br />
     % for i in xrange(size):
         <div class="indent"></div>
     % endfor

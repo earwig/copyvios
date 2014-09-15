@@ -28,7 +28,7 @@ span.resp-dtype:before, span.resp-cond:before {
     content: "(";
 }
 
-span.resp-dtype:after, span.resp-cond:before {
+span.resp-dtype:after, span.resp-cond:after {
     content: ")";
 }
 
@@ -38,6 +38,7 @@ span.resp-desc {
 
 span.resp-cond {
     color: #900;
+    font-style: italic;
 }
 
 span.param-key {

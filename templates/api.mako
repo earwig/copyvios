@@ -192,8 +192,8 @@
         "time":       <span class="resp-dtype">float</span> <span class="resp-desc">time to generate results, in seconds</span>,
         "queries":    <span class="resp-dtype">int</span> <span class="resp-desc">number of search engine queries made</span>,
         "cached":     <span class="resp-dtype">boolean</span> <span class="resp-desc">whether or not these results are cached from an earlier search (always false in the case of action=compare)</span>,
-        <span class="resp-cond">only if cached=true</span> "cache_time": <span class="resp-dtype">string</span> <span class="resp-desc">human-readable time of the original search that the results are cached from</span>,
-        "redirected": <span class="resp-dtype">boolean</span> <span class="resp-desc">whether or not a redirect was followed</span>
+        "redirected": <span class="resp-dtype">boolean</span> <span class="resp-desc">whether or not a redirect was followed</span>,
+        <span class="resp-cond">only if cached=true</span> "cache_time": <span class="resp-dtype">string</span> <span class="resp-desc">human-readable time of the original search that the results are cached from</span>
     },
     "page": {
         "title": <span class="resp-dtype">string</span> <span class="resp-desc">the normalized title of the page checked</span>,

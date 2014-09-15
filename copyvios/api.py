@@ -1,5 +1,7 @@
 # -*- coding: utf-8  -*-
 
+from collections import OrderedDict
+
 from .checker import do_check, T_POSSIBLE, T_SUSPECT
 from .misc import Query
 from .sites import get_sites
@@ -19,19 +21,20 @@ _CHECK_ERRORS = {
 }
 
 def _serialize_page(page):
-    return {"title": page.title, "url": page.url}
+    return OrderedDict(("title", page.title), ("url", page.url))
 
 def _serialize_source(source, show_skip=True):
     if not source:
-        return {"url": None, "confidence": 0.0, "violation": "none"}
+        return OrderedDict(("url", None), ("confidence", 0.0),
+                           ("violation", "none"))
 
     conf = source.confidence
-    data = {
-        "url": source.url,
-        "confidence": conf,
-        "violation": "suspected" if conf >= T_SUSPECT else
-                     "possible" if conf >= T_POSSIBLE else "none"
-    }
+    data = OrderedDict(
+        ("url", source.url),
+        ("confidence", conf),
+        ("violation", "suspected" if conf >= T_SUSPECT else
+                      "possible" if conf >= T_POSSIBLE else "none")
+    )
     if show_skip:
         data["skipped"] = source.skipped
     return data
@@ -41,7 +44,8 @@ def format_api_error(code, info):
         info = type(info).__name__ + ": " + str(info)
     elif isinstance(info, unicode):
         info = info.encode("utf8")
-    return {"status": "error", "error": {"code": code, "info": info}}
+    error_inner = OrderedDict(("code", code), ("info", info))
+    return OrderedDict(("status", "error"), ("error", error_inner))
 
 def _hook_default(query):
     info = u"Unknown action: '{0}'".format(query.action.lower())
@@ -69,27 +73,28 @@ def _hook_check(query):
             return format_api_error("bad_title", info.format(query.page.title))
 
     result = query.result
-    data = {
-        "status": "ok",
-        "meta": {
-            "time": result.time,
-            "queries": result.queries,
-            "cached": result.cached,
-            "redirected": bool(query.redirected_from)
-        },
-        "page": _serialize_page(query.page),
-        "best": _serialize_source(result.best, show_skip=False),
-        "sources": [_serialize_source(source) for source in result.sources]
-    }
+    data = OrderedDict(
+        ("status", "ok"),
+        ("meta", OrderedDict(
+            ("time", result.time),
+            ("queries", result.queries),
+            ("cached", result.cached),
+            ("redirected", bool(query.redirected_from))
+        )),
+        ("page", _serialize_page(query.page))
+    )
     if result.cached:
         data["meta"]["cache_time"] = result.cache_time
     if query.redirected_from:
         data["original_page"] = _serialize_page(query.redirected_from)
+    data["best"] = _serialize_source(result.best, show_skip=False)
+    data["sources"] = [_serialize_source(source) for source in result.sources]
     return data
 
 def _hook_sites(query):
     langs, projects = get_sites()
-    return {"status": "ok", "langs": langs, "projects": projects}
+    return OrderedDict(("status", "ok"), ("langs", langs),
+                       ("projects", projects))
 
 _HOOKS = {
     "compare": _hook_check,

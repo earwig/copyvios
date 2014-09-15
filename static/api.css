@@ -55,22 +55,22 @@ table.parameters {
     margin: 1em 0;
 }
 
-table.parameters td, table.parameters th {
-    padding: 0.2em 0.5em;
-}
-
-table.parameters th {
-    background-color: #F0F0F0;
-}
-
 table.parameters tr:first-child {
     font-family: sans-serif;
     font-size: 1.17em;
     color: white;
 }
 
-table.parameters tr:first-child td {
+table.parameters tr:first-child th {
     background-color: #369;
+}
+
+table.parameters td, table.parameters th {
+    padding: 0.2em 0.5em;
+}
+
+table.parameters th {
+    background-color: #F0F0F0;
 }
 
 table.parameters td:first-child {

@@ -22,7 +22,7 @@
         ${do_indent(indent)}
         ]
     % else:
-        ${obj | h}
+        ${repr(obj) | h}
     % endif
 </%def>\
 <!DOCTYPE html>

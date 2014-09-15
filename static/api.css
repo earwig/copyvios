@@ -2,6 +2,10 @@ h1, h2 {
     font-family: sans-serif;
 }
 
+pre {
+    white-space: pre-wrap;
+}
+
 div#help {
     margin: auto;
     max-width: 1200px;
@@ -9,6 +13,19 @@ div#help {
 
 span.code {
     font-family: monospace;
+}
+
+span.resp-dtype, span.resp-desc {
+    padding: 0 0.25em;
+    background-color: #E5E5E5;
+}
+
+span.resp-dtype {
+    color: #009;
+}
+
+span.resp-desc {
+    color: #090;
 }
 
 span.param-key {
@@ -36,6 +53,8 @@ table.parameters th {
 table.parameters tr:first-child {
     font-family: sans-serif;
     font-size: 1.17em;
+    background-color: #369;
+    color: white;
 }
 
 table.parameters td:first-child {

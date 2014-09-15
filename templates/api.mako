@@ -156,39 +156,39 @@
                 <pre>{
     "status": "error",
     "error": {
-        "code": (string) error code,
-        "info": (string) human-readable description of error
+        "code": <span class="resp-dtype">string</span> <span class="resp-desc">error code</span>,
+        "info": <span class="resp-dtype">string</span> <span class="resp-desc">human-readable description of error</span>
     }
 }</pre>
                 <p>Valid responses for <span class="code">action=compare</span> and <span class="code">action=search</span> are formatted like this:</p>
                 <pre>{
     "status": "ok",
     "meta": {
-        "time":       (float) time to generate results, in seconds,
-        "queries":    (int) number of search engine queries made,
-        "cached":     (boolean) whether or not these results are cached from an earlier search (always false in the case of action=compare),
-        (only if cached=true) "cache_time": (string) human-readable time of the original search that the results are cached from
-        "redirected": (boolean) whether or not a redirect was followed
+        "time":       <span class="resp-dtype">float</span> <span class="resp-desc">time to generate results, in seconds</span>,
+        "queries":    <span class="resp-dtype">int</span> <span class="resp-desc">number of search engine queries made</span>,
+        "cached":     <span class="resp-dtype">boolean</span> <span class="resp-desc">whether or not these results are cached from an earlier search (always false in the case of action=compare)</span>,
+        (only if cached=true) "cache_time": <span class="resp-dtype">string</span> <span class="resp-desc">human-readable time of the original search that the results are cached from</span>,
+        "redirected": <span class="resp-dtype">boolean</span> <span class="resp-desc">whether or not a redirect was followed</span>
     },
     "page": {
-        "title": (string) the normalized title of the page checked,
-        "url":   (string) the full URL of the page checked
+        "title": <span class="resp-dtype">string</span> <span class="resp-desc">the normalized title of the page checked</span>,
+        "url":   <span class="resp-dtype">string</span> <span class="resp-desc">the full URL of the page checked</span>
     },
     (only if redirected=true) "original_page": {
-        "title": (string) the normalized title of the original page whose redirect was followed,
-        "url":   (string) the full URL of the original page whose redirect was followed
+        "title": <span class="resp-dtype">string</span> <span class="resp-desc">the normalized title of the original page whose redirect was followed</span>,
+        "url":   <span class="resp-dtype">string</span> <span class="resp-desc">the full URL of the original page whose redirect was followed</span>
     },
     "best": {
-        "url":        (string) the URL of the best match found, or null if no matches were found,
-        "confidence": (float) the confidence of a violation in the best match, or 0.0 if no matches were found,
-        "violation":  (string) one of "suspected", "possible", or "none"
+        "url":        <span class="resp-dtype">string</span> <span class="resp-desc">the URL of the best match found, or null if no matches were found</span>,
+        "confidence": <span class="resp-dtype">float</span> <span class="resp-desc">the confidence of a violation in the best match, or 0.0 if no matches were found</span>,
+        "violation":  <span class="resp-dtype">string</span> <span class="resp-desc">one of "suspected", "possible", or "none"</span>
     },
     "sources": [
         {
-            "url":        (string) the URL of the source,
-            "confidence": (float) the confidence of a violation in the source,
-            "violation":  (string) one of "suspected", "possible", or "none",
-            "skipped":    (boolean) whether or not the source was skipped due to the check finishing early (see note about noskip above)
+            "url":        <span class="resp-dtype">string</span> <span class="resp-desc">the URL of the source</span>,
+            "confidence": <span class="resp-dtype">float</span> <span class="resp-desc">the confidence of a violation in the source</span>,
+            "violation":  <span class="resp-dtype">string</span> <span class="resp-desc">one of "suspected", "possible", or "none"</span>,
+            "skipped":    <span class="resp-dtype">boolean</span> <span class="resp-desc">whether or not the source was skipped due to the check finishing early (see note about noskip above)</span>
         },
         ...
     ]
@@ -200,15 +200,15 @@
     "status": "ok",
     "langs": [
         [
-            (string) language code,
-            (string) human-readable language name
+            <span class="resp-dtype">string</span> <span class="resp-desc">language code</span>,
+            <span class="resp-dtype">string</span> <span class="resp-desc">human-readable language name</span>
         ],
         ...
     ],
     "projects": [
         [
-            (string) project code,
-            (string) human-readable project name
+            <span class="resp-dtype">string</span> <span class="resp-desc">project code</span>,
+            <span class="resp-dtype">string</span> <span class="resp-desc">human-readable project name</span>
         ],
         ...
     ]

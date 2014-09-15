@@ -66,8 +66,11 @@ table.parameters th {
 table.parameters tr:first-child {
     font-family: sans-serif;
     font-size: 1.17em;
-    background-color: #369;
     color: white;
+}
+
+table.parameters tr:first-child td {
+    background-color: #369;
 }
 
 table.parameters td:first-child {

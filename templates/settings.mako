@@ -17,7 +17,7 @@
                 <span class="mono">https://</span>
                 <select name="lang">
                     <% selected_lang = g.cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in g.cookies else default_lang %>\
-                    % for code, name in langs:
+                    % for code, name in g.langs:
                         % if code == selected_lang:
                             <option value="${code | h}" selected="selected">${name}</option>
                         % else:
@@ -28,7 +28,7 @@
                 <span class="mono">.</span>
                 <select name="project">
                     <% selected_project = g.cookies["CopyviosDefaultProject"].value if "CopyviosDefaultProject" in g.cookies else default_project %>\
-                    % for code, name in projects:
+                    % for code, name in g.projects:
                         % if code == selected_project:
                             <option value="${code | h}" selected="selected">${name}</option>
                         % else:

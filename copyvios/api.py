@@ -2,9 +2,11 @@
 
 from collections import OrderedDict
 
+from flask import g
+
 from .checker import do_check, T_POSSIBLE, T_SUSPECT
 from .misc import Query
-from .sites import get_sites
+from .sites import update_sites
 
 __all__ = ["format_api_error", "handle_api_request"]
 
@@ -92,9 +94,9 @@ def _hook_check(query):
     return data
 
 def _hook_sites(query):
-    langs, projects = get_sites()
+    update_sites()
     return OrderedDict((
-        ("status", "ok"), ("langs", langs), ("projects", projects)))
+        ("status", "ok"), ("langs", g.langs), ("projects", g.projects)))
 
 _HOOKS = {
     "compare": _hook_check,

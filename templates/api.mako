@@ -1,6 +1,4 @@
-<%!
-    from json import dumps
-%>\
+<%! from json import dumps %>\
 <%def name="do_indent(size)">
     <br />
     % for i in xrange(size):
@@ -18,9 +16,9 @@
         }
     % elif isinstance(obj, (type([]), type(()))):
         [
-        % for member in obj:
+        % for elem in obj:
             ${do_indent(indent + 1)}
-            ${walk_json(member, indent + 1)}${"," if not loop.last else ""}
+            ${walk_json(elem, indent + 1)}${"," if not loop.last else ""}
         % endfor
         ${do_indent(indent)}
         ]

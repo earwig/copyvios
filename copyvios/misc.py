@@ -8,7 +8,7 @@ from sqlalchemy.pool import manage
 
 oursql = manage(oursql)
 
-__all__ = ["Query", "get_globals_db", "get_cache_db", "httpsfix", "urlstrip"]
+__all__ = ["Query", "get_db", "httpsfix", "urlstrip"]
 
 class Query(object):
     def __init__(self, method="GET"):
@@ -27,22 +27,14 @@ class Query(object):
             self.query[key] = value
 
 
-def _connect_db(name):
-    args = g.bot.config.wiki["_copyviosSQL"][name]
-    args["read_default_file"] = expanduser("~/.my.cnf")
-    args["autoping"] = True
-    args["autoreconnect"] = True
-    return oursql.connect(**args)
-
-def get_globals_db():
-    if not g.globals_db:
-        g.globals_db = _connect_db("globals")
-    return g.globals_db
-
-def get_cache_db():
-    if not g.cache_db:
-        g.cache_db = _connect_db("cache")
-    return g.cache_db
+def get_db():
+    if not g.db:
+        args = g.bot.config.wiki["_copyviosSQL"]
+        args["read_default_file"] = expanduser("~/.my.cnf")
+        args["autoping"] = True
+        args["autoreconnect"] = True
+        g.db = oursql.connect(**args)
+    return g.db
 
 def httpsfix(context, url):
     if url.startswith("http://"):

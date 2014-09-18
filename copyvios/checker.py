@@ -9,8 +9,8 @@ from earwigbot.wiki.copyvios.markov import EMPTY, MarkovChain
 from earwigbot.wiki.copyvios.parsers import ArticleTextParser
 from earwigbot.wiki.copyvios.result import CopyvioSource, CopyvioCheckResult
 
-from .misc import Query, get_cache_db
-from .sites import get_site, get_sites
+from .misc import Query, get_db
+from .sites import get_site
 
 __all__ = ["do_check", "T_POSSIBLE", "T_SUSPECT"]
 
@@ -30,7 +30,6 @@ def do_check(query=None):
     if query.project:
         query.project = query.project.lower()
 
-    query.all_langs, query.all_projects = get_sites()
     query.submitted = query.project and query.lang and (query.title or query.oldid)
     if query.submitted:
         query.site = get_site(query)
@@ -61,7 +60,7 @@ def _get_results(query, follow=True):
     if not query.action:
         query.action = "compare" if query.url else "search"
     if query.action == "search":
-        conn = get_cache_db()
+        conn = get_db()
         use_engine = 0 if query.use_engine in ("0", "false") else 1
         use_links = 0 if query.use_links in ("0", "false") else 1
         if not use_engine and not use_links:

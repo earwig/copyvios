@@ -18,7 +18,7 @@ from copyvios.api import format_api_error, handle_api_request
 from copyvios.checker import do_check
 from copyvios.cookies import parse_cookies
 from copyvios.settings import process_settings
-from copyvios.sites import get_sites
+from copyvios.sites import update_sites
 
 app = Flask(__name__)
 MakoTemplates(app)
@@ -28,9 +28,7 @@ app.logger.addHandler(TimedRotatingFileHandler(
     "logs/app.log", when="midnight", backupCount=7))
 app.logger.info(u"Flask server started " + asctime())
 
-bot = Bot(".earwigbot", 100)
 getLogger("earwigbot.wiki.cvworker").setLevel(INFO)
-globalize()
 
 def catch_errors(func):
     @wraps(func)
@@ -43,12 +41,20 @@ def catch_errors(func):
             return render_template("error.mako", traceback=format_exc())
     return inner
 
+@app.before_first_request
+def setup_app():
+    g.bot = Bot(".earwigbot", 100)
+    g.langs, g.projects = set(), set()
+    g.last_sites_update = 0
+    g.background_data = {}
+    g.last_background_updates = {}
+    globalize()
+
 @app.before_request
 def prepare_request():
-    g.bot = bot
-    g.globals_db = g.cache_db = None
-    g.cookies = parse_cookies(request.script_root,
-                              request.environ.get("HTTP_COOKIE"))
+    g.db = None
+    g.cookies = parse_cookies(
+        request.script_root, request.environ.get("HTTP_COOKIE"))
     g.new_cookies = []
 
 @app.after_request
@@ -66,25 +72,24 @@ def write_access_log(response):
 
 @app.teardown_appcontext
 def close_databases(error):
-    if g.globals_db:
-        g.globals_db.close()
-    if g.cache_db:
-        g.cache_db.close()
+    if g.db:
+        g.db.close()
 
 @app.route("/")
 @catch_errors
 def index():
     query = do_check()
+    update_sites()
     return render_template("index.mako", query=query, result=query.result)
 
 @app.route("/settings", methods=["GET", "POST"])
 @catch_errors
 def settings():
     status = process_settings() if request.method == "POST" else None
-    langs, projects = get_sites()
-    default = bot.wiki.get_site()
-    kwargs = {"status": status, "langs": langs, "projects": projects,
-              "default_lang": default.lang, "default_project": default.project}
+    update_sites()
+    default = g.bot.wiki.get_site()
+    kwargs = {"status": status, "default_lang": default.lang,
+              "default_project": default.project}
     return render_template("settings.mako", **kwargs)
 
 @app.route("/api")

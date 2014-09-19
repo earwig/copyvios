@@ -29,7 +29,7 @@ class Query(object):
 
 class _AppCache(object):
     def __init__(self):
-        self._data = {}
+        super(_AppCache, self).__setattr__("_data", {})
 
     def __getattr__(self, key):
         return self._data[key]

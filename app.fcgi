@@ -49,7 +49,6 @@ def setup_app():
     cache.last_background_updates = {}
 
     getLogger("earwigbot.wiki.cvworker").setLevel(INFO)
-    # getLogger().handlers ....
     globalize()
 
 @app.before_request
@@ -107,6 +106,7 @@ def api_json():
 
     format = request.args.get("format", "json")
     if format in ["json", "jsonfm"]:
+        update_sites()
         try:
             result = handle_api_request()
         except Exception as exc:

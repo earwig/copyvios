@@ -14,7 +14,7 @@
         % endfor
         ${do_indent(indent)}
         }
-    % elif isinstance(obj, (type([]), type(()))):
+    % elif isinstance(obj, (list, tuple, set)):
         [
         % for elem in obj:
             ${do_indent(indent + 1)}

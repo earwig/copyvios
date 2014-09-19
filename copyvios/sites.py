@@ -12,7 +12,7 @@ __all__ = ["get_site", "update_sites"]
 def get_site(query):
     lang, project, name = query.lang, query.project, query.name
     wiki = cache.bot.wiki
-    if project not in [proj[0] for proj in query.all_projects]:
+    if project not in [proj[0] for proj in cache.projects]:
         return None
     if project == "wikimedia" and name:  # Special sites:
         try:

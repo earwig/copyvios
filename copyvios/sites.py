@@ -4,13 +4,14 @@ from time import time
 from urlparse import urlparse
 
 from earwigbot import exceptions
-from flask import g
+
+from .misc import cache
 
 __all__ = ["get_site", "update_sites"]
 
 def get_site(query):
     lang, project, name = query.lang, query.project, query.name
-    wiki = g.bot.wiki
+    wiki = cache.bot.wiki
     if project not in [proj[0] for proj in query.all_projects]:
         return None
     if project == "wikimedia" and name:  # Special sites:
@@ -30,12 +31,12 @@ def get_site(query):
             return None
 
 def update_sites():
-    if time() - g.last_sites_update > 60 * 60 * 24 * 7:
-        g.langs, g.projects = _load_sites()
-        g.last_sites_update = time()
+    if time() - cache.last_sites_update > 60 * 60 * 24 * 7:
+        cache.langs, cache.projects = _load_sites()
+        cache.last_sites_update = time()
 
 def _load_sites():
-    site = g.bot.wiki.get_site()
+    site = cache.bot.wiki.get_site()
     matrix = site.api_query(action="sitematrix")["sitematrix"]
     del matrix["count"]
     langs, projects = set(), set()

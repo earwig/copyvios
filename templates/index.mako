@@ -1,6 +1,7 @@
 <%!
     from flask import g, request
     from copyvios.checker import T_POSSIBLE, T_SUSPECT
+    from copyvios.misc import cache
 %>\
 <%include file="/support/header.mako" args="title='Earwig\'s Copyvio Detector'"/>
 <%namespace module="copyvios.highlighter" import="highlight_delta"/>\
@@ -50,8 +51,8 @@
             <td colspan="3">
                 <span class="mono">https://</span>
                 <select name="lang">
-                    <% selected_lang = query.orig_lang if query.orig_lang else g.cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in g.cookies else g.bot.wiki.get_site().lang %>\
-                    % for code, name in g.langs:
+                    <% selected_lang = query.orig_lang if query.orig_lang else g.cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in g.cookies else cache.bot.wiki.get_site().lang %>\
+                    % for code, name in cache.langs:
                         % if code == selected_lang:
                             <option value="${code | h}" selected="selected">${name}</option>
                         % else:
@@ -61,8 +62,8 @@
                 </select>
                 <span class="mono">.</span>
                 <select name="project">
-                    <% selected_project = query.project if query.project else g.cookies["CopyviosDefaultProject"].value if "CopyviosDefaultProject" in g.cookies else g.bot.wiki.get_site().project %>\
-                    % for code, name in g.projects:
+                    <% selected_project = query.project if query.project else g.cookies["CopyviosDefaultProject"].value if "CopyviosDefaultProject" in g.cookies else cache.bot.wiki.get_site().project %>\
+                    % for code, name in cache.projects:
                         % if code == selected_project:
                             <option value="${code | h}" selected="selected">${name}</option>
                         % else:

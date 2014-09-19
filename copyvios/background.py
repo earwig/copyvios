@@ -8,13 +8,15 @@ import re
 from earwigbot import exceptions
 from flask import g
 
+from .misc import cache
+
 __all__ = ["set_background"]
 
 def _get_commons_site():
     try:
-        return g.bot.wiki.get_site("commonswiki")
+        return cache.bot.wiki.get_site("commonswiki")
     except exceptions.SiteNotFoundError:
-        return g.bot.wiki.add_site(project="wikimedia", lang="commons")
+        return cache.bot.wiki.add_site(project="wikimedia", lang="commons")
 
 def _load_file(site, filename):
     res = site.api_query(action="query", prop="imageinfo", iiprop="url|size",
@@ -57,23 +59,23 @@ _BACKGROUNDS = {
 }
 
 def _get_background(selected):
-    if not g.last_background_updates:
+    if not cache.last_background_updates:
         for key in _BACKGROUNDS:
-            g.last_background_updates[key] = datetime.min
+            cache.last_background_updates[key] = datetime.min
 
-    plus_one = g.last_background_updates[selected] + timedelta(days=1)
+    plus_one = cache.last_background_updates[selected] + timedelta(days=1)
     max_age = datetime(plus_one.year, plus_one.month, plus_one.day)
     if datetime.utcnow() > max_age:
         update_func = _BACKGROUNDS.get(selected, _get_fresh_list)
-        g.background_data[selected] = update_func()
-        g.last_background_updates[selected] = datetime.utcnow()
-    return g.background_data[selected]
+        cache.background_data[selected] = update_func()
+        cache.last_background_updates[selected] = datetime.utcnow()
+    return cache.background_data[selected]
 
 def set_background(selected):
     if "CopyviosScreenCache" in g.cookies:
-        cache = g.cookies["CopyviosScreenCache"].value
+        screen_cache = g.cookies["CopyviosScreenCache"].value
         try:
-            screen = loads(cache)
+            screen = loads(screen_cache)
             int(screen["width"])
             int(screen["height"])
         except (ValueError, KeyError):

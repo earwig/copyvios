@@ -1,5 +1,6 @@
 # -*- coding: utf-8  -*-
 
+from collections import deque
 from re import sub, UNICODE
 
 from earwigbot.wiki.copyvios.markov import EMPTY_INTERSECTION
@@ -10,7 +11,7 @@ __all__ = ["highlight_delta"]
 def highlight_delta(context, chain, delta):
     degree = chain.degree - 1
     highlights = [False] * degree
-    block = [chain.START] * degree
+    block = deque([chain.START] * degree)
     if not delta:
         delta = EMPTY_INTERSECTION
     for word in chain.text.split() + ([chain.END] * degree):
@@ -21,13 +22,13 @@ def highlight_delta(context, chain, delta):
             highlights.append(True)
         else:
             highlights.append(False)
-        block.pop(0)
+        block.popleft()
         block.append(word)
 
     i = degree
     numwords = len(chain.text.split())
     result = []
-    paragraphs = chain.text.split("\n")
+    paragraphs = deque(chain.text.split("\n"))
     while paragraphs:
         words = []
         for i, word in enumerate(_get_next(paragraphs), i):
@@ -45,14 +46,15 @@ def highlight_delta(context, chain, delta):
     return u"<br /><br />".join(result)
 
 def _get_next(paragraphs):
-    paragraph = paragraphs.pop(0)
-    body = paragraph.split()
-    if len(body) <= 3:
+    body = []
+    while paragraphs and not body:
+        body = paragraphs.popleft().split()
+    if body and len(body) <= 3:
         while paragraphs:
             next = paragraphs[0].split()
             if len(next) <= 3:
                 body += next
-                paragraphs.pop(0)
+                paragraphs.popleft()
             else:
                 break
     return body

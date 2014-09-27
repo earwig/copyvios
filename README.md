@@ -2,7 +2,8 @@ This is a [copyright violation](https://en.wikipedia.org/wiki/WP:COPYVIO)
 detector running on [Wikimedia Labs](https://tools.wmflabs.org/copyvios).
 
 It can search the web for content similar to a given article, and graphically
-compare an article to a specific URL.
+compare an article to a specific URL. Some technical details are expanded upon
+[in a blog post](http://benkurtovic.com/2014/08/20/copyvio-detector.html).
 
 Dependencies
 ============

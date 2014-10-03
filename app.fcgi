@@ -79,8 +79,8 @@ def close_databases(error):
 @app.route("/")
 @catch_errors
 def index():
-    query = do_check()
     update_sites()
+    query = do_check()
     return render_template("index.mako", query=query, result=query.result)
 
 @app.route("/settings", methods=["GET", "POST"])

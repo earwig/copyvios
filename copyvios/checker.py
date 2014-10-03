@@ -184,7 +184,7 @@ def _cache_result(page, result, conn, mode):
     query2 = "INSERT INTO cache VALUES (?, DEFAULT, ?, ?)"
     query3 = "INSERT INTO cache_data VALUES (DEFAULT, ?, ?, ?, ?)"
     cache_id = buffer(sha256(mode + page.get().encode("utf8")).digest())
-    data = [(cache_id, source.url, source.confidence, source.skipped)
+    data = [(cache_id, source.url[:1024], source.confidence, source.skipped)
             for source in result.sources]
     with conn.cursor() as cursor:
         cursor.execute("START TRANSACTION")

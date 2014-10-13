@@ -234,9 +234,9 @@
                     ${len(result.sources) - 10} URL${"s" if len(result.sources) > 11 else ""} with lower confidence hidden. <a id="show-additional-sources" href="#">Show them.</a>
                 </div>
             % endif
-            % if skips:
+            % if skips or result.possible_miss:
                 <div class="cv-source-footer">
-                    Since a suspected source was found with a high confidence value, some URLs were skipped. <a href="${request.url | httpsfix, h}&amp;noskip=1">Check all URLs.</a>
+                    Since a suspected source was found with a high confidence value, some URLs ${"were skipped" if skips else "may have been missed"}. <a href="${request.url | httpsfix, h}&amp;noskip=1">Check all URLs.</a>
                 </div>
             % endif
         </div>

@@ -123,7 +123,8 @@ def _get_page_by_revid(site, revid):
 def _get_cached_results(page, conn, mode, noskip):
     query1 = """DELETE FROM cache
                 WHERE cache_time < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)"""
-    query2 = """SELECT cache_time, cache_queries, cache_process_time
+    query2 = """SELECT cache_time, cache_queries, cache_process_time,
+                       cache_possible_miss
                 FROM cache
                 WHERE cache_id = ?"""
     query3 = """SELECT cdata_url, cdata_confidence, cdata_skipped
@@ -137,13 +138,14 @@ def _get_cached_results(page, conn, mode, noskip):
         results = cursor.fetchall()
         if not results:
             return None
-        cache_time, queries, check_time = results[0]
+        cache_time, queries, check_time, possible_miss = results[0]
         cursor.execute(query3, (cache_id,))
         data = cursor.fetchall()
 
     if not data:  # TODO: do something less hacky for this edge case
-        artchain = MarkovChain(ArticleTextParser(page.get()).strip())
-        result = CopyvioCheckResult(False, [], queries, check_time, artchain)
+        article_chain = MarkovChain(ArticleTextParser(page.get()).strip())
+        result = CopyvioCheckResult(False, [], queries, check_time,
+                                    article_chain, possible_miss)
         result.cached = True
         result.cache_time = cache_time.strftime("%b %d, %Y %H:%M:%S UTC")
         result.cache_age = _format_date(cache_time)
@@ -165,6 +167,7 @@ def _get_cached_results(page, conn, mode, noskip):
         result.sources.append(source)
     result.queries = queries
     result.time = check_time
+    result.possible_miss = possible_miss
     result.cached = True
     result.cache_time = cache_time.strftime("%b %d, %Y %H:%M:%S UTC")
     result.cache_age = _format_date(cache_time)

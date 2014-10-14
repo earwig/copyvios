@@ -139,6 +139,8 @@ def _get_cached_results(page, conn, mode, noskip):
         if not results:
             return None
         cache_time, queries, check_time, possible_miss = results[0]
+        if possible_miss and noskip:
+            return None
         cursor.execute(query3, (cache_id,))
         data = cursor.fetchall()
 

@@ -184,7 +184,7 @@ def _format_date(cache_time):
 
 def _cache_result(page, result, conn, mode):
     query1 = "DELETE FROM cache WHERE cache_id = ?"
-    query2 = "INSERT INTO cache VALUES (?, DEFAULT, ?, ?)"
+    query2 = "INSERT INTO cache VALUES (?, DEFAULT, ?, ?, ?)"
     query3 = "INSERT INTO cache_data VALUES (DEFAULT, ?, ?, ?, ?)"
     cache_id = buffer(sha256(mode + page.get().encode("utf8")).digest())
     data = [(cache_id, source.url[:1024], source.confidence, source.skipped)
@@ -192,6 +192,7 @@ def _cache_result(page, result, conn, mode):
     with conn.cursor() as cursor:
         cursor.execute("START TRANSACTION")
         cursor.execute(query1, (cache_id,))
-        cursor.execute(query2, (cache_id, result.queries, result.time))
+        cursor.execute(query2, (cache_id, result.queries, result.time,
+                                result.possible_miss))
         cursor.executemany(query3, data)
         cursor.execute("COMMIT")

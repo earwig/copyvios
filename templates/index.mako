@@ -236,7 +236,7 @@
             % endif
             % if skips or result.possible_miss:
                 <div class="cv-source-footer">
-                    Since a suspected source was found with a high confidence value, some URLs ${"were skipped" if skips else "may have been missed"}. <a href="${request.url | httpsfix, h}&amp;noskip=1">Check all URLs.</a>
+                    Since a suspected source was found with a high confidence value, some URLs ${"were skipped" if skips else ""}${", and others " if skips and result.possible_miss else ""}${"may have been missed" if result.possible_miss else ""}. <a href="${request.url | httpsfix, h}&amp;noskip=1">Do a complete check.</a>
                 </div>
             % endif
         </div>

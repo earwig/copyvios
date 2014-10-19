@@ -35,8 +35,10 @@ def catch_errors(func):
         try:
             return func(*args, **kwargs)
         except TemplateError as exc:
+            app.logger.error(u"Caught exception:\n{0}".format(exc.text))
             return render_template("error.mako", traceback=exc.text)
         except Exception:
+            app.logger.exception(u"Caught exception:")
             return render_template("error.mako", traceback=format_exc())
     return inner
 

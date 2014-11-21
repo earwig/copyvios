@@ -88,9 +88,9 @@ $(document).ready(function() {
     $("#cv-form").submit(function() {
         if ($("#action-search").is(":checked")) {
             if ($("#cv-cb-engine").is(":checked"))
-                $(".cv-search[type='hidden'][name='use_engine'").prop("disabled", true);
+                $(".cv-search[type='hidden'][name='use_engine']").prop("disabled", true);
             if ($("#cv-cb-links").is(":checked"))
-                $(".cv-search[type='hidden'][name='use_links'").prop("disabled", true);
+                $(".cv-search[type='hidden'][name='use_links']").prop("disabled", true);
         }
     });
 

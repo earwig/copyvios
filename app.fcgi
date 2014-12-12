@@ -24,9 +24,9 @@ from copyvios.sites import update_sites
 app = Flask(__name__)
 MakoTemplates(app)
 
-app.logger.setLevel(DEBUG)
-app.logger.addHandler(TimedRotatingFileHandler(
-    "logs/app.log", when="midnight", backupCount=7))
+hand = TimedRotatingFileHandler("logs/app.log", when="midnight", backupCount=7)
+hand.setLevel(DEBUG)
+app.logger.addHandler(hand)
 app.logger.info(u"Flask server started " + asctime())
 
 def catch_errors(func):

@@ -121,6 +121,7 @@ def api_json():
         return render_template("api.mako", help=False, result=result)
     resp = make_response(dumps(result))
     resp.mimetype = "application/json"
+    resp.headers["Access-Control-Allow-Origin"] = "*"
     return resp
 
 if __name__ == '__main__':

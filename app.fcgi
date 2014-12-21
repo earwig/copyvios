@@ -45,7 +45,7 @@ def catch_errors(func):
 @app.before_first_request
 def setup_app():
     cache.bot = Bot(".earwigbot", 100)
-    cache.langs, cache.projects = set(), set()
+    cache.langs, cache.projects = [], []
     cache.last_sites_update = 0
     cache.background_data = {}
     cache.last_background_updates = {}

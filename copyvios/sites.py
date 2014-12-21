@@ -65,4 +65,4 @@ def _load_sites():
                 code = site["code"]
                 langs.add((code, u"{0} ({1})".format(code, site["name"])))
                 projects |= this
-    return langs, projects
+    return list(sorted(langs)), list(sorted(projects))

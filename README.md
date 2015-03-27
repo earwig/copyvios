@@ -11,7 +11,6 @@ Dependencies
 * [earwigbot](https://github.com/earwig/earwigbot) >= 0.1
 * [flask](http://flask.pocoo.org/) >= 0.10.1
 * [flask-mako](https://pythonhosted.org/Flask-Mako/) >= 0.3
-* [flup](http://trac.saddi.com/flup) >= 1.0.3
 * [mako](http://www.makotemplates.org/) >= 0.7.2
 * [mwparserfromhell](https://github.com/earwig/mwparserfromhell) >= 0.3
 * [oursql](http://packages.python.org/oursql/) >= 0.9.3.1
@@ -22,8 +21,12 @@ Dependencies
 Running
 =======
 
-- Install all dependencies listed above. You might want to use a
-  [virtualenv](http://virtualenv.readthedocs.org/).
+- If using Tool Labs, you should clone the repository to `~/www/python/src`, or
+  otherwise symlink it to that directory. A
+  [virtualenv](http://virtualenv.readthedocs.org/) should be created at
+  `~/www/python/venv`.
+
+- Install all dependencies listed above.
 
 - Create an SQL database with the `cache` and `cache_data` tables defined by
   [earwigbot-plugins](https://github.com/earwig/earwigbot-plugins/blob/develop/tasks/schema/afc_copyvios.sql).
@@ -39,12 +42,6 @@ Running
   If additional arguments are needed by `oursql.connect()`, like usernames or
   passwords, they should be added to the `_copyviosSQL` section.
 
-- Copy `.lighttpd.conf` to the relevant location (on Tool Labs, this is in the
-  root of the project's home directory) and adjust its contents as necessary.
-
 - Run `./build.py` to minify JS and CSS files.
 
-- Adjust the hashbang in `app.fcgi` to point to the correct Python interpreter
-  or virtual environment.
-
-- Start lighttpd (on Tool Labs, `webservice start`).
+- Start the web server (on Tool Labs, `webservice2 uwsgi-python start`).

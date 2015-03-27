@@ -1,4 +1,4 @@
-#! /data/project/copyvios/env/bin/python
+#! /usr/bin/env python
 # -*- coding: utf-8  -*-
 
 from functools import wraps
@@ -12,7 +12,6 @@ from earwigbot.bot import Bot
 from earwigbot.wiki.copyvios import globalize
 from flask import Flask, g, make_response, request
 from flask.ext.mako import MakoTemplates, render_template, TemplateError
-from flup.server.fcgi import WSGIServer
 
 from copyvios.api import format_api_error, handle_api_request
 from copyvios.checker import do_check
@@ -125,4 +124,4 @@ def api_json():
     return resp
 
 if __name__ == '__main__':
-    WSGIServer(app).run()
+    app.run()

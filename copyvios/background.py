@@ -19,14 +19,12 @@ def _get_commons_site():
         return cache.bot.wiki.add_site(project="wikimedia", lang="commons")
 
 def _load_file(site, filename):
-    res = site.api_query(action="query", prop="imageinfo", iiprop="url|size",
-                         titles="File:" + filename)
-    data = res["query"]["pages"].values()[0]["imageinfo"][0]
-    url = data["url"]
-    descurl = data["descriptionurl"]
-    width = data["width"]
-    height = data["height"]
-    return filename.replace(" ", "_"), url, descurl, width, height
+    data = site.api_query(
+        action="query", prop="imageinfo", iiprop="url|size|canonicaltitle",
+        titles="File:" + filename)
+    res = data["query"]["pages"].values()[0]["imageinfo"][0]
+    name = res["canonicaltitle"][len("File:"):].replace(" ", "_")
+    return name, res["url"], res["descriptionurl"], res["width"], res["height"]
 
 def _get_fresh_potd():
     site = _get_commons_site()

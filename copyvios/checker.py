@@ -127,7 +127,7 @@ def _get_cached_results(page, conn, mode, noskip):
                        cache_possible_miss
                 FROM cache
                 WHERE cache_id = ?"""
-    query3 = """SELECT cdata_url, cdata_confidence, cdata_skipped
+    query3 = """SELECT cdata_url, cdata_confidence, cdata_skipped, cdata_excluded
                 FROM cache_data
                 WHERE cdata_cache_id = ?"""
     cache_id = buffer(sha256(mode + page.get().encode("utf8")).digest())
@@ -153,19 +153,20 @@ def _get_cached_results(page, conn, mode, noskip):
         result.cache_age = _format_date(cache_time)
         return result
 
-    url, confidence, skipped = data.pop(0)
+    url, confidence, skipped, excluded = data.pop(0)
     if skipped:  # Should be impossible: data must be bad; run a new check
         return None
     result = page.copyvio_compare(url, min_confidence=T_SUSPECT, max_time=30)
     if abs(result.confidence - confidence) >= 0.0001:
         return None
 
-    for url, confidence, skipped in data:
+    for url, confidence, skipped, excluded in data:
         if noskip and skipped:
             return None
         source = CopyvioSource(None, url)
         source.confidence = confidence
         source.skipped = bool(skipped)
+        source.excluded = bool(excluded)
         result.sources.append(source)
     result.queries = queries
     result.time = check_time
@@ -187,9 +188,10 @@ def _format_date(cache_time):
 def _cache_result(page, result, conn, mode):
     query1 = "DELETE FROM cache WHERE cache_id = ?"
     query2 = "INSERT INTO cache VALUES (?, DEFAULT, ?, ?, ?)"
-    query3 = "INSERT INTO cache_data VALUES (DEFAULT, ?, ?, ?, ?)"
+    query3 = "INSERT INTO cache_data VALUES (DEFAULT, ?, ?, ?, ?, ?)"
     cache_id = buffer(sha256(mode + page.get().encode("utf8")).digest())
-    data = [(cache_id, source.url[:1024], source.confidence, source.skipped)
+    data = [(cache_id, source.url[:1024], source.confidence, source.skipped,
+             source.excluded)
             for source in result.sources]
     with conn.cursor() as cursor:
         cursor.execute("START TRANSACTION")

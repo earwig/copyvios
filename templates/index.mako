@@ -162,6 +162,11 @@
     </div>
     <div id="cv-result" class="${'red' if result.confidence >= T_SUSPECT else 'yellow' if result.confidence >= T_POSSIBLE else 'green'}-box">
         <table id="cv-result-head-table">
+            <colgroup>
+                <col>
+                <col>
+                <col>
+            </colgroup>
             <tr>
                 <td>
                     <a href="${query.page.url}">${query.page.title | h}</a>
@@ -204,6 +209,11 @@
             <div id="sources-title">Checked Sources</div>
             % if result.sources:
                 <table id="cv-result-sources">
+                    <colgroup>
+                        <col>
+                        <col>
+                        <col>
+                    </colgroup>
                     <tr>
                         <th>URL</th>
                         <th>Confidence</th>

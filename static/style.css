@@ -335,6 +335,7 @@ span.source-suspect    { color: #900; }
 span.source-possible   { color: #990; }
 span.source-novio      { color: #090; }
 span.source-skipped    { font-style: italic; }
+span.source-excluded   { font-style: italic; }
 
 a:link    { color: #373; text-decoration: none; }
 a:visited { color: #373; text-decoration: none; }

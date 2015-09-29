@@ -223,7 +223,9 @@
                         <tr ${'class="source-default-hidden"' if i >= 10 else 'id="source-row-selected"' if i == 0 else ""}>
                             <td><a ${'id="source-selected"' if i == 0 else ""} class="source-url" href="${source.url | h}">${source.url | h}</a></td>
                             <td>
-                                % if source.skipped:
+                                % if source.excluded:
+                                    <span class="source-excluded">Excluded</span>
+                                % elif source.skipped:
                                     <% skips = True %>
                                     <span class="source-skipped">Skipped</span>
                                 % else:

@@ -72,6 +72,36 @@ function delete_cookie(name) {
     set_cookie(name, "", -1);
 }
 
+function toggle_notice() {
+    var details = $("#notice-collapse-box"),
+        trigger = $("#notice-collapse-trigger");
+    if (details.is(":hidden")) {
+        details.show();
+        trigger.text("[hide]");
+    }
+    else {
+        details.hide();
+        trigger.text("[show]");
+    }
+}
+
+function install_notice() {
+    var details = $("#notice-collapse-box"),
+        trigger = $("#notice-collapse-trigger");
+    if (details.length >= 0 && trigger.length >= 0) {
+        trigger.replaceWith($("<a/>", {
+            id: "notice-collapse-trigger",
+            href: "#",
+            text: "[show]",
+            click: function() {
+                toggle_notice();
+                return false;
+            }
+        }));
+        details.hide();
+    }
+}
+
 $(document).ready(function() {
     $("#action-search").change(function() {
         $(".cv-search").prop("disabled", false);
@@ -94,7 +124,7 @@ $(document).ready(function() {
         }
     });
 
-    if ($("#cv-additional").length) {
+    if ($("#cv-additional").length >= 0) {
         $("#cv-additional").css("display", "block");
         $(".source-default-hidden").css("display", "none");
         $("#show-additional-sources").click(function() {
@@ -103,4 +133,6 @@ $(document).ready(function() {
             return false;
         });
     }
+
+    install_notice();
 });

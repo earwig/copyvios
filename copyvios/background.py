@@ -39,6 +39,9 @@ def _get_fresh_list():
     page = site.get_page("User:The Earwig/POTD")
     regex = ur"\*\*?\s*\[\[:File:(.*?)\]\]"
     filenames = re.findall(regex, page.get())
+
+    # Ensure all workers share the same background each day:
+    random.seed(datetime.utcnow().strftime("%Y%m%d"))
     filename = random.choice(filenames)
     return _load_file(site, filename)
 
@@ -66,7 +69,7 @@ def _get_background(selected):
     if datetime.utcnow() > max_age:
         update_func = _BACKGROUNDS.get(selected, _get_fresh_list)
         cache.background_data[selected] = update_func()
-        cache.last_background_updates[selected] = datetime.utcnow()
+        cache.last_background_updates[selected] = datetime.utcnow().date()
     return cache.background_data[selected]
 
 def set_background(selected):

@@ -80,7 +80,7 @@ def close_databases(error):
     if g._db:
         g._db.close()
 
-def external_url_handler(error, endpoint, **values):
+def external_url_handler(error, endpoint, values):
     if endpoint == "static" and "file" in values:
         fpath = path.join(app.static_folder, values["file"])
         mtime = path.getmtime(fpath)
@@ -94,7 +94,7 @@ def external_url_handler(error, endpoint, **values):
         return "/static/{0}?v={1}".format(values["file"], hashstr)
     raise error
 
-app.build_error_handler = external_url_handler
+app.url_build_error_handlers.append(external_url_handler)
 
 @app.route("/")
 @catch_errors

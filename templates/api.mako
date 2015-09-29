@@ -215,8 +215,8 @@
             "url":        <span class="resp-dtype">string</span> <span class="resp-desc">the URL of the source</span>,
             "confidence": <span class="resp-dtype">float</span> <span class="resp-desc">the confidence of a violation in the source</span>,
             "violation":  <span class="resp-dtype">string</span> <span class="resp-desc">one of "suspected", "possible", or "none"</span>,
-            "skipped":    <span class="resp-dtype">boolean</span> <span class="resp-desc">whether the source was skipped due to the check finishing early (see note about noskip above)</span>,
-            "excluded":    <span class="resp-dtype">boolean</span> <span class="resp-desc">whether the source was skipped for being in the excluded URL list ("skipped" will also be true in this case, even when using noskip)</span>
+            "skipped":    <span class="resp-dtype">boolean</span> <span class="resp-desc">whether the source was skipped due to the check finishing early (see note about noskip above) or an exclusion</span>,
+            "excluded":    <span class="resp-dtype">boolean</span> <span class="resp-desc">whether the source was skipped for being in the excluded URL list</span>
         },
         ...
     ]

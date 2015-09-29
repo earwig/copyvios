@@ -170,6 +170,7 @@ table#cv-chain-table {
     width: 100%;
     margin-bottom: 10px;
     border-spacing: 0;
+    table-layout: fixed;
 }
 
 tr#source-row-selected {
@@ -286,8 +287,8 @@ div.cv-chain-detail {
 }
 
 td.cv-chain-cell {
-    width: 50%;
     vertical-align: top;
+    word-wrap: break-word;
 }
 
 td.cv-chain-cell:first-child {

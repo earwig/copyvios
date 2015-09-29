@@ -2,9 +2,11 @@
 # -*- coding: utf-8  -*-
 
 from functools import wraps
+from hashlib import md5
 from json import dumps
 from logging import DEBUG, INFO, getLogger
 from logging.handlers import TimedRotatingFileHandler
+from os import path
 from time import asctime
 from traceback import format_exc
 
@@ -27,6 +29,7 @@ hand = TimedRotatingFileHandler("logs/app.log", when="midnight", backupCount=7)
 hand.setLevel(DEBUG)
 app.logger.addHandler(hand)
 app.logger.info(u"Flask server started " + asctime())
+app._hash_cache = {}
 
 def catch_errors(func):
     @wraps(func)
@@ -76,6 +79,22 @@ def write_access_log(response):
 def close_databases(error):
     if g._db:
         g._db.close()
+
+def external_url_handler(error, endpoint, **values):
+    if endpoint == "static" and "file" in values:
+        fpath = path.join(app.static_folder, values["file"])
+        mtime = path.getmtime(fpath)
+        cache = app._hash_cache.get(fpath)
+        if cache and cache[0] == mtime:
+            hashstr = cache[1]
+        else:
+            with open(fpath, "rb") as f:
+                hashstr = md5(f.read()).hexdigest()
+            app._hash_cache[fpath] = (mtime, hashstr)
+        return "/static/{0}?v={1}".format(values["file"], hashstr)
+    raise error
+
+app.build_error_handler = external_url_handler
 
 @app.route("/")
 @catch_errors

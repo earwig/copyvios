@@ -1,4 +1,7 @@
-<%! from json import dumps %>\
+<%!
+    from json import dumps
+    from flask import url_for
+%>\
 <%def name="do_indent(size)">
     <br />
     % for i in xrange(size):
@@ -31,7 +34,7 @@
     <head>
         <meta charset="utf-8">
         <title>API - Earwig's Copyvio Detector</title>
-        <link rel="stylesheet" href="${request.script_root}/static/api.min.css" type="text/css" />
+        <link rel="stylesheet" href="${request.script_root}$(url_for('static', file='api.min.css')" type="text/css" />
     </head>
     <body>
         % if help:

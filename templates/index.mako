@@ -6,6 +6,11 @@
 <%include file="/support/header.mako" args="title='Earwig\'s Copyvio Detector'"/>
 <%namespace module="copyvios.highlighter" import="highlight_delta"/>\
 <%namespace module="copyvios.misc" import="httpsfix, urlstrip"/>\
+% if notice:
+    <div id="notice-box" class="gray-box">
+        ${notice}
+    </div>
+% endif
 % if query.submitted:
     % if query.error:
         <div id="info-box" class="red-box"><p>

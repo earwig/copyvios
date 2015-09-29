@@ -16,7 +16,7 @@ from flask.ext.mako import MakoTemplates, render_template, TemplateError
 from copyvios.api import format_api_error, handle_api_request
 from copyvios.checker import do_check
 from copyvios.cookies import parse_cookies
-from copyvios.misc import cache
+from copyvios.misc import cache, get_notice
 from copyvios.settings import process_settings
 from copyvios.sites import update_sites
 
@@ -80,9 +80,11 @@ def close_databases(error):
 @app.route("/")
 @catch_errors
 def index():
+    notice = get_notice()
     update_sites()
     query = do_check()
-    return render_template("index.mako", query=query, result=query.result)
+    return render_template(
+        "index.mako", notice=notice, query=query, result=query.result)
 
 @app.route("/settings", methods=["GET", "POST"])
 @catch_errors

@@ -8,7 +8,7 @@ from sqlalchemy.pool import manage
 
 oursql = manage(oursql)
 
-__all__ = ["Query", "cache", "get_db", "httpsfix", "urlstrip"]
+__all__ = ["Query", "cache", "get_db", "get_notice", "httpsfix", "urlstrip"]
 
 class Query(object):
     def __init__(self, method="GET"):
@@ -48,6 +48,16 @@ def get_db():
         args["autoreconnect"] = True
         g._db = oursql.connect(**args)
     return g._db
+
+def get_notice():
+    try:
+        with open(expanduser("~/copyvios_notice.html")) as fp:
+            lines = fp.read().decode("utf8").strip().splitlines()
+            if lines[0] == "<!-- active -->":
+                return "\n".join(lines[1:])
+            return None
+    except IOError:
+        return None
 
 def httpsfix(context, url):
     if url.startswith("http://"):

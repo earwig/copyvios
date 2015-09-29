@@ -44,9 +44,23 @@ div#footer {
     background: #DDDDDD;
 }
 
+div#notice-box {
+    padding: 10px;
+    margin: 10px 5px;
+}
+
+div#notice-box p {
+    margin: 0.25em 0;
+}
+
+div#notice-box ul {
+    padding-left: 1.5em;
+    margin: 0;
+}
+
 div#info-box {
-    padding: 0 10px 0 10px;
-    margin: 10px 5px 10px 5px;
+    padding: 0 10px;
+    margin: 10px 5px;
 }
 
 div#cv-result {
@@ -233,6 +247,11 @@ div.yellow-box {
 div.red-box {
     background-color: #FEE;
     border: 1px solid #F77;
+}
+
+div.gray-box {
+    background-color: #EEE;
+    border: 1px solid #AAA;
 }
 
 div.indentable {

@@ -34,7 +34,7 @@
     <head>
         <meta charset="utf-8">
         <title>API - Earwig's Copyvio Detector</title>
-        <link rel="stylesheet" href="${request.script_root}$(url_for('static', file='api.min.css')" type="text/css" />
+        <link rel="stylesheet" href="${request.script_root}${url_for('static', file='api.min.css')}" type="text/css" />
     </head>
     <body>
         % if help:

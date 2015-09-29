@@ -37,6 +37,7 @@ def _serialize_source(source, show_skip=True):
     ))
     if show_skip:
         data["skipped"] = source.skipped
+        data["excluded"] = source.excluded
     return data
 
 def format_api_error(code, info):

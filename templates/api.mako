@@ -193,8 +193,8 @@
     "meta": {
         "time":       <span class="resp-dtype">float</span> <span class="resp-desc">time to generate results, in seconds</span>,
         "queries":    <span class="resp-dtype">int</span> <span class="resp-desc">number of search engine queries made</span>,
-        "cached":     <span class="resp-dtype">boolean</span> <span class="resp-desc">whether or not these results are cached from an earlier search (always false in the case of action=compare)</span>,
-        "redirected": <span class="resp-dtype">boolean</span> <span class="resp-desc">whether or not a redirect was followed</span>,
+        "cached":     <span class="resp-dtype">boolean</span> <span class="resp-desc">whether these results are cached from an earlier search (always false in the case of action=compare)</span>,
+        "redirected": <span class="resp-dtype">boolean</span> <span class="resp-desc">whether a redirect was followed</span>,
         <span class="resp-cond">only if cached=true</span> "cache_time": <span class="resp-dtype">string</span> <span class="resp-desc">human-readable time of the original search that the results are cached from</span>
     },
     "page": {
@@ -215,12 +215,13 @@
             "url":        <span class="resp-dtype">string</span> <span class="resp-desc">the URL of the source</span>,
             "confidence": <span class="resp-dtype">float</span> <span class="resp-desc">the confidence of a violation in the source</span>,
             "violation":  <span class="resp-dtype">string</span> <span class="resp-desc">one of "suspected", "possible", or "none"</span>,
-            "skipped":    <span class="resp-dtype">boolean</span> <span class="resp-desc">whether or not the source was skipped due to the check finishing early (see note about noskip above)</span>
+            "skipped":    <span class="resp-dtype">boolean</span> <span class="resp-desc">whether the source was skipped due to the check finishing early (see note about noskip above)</span>,
+            "excluded":    <span class="resp-dtype">boolean</span> <span class="resp-desc">whether the source was skipped for being in the excluded URL list ("skipped" will also be true in this case, even when using noskip)</span>
         },
         ...
     ]
 }</pre>
-                <p>In the case of <span class="code">action=search</span>, <span class="code">sources</span> will contain one entry for each source checked (or skipped if the check ends early), sorted in order of confidence, with skipped sources at the bottom.</p>
+                <p>In the case of <span class="code">action=search</span>, <span class="code">sources</span> will contain one entry for each source checked (or skipped if the check ends early), sorted in order of confidence, with skipped and excluded sources at the bottom.</p>
                 <p>In the case of <span class="code">action=compare</span>, <span class="code">best</span> will always contain information about the URL that was given, so <span class="code">response["best"]["url"]</span> will never be <span class="code">null</span>. Also, <span class="code">sources</span> will always contain one entry, with the same data as <span class="code">best</span>, since only one source is checked in comparison mode.</p>
                 <p>Valid responses for <span class="code">action=sites</span> are formatted like this:</p>
                 <pre>{
@@ -246,7 +247,7 @@
                     <li>Requests are typically not rate-limited, but the tool uses the same workers to handle all requests, so making simultaneous API calls is only going to slow you down. In general, you are fine making an unlimited number of requests, as long as they are not concurrent and you wait a few seconds between them.</li>
                 </ul>
                 <h2>Example</h2>
-                <p><a class="no-color" href="https://tools.wmflabs.org/copyvios/api.json?version=1&amp;action=search&amp;project=wikipedia&amp;lang=en&amp;title=User:The_Earwig/Sandbox/CopyvioExample"><span class="code">https://tools.wmflabs.org/copyvios/api.json?<span class="param-key">version</span>=<span class="param-val">1</span>&amp;<span class="param-key">action</span>=<span class="param-val">search</span>&amp;<span class="param-key">project</span>=<span class="param-val">wikipedia</span>&amp;<span class="param-key">lang</span>=<span class="param-val">en</span>&amp;<span class="param-key">title</span>=<span class="param-val">User:The_Earwig/Sandbox/CopyvioExample</span></span></a></p>
+                <p><a class="no-color" href="https://tools.wmflabs.org/copyvios/api.json?version=1&amp;action=search&amp;project=wikipedia&amp;lang=en&amp;title=User:EarwigBot/Copyvios/Tests/2"><span class="code">https://tools.wmflabs.org/copyvios/api.json?<span class="param-key">version</span>=<span class="param-val">1</span>&amp;<span class="param-key">action</span>=<span class="param-val">search</span>&amp;<span class="param-key">project</span>=<span class="param-val">wikipedia</span>&amp;<span class="param-key">lang</span>=<span class="param-val">en</span>&amp;<span class="param-key">title</span>=<span class="param-val">User:EarwigBot/Copyvios/Tests/2</span></span></a></p>
                 <pre>{
     "status": "ok",
     "meta": {
@@ -256,8 +257,8 @@
         "redirected": false
     },
     "page": {
-        "title": "User:The Earwig/Sandbox/CopyvioExample",
-        "url": "https://en.wikipedia.org/wiki/User:The_Earwig/Sandbox/CopyvioExample"
+        "title": "User:EarwigBot/Copyvios/Tests/2",
+        "url": "https://en.wikipedia.org/wiki/User:EarwigBot/Copyvios/Tests/2"
     },
     "best": {
         "url": "http://www.whitehouse.gov/administration/president-obama/",
@@ -269,31 +270,36 @@
             "url": "http://www.whitehouse.gov/administration/president-obama/",
             "confidence": 0.9886608511242603,
             "violation": "suspected",
-            "skipped": false
+            "skipped": false,
+            "excluded": false
         },
         {
             "url": "http://maige2009.blogspot.com/2013/07/barack-h-obama-is-44th-president-of.html",
             "confidence": 0.9864798816568047,
             "violation": "suspected",
-            "skipped": false
+            "skipped": false,
+            "excluded": false
         },
         {
             "url": "http://jeuxdemonstre-apkdownload.rhcloud.com/luo-people-of-kenya-and-tanzania---wikipedia--the-free",
             "confidence": 0.0,
             "violation": "none",
-            "skipped": false
+            "skipped": false,
+            "excluded": false
         },
         {
             "url": "http://www.whitehouse.gov/about/presidents/barackobama",
             "confidence": 0.0,
             "violation": "none",
-            "skipped": true
+            "skipped": true,
+            "excluded": false
         },
         {
             "url": "http://jeuxdemonstre-apkdownload.rhcloud.com/president-barack-obama---the-white-house",
             "confidence": 0.0,
             "violation": "none",
-            "skipped": true
+            "skipped": true,
+            "excluded": false
         }
     ]
 }

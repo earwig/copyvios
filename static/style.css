@@ -128,7 +128,7 @@ table#cv-result-sources tr:nth-child(even) {
 
 table#cv-result-sources td:first-child {
     overflow: hidden;
-    word-break: break-all;
+    word-wrap: break-word;
 }
 
 table#cv-result-head-table {
@@ -149,7 +149,7 @@ table#cv-result-head-table td:nth-child(odd) {
     font-size: 1.25em;
     font-weight: bold;
     overflow: hidden;
-    word-break: break-all;
+    word-wrap: break-word;
 }
 
 table#cv-result-head-table td:nth-child(2) div:nth-child(1) {

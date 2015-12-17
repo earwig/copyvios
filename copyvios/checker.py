@@ -11,6 +11,7 @@ from earwigbot.wiki.copyvios.result import CopyvioSource, CopyvioCheckResult
 
 from .misc import Query, get_db
 from .sites import get_site
+from .turnitin import search_turnitin
 
 __all__ = ["do_check", "T_POSSIBLE", "T_SUSPECT"]
 
@@ -63,9 +64,16 @@ def _get_results(query, follow=True):
         conn = get_db()
         use_engine = 0 if query.use_engine in ("0", "false") else 1
         use_links = 0 if query.use_links in ("0", "false") else 1
+        use_turnitin = 0 if query.turnitin in ("0", "false") else 1
         if not use_engine and not use_links:
             query.error = "no search method"
             return
+
+        # Handle the turnitin check
+        if use_turnitin:
+            query.turnitin_result = search_turnitin(query.title, query.lang)
+
+        # Handle the copyvio check
         mode = "{0}:{1}:".format(use_engine, use_links)
         if not _coerce_bool(query.nocache):
             query.result = _get_cached_results(

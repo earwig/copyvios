@@ -103,7 +103,8 @@ def index():
     update_sites()
     query = do_check()
     return render_template(
-        "index.mako", notice=notice, query=query, result=query.result)
+        "index.mako", notice=notice, query=query, result=query.result,
+        turnitin_result=query.turnitin_result)
 
 @app.route("/settings", methods=["GET", "POST"])
 @catch_errors

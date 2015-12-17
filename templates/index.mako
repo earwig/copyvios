@@ -113,6 +113,10 @@
                             <input class="cv-search" type="hidden" name="use_links" value="0" />
                             <input id="cv-cb-links" class="cv-search" type="checkbox" name="use_links" value="1" ${'checked="checked"' if (query.use_links != "0") else ""} />
                             <label for="cv-cb-links">Use&nbsp;links&nbsp;in&nbsp;page</label>
+                            <input class="cv-search" type="hidden" name="use_links" value="0" />
+                            <br>
+                            <input id="cv-cb-turnitin" class="cv-search" type="checkbox" name="turnitin" value="1" ${'checked="checked"' if (query.turnitin != "0") else ""}/>
+                            <label for="cv-cb-turnitin">Find&nbsp;reports&nbsp;through&nbsp;Turnitin</label>
                         </td>
                     </tr>
                     <tr>
@@ -160,6 +164,31 @@
         % endif
         <a href="${request.script_root | h}?lang=${query.lang | h}&amp;project=${query.project | h}&amp;oldid=${query.oldid or query.page.lastrevid | h}&amp;action=${query.action | h}&amp;${"use_engine={0}&use_links={1}".format(int(query.use_engine not in ("0", "false")), int(query.use_links not in ("0", "false"))) if query.action == "search" else "" | h}${"url=" if query.action == "compare" else ""}${query.url if query.action == "compare" else "" | u}">Permalink.</a>
     </div>
+
+    % if query.turnitin:
+        <div id="turnitin-result" class="${'red' if query.turnitin_result else 'green'}-box">
+            <p>Turnitin results (this should be centered like "checked sources")</p>
+            % if query.turnitin_result:
+                Turnitin (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found revisions that may have been plagiarized. Please review them. (Does this need some sort of p tag or something?)
+
+                %for report in turnitin_result.reports:
+                <ul>
+                    <li><a href="https://tools.wmflabs.org/eranbot/ithenticate.py?rid=${report.reportid}">Turnitin report</a>
+                    <ul>
+                    % for source in report.sources:
+                          <li> ${source['percent']}% of revision text (${source['words']} words) found at <a href="${source['url']}">${source['url']}</a></li>
+                    % endfor
+                    </ul></li>
+                %endfor
+                </ul>
+                ${turnitin_result}
+
+            % else:
+                Turnitin (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found no matching sources.
+            % endif
+        </div>
+    % endif
+
     <div id="cv-result" class="${'red' if result.confidence >= T_SUSPECT else 'yellow' if result.confidence >= T_POSSIBLE else 'green'}-box">
         <table id="cv-result-head-table">
             <colgroup>

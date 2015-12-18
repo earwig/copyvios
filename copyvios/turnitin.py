@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""TODO: Docstrings, tests?, documentation of input/output formats (esp. nested data structures woe)"""
+"""TODO: Docstrings, tests?, documentation of input/output formats (esp. nested data structures)"""
 
 from ast import literal_eval
 import re
@@ -11,12 +11,17 @@ __all__ = ['search_turnitin', 'TURNITIN_API_ENDPOINT']
 TURNITIN_API_ENDPOINT = 'http://tools.wmflabs.org/eranbot/plagiabot/api.py'
 
 def search_turnitin(page_title, lang):
-    """ returns a list of tuples, one per report, each containing report id and data from the report"""
-    turnitin_data = _parse_reports(_make_api_request('The quick brown fox jumps over the lazy dog', lang))
+    """ returns a TurnitinResult, containing a list of TurnitinReport items, each containing report id and a list of dicts with data from the report"""
+    turnitin_data = _parse_plagiabot_result(_make_api_request(
+        'The quick brown fox jumps over the lazy dog', lang))  # FIXME: replace with page_title when the earwigbot dev setup is working properly
     turnitin_result = TurnitinResult(turnitin_data)
     return turnitin_result
 
 def _make_api_request(page_title, lang):
+    """ Query the plagiabot API for Turnitin reports for a given page
+    page_title : string containing title of the page in question
+    lang : string containing language code for the current project
+    """
     stripped_page_title = page_title.replace(' ', '_')
     api_parameters = {'action': 'suspected_diffs',
                       'page_title': stripped_page_title,
@@ -24,16 +29,19 @@ def _make_api_request(page_title, lang):
                       'report': 1}
 
     result = requests.get(TURNITIN_API_ENDPOINT, params=api_parameters)
-    parsed_result = literal_eval(result.text)  # should be ok with encoding, content-type utf-8
-    return parsed_result
+    # use literal_eval to *safely* parse the resulting dict-containing string
+    parsed_api_result = literal_eval(result.text)
+    return parsed_api_result
 
-def _parse_reports(turnitin_api_result):
-    reports_data = []
+def _parse_plagiabot_result(turnitin_api_result):
+    result_data = []
     for item in turnitin_api_result:
-        reports_data.append(_regex_magic(item['report']))
-    return reports_data
+        reports_data.append(_parse_report(item['report']))
+    return result_data
 
-def _regex_magic(report):
+def _parse_report(report):
+    """ Given the "report" bit from the plagiabot API, extract the report ID and the percent/words/url
+    """
     # ~magic~
     report_id_pattern = re.compile(r'\?rid=(\d*)')
     report_id = report_id_pattern.search(report).groups()[0]
@@ -44,6 +52,12 @@ def _regex_magic(report):
     return (report_id, results)
 
 class TurnitinResult:
+    """ Container class for TurnitinReports. Each page may have zero or
+    more reports of plagiarism, if plagiarism has been detected for
+    different revisions.
+
+    TurnitinResult.reports : list containing zero or more TurnitinReports
+    """
     def __init__(self, turnitin_data):
         self.reports = []
         for item in turnitin_data:
@@ -54,6 +68,10 @@ class TurnitinResult:
         return str(self.__dict__)
 
 class TurnitinReport:
+    """ Contains data for each Turnitin report.
+    TurnitinReport.sources : list of dicts with info from each source
+    TurnitinReport.reportid : Turnitin report ID, taken from plagiabot
+    """
     def __init__(self, data):
         self.reportid = data[0]
 

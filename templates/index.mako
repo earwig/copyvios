@@ -150,6 +150,7 @@
         </tr>
     </table>
 </form>
+
 % if result:
     <div id="generation-time">
         Results
@@ -166,14 +167,14 @@
     </div>
 
     % if query.turnitin:
-        <div id="turnitin-result" class="${'red' if query.turnitin_result else 'green'}-box">
-            <p>Turnitin results (this should be centered like "checked sources")</p>
-            % if query.turnitin_result:
-                Turnitin (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found revisions that may have been plagiarized. Please review them. (Does this need some sort of p tag or something?)
+        <div id="turnitin-container" class="${'red' if query.turnitin_result.reports else 'green'}-box">
+            <div id="turnitin-title">Turnitin Results</div>
+            % if query.turnitin_result.reports:
+                <p>Turnitin (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found revisions that may have been plagiarized. Please review them.</p>
 
                 %for report in turnitin_result.reports:
                 <ul>
-                    <li><a href="https://tools.wmflabs.org/eranbot/ithenticate.py?rid=${report.reportid}">Turnitin report</a>
+                    <li><a href="https://tools.wmflabs.org/eranbot/ithenticate.py?rid=${report.reportid}">Turnitin report ${report.reportid}</a>
                     <ul>
                     % for source in report.sources:
                           <li> ${source['percent']}% of revision text (${source['words']} words) found at <a href="${source['url']}">${source['url']}</a></li>
@@ -181,10 +182,9 @@
                     </ul></li>
                 %endfor
                 </ul>
-                ${turnitin_result}
 
             % else:
-                Turnitin (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found no matching sources.
+                <p>Turnitin (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found no matching sources.</p>
             % endif
         </div>
     % endif

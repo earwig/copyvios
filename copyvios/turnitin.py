@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-"""TODO: Docstrings, tests?, documentation of input/output formats (esp. nested data structures)"""
-
 from ast import literal_eval
 import re
 
@@ -11,16 +9,22 @@ __all__ = ['search_turnitin', 'TURNITIN_API_ENDPOINT']
 TURNITIN_API_ENDPOINT = 'http://tools.wmflabs.org/eranbot/plagiabot/api.py'
 
 def search_turnitin(page_title, lang):
-    """ returns a TurnitinResult, containing a list of TurnitinReport items, each containing report id and a list of dicts with data from the report"""
+    """ Search the Plagiabot database for Turnitin reports for a page.
+
+    Keyword arguments:
+    page_title -- string containing the page title
+    lang       -- string containing the page's project language code
+
+    Return a TurnitinResult (containing a list of TurnitinReports, with
+    report ID and source data).
+    """
     turnitin_data = _parse_plagiabot_result(_make_api_request(
-        'The quick brown fox jumps over the lazy dog', lang))  # FIXME: replace with page_title when the earwigbot dev setup is working properly
+        page_title, lang))
     turnitin_result = TurnitinResult(turnitin_data)
     return turnitin_result
 
 def _make_api_request(page_title, lang):
-    """ Query the plagiabot API for Turnitin reports for a given page
-    page_title : string containing title of the page in question
-    lang : string containing language code for the current project
+    """ Query the plagiabot API for Turnitin reports for a given page.
     """
     stripped_page_title = page_title.replace(' ', '_')
     api_parameters = {'action': 'suspected_diffs',
@@ -36,16 +40,15 @@ def _make_api_request(page_title, lang):
 def _parse_plagiabot_result(turnitin_api_result):
     result_data = []
     for item in turnitin_api_result:
-        reports_data.append(_parse_report(item['report']))
+        result_data.append(_parse_report(item['report']))
     return result_data
 
 def _parse_report(report):
-    """ Given the "report" bit from the plagiabot API, extract the report ID and the percent/words/url
-    """
-    # ~magic~
+    # extract report ID
     report_id_pattern = re.compile(r'\?rid=(\d*)')
     report_id = report_id_pattern.search(report).groups()[0]
 
+    # extract percent match, words, and URL for each source in the report
     extract_info_pattern = re.compile(r'\n\* \w\s+(\d*)\% (\d*) words at \[(.*?) ')
     results = extract_info_pattern.findall(report)
 
@@ -53,12 +56,18 @@ def _parse_report(report):
 
 class TurnitinResult:
     """ Container class for TurnitinReports. Each page may have zero or
-    more reports of plagiarism, if plagiarism has been detected for
-    different revisions.
+    more reports of plagiarism. The list will have multiple
+    TurnitinReports if plagiarism has been detected for more than one
+    revision.
 
-    TurnitinResult.reports : list containing zero or more TurnitinReports
+    TurnitinResult.reports -- list containing >= 0 TurnitinReport items
     """
     def __init__(self, turnitin_data):
+        """
+        Keyword argument:
+        turnitin_data -- list of tuples with data on each report; see
+                         TurnitinReport.__init__ for the contents.
+        """
         self.reports = []
         for item in turnitin_data:
             report = TurnitinReport(item)
@@ -68,11 +77,26 @@ class TurnitinResult:
         return str(self.__dict__)
 
 class TurnitinReport:
-    """ Contains data for each Turnitin report.
-    TurnitinReport.sources : list of dicts with info from each source
-    TurnitinReport.reportid : Turnitin report ID, taken from plagiabot
+    """ Contains data for each Turnitin report (one on each potentially
+    plagiarized revision).
+
+    TurnitinReport.reportid -- Turnitin report ID, taken from plagiabot
+    TurnitinReport.sources -- list of dicts with information on:
+        percent -- percent of revision found in source as well
+        words   -- number of words found in both source and revision
+        url     -- url for the possibly-plagiarized source
     """
     def __init__(self, data):
+        """
+        Keyword argument:
+        data -- tuple containing report data. All values are strings.
+            data[0] -- turnitin report ID
+            data[1] -- list of tuples with data on each source in the
+                       report
+               data[<index>][0] -- percent of revision found in source
+               data[<index>][1] -- number of words matching the source
+               data[<index>][2] -- url for the matched source
+        """
         self.reportid = data[0]
 
         self.sources = []

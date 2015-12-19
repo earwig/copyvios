@@ -114,9 +114,8 @@
                             <input id="cv-cb-links" class="cv-search" type="checkbox" name="use_links" value="1" ${'checked="checked"' if (query.use_links != "0") else ""} />
                             <label for="cv-cb-links">Use&nbsp;links&nbsp;in&nbsp;page</label>
                             <input class="cv-search" type="hidden" name="use_links" value="0" />
-                            <br>
-                            <input id="cv-cb-turnitin" class="cv-search" type="checkbox" name="turnitin" value="1" ${'checked="checked"' if (query.turnitin != "0") else ""}/>
-                            <label for="cv-cb-turnitin">Find&nbsp;reports&nbsp;through&nbsp;Turnitin</label>
+                            <span style="white-space:nowrap"><input id="cv-cb-turnitin" class="cv-search" type="checkbox" name="turnitin" value="1" ${'checked="checked"' if (query.turnitin != "0") else ""}/>
+                            <label for="cv-cb-turnitin">Search&nbsp;Turnitin&nbsp;reports</label></span>
                         </td>
                     </tr>
                     <tr>
@@ -172,16 +171,18 @@
             % if query.turnitin_result.reports:
                 <p>Turnitin (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found revisions that may have been plagiarized. Please review them.</p>
 
+                <table id="turnitin-table"><tbody>
+                ## TODO: make this prettier/tabular
                 %for report in turnitin_result.reports:
-                <ul>
-                    <li><a href="https://tools.wmflabs.org/eranbot/ithenticate.py?rid=${report.reportid}">Turnitin report ${report.reportid}</a>
+                    <tr><td><a href="https://tools.wmflabs.org/eranbot/ithenticate.py?rid=${report.reportid}">Turnitin report ${report.reportid} for text added in revision ${loop.index}</a>
+## TODO: Rework this to something like: [Turnitin report](link) for [revision at timestamp](diff link). Requires API-result-parsing/TurnitinReport changes. Shouldn't be too bad. Reason: needs to make it clear that Turnitin is looking at individual revisions; current report does not.
                     <ul>
                     % for source in report.sources:
                           <li> ${source['percent']}% of revision text (${source['words']} words) found at <a href="${source['url']}">${source['url']}</a></li>
                     % endfor
-                    </ul></li>
+                    </ul></td></tr>
                 %endfor
-                </ul>
+                </tbody></table>
 
             % else:
                 <p>Turnitin (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found no matching sources.</p>

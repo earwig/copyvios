@@ -172,10 +172,8 @@
                 <p>Turnitin (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found revisions that may have been plagiarized. Please review them.</p>
 
                 <table id="turnitin-table"><tbody>
-                ## TODO: make this prettier/tabular
                 %for report in turnitin_result.reports:
-                    <tr><td><a href="https://tools.wmflabs.org/eranbot/ithenticate.py?rid=${report.reportid}">Turnitin report ${report.reportid} for text added in revision ${loop.index}</a>
-## TODO: Rework this to something like: [Turnitin report](link) for [revision at timestamp](diff link). Requires API-result-parsing/TurnitinReport changes. Shouldn't be too bad. Reason: needs to make it clear that Turnitin is looking at individual revisions; current report does not.
+                    <tr><td id="turnitin-table-cell"><a href="https://tools.wmflabs.org/eranbot/ithenticate.py?rid=${report.reportid}">Turnitin report ${report.reportid}</a> for text added <a href="https://${query.lang}.wikipedia.org/w/index.php?title=${query.title}&diff=${report.diffid}"> at ${report.time_posted}</a>:
                     <ul>
                     % for source in report.sources:
                           <li> ${source['percent']}% of revision text (${source['words']} words) found at <a href="${source['url']}">${source['url']}</a></li>
@@ -183,7 +181,6 @@
                     </ul></td></tr>
                 %endfor
                 </tbody></table>
-
             % else:
                 <p>Turnitin (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found no matching sources.</p>
             % endif

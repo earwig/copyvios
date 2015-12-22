@@ -1,5 +1,6 @@
 # -*- coding: utf-8  -*-
 
+import datetime
 from os.path import expanduser
 
 from flask import g, request
@@ -63,6 +64,9 @@ def httpsfix(context, url):
     if url.startswith("http://"):
         url = url[len("http:"):]
     return url
+
+def parse_wiki_timestamp(timestamp):
+    return datetime.datetime.strptime(timestamp, '%Y%m%d%H%M%S')
 
 def urlstrip(context, url):
     if url.startswith("http://"):

@@ -115,7 +115,7 @@
                             <label for="cv-cb-links">Use&nbsp;links&nbsp;in&nbsp;page</label>
                             <input class="cv-search" type="hidden" name="use_links" value="0" />
                             <span style="white-space:nowrap"><input id="cv-cb-turnitin" class="cv-search" type="checkbox" name="turnitin" value="1" ${'checked="checked"' if (query.turnitin != "0") else ""}/>
-                            <label for="cv-cb-turnitin">Search&nbsp;Turnitin&nbsp;reports</label></span>
+                            <label for="cv-cb-turnitin">Use&nbsp;Turnitin&nbsp;database</label></span>
                         </td>
                     </tr>
                     <tr>

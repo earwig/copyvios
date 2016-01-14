@@ -233,11 +233,7 @@
                                 % endif
                             </td>
                             <td>
-                                % if i == 0:
-                                    <a href="#cv-chain-table">Compare</a>
-                                % else:
-                                    <a href="${request.script_root | h}?lang=${query.lang | h}&amp;project=${query.project | h}&amp;oldid=${query.oldid or query.page.lastrevid | h}&amp;action=compare&amp;url=${source.url | u}">Compare</a>
-                                % endif
+                                <a href="${request.script_root | h}?lang=${query.lang | h}&amp;project=${query.project | h}&amp;oldid=${query.oldid or query.page.lastrevid | h}&amp;action=compare&amp;url=${source.url | u}">Compare</a>
                             </td>
                         </tr>
                     % endfor

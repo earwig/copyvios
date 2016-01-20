@@ -17,7 +17,7 @@
             % if query.error == "bad action":
                 Unknown action: <b><span class="mono">${query.action | h}</span></b>.
             % elif query.error == "no search method":
-                No copyvio search methods were selected. A check can only be made using a search engine, links present in the page, or both.
+                No copyvio search methods were selected. A check can only be made using the search engine, links present in the page, Turnitin, or some combination of these.
             % elif query.error == "no URL":
                 URL comparison mode requires a URL to be entered. Enter one in the text box below, or choose copyvio search mode to look for content similar to the article elsewhere on the web.
             % elif query.error == "bad URI":
@@ -46,9 +46,9 @@
         </div>
     % endif
 %endif
-<p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. In search mode, it will check for similar content elsewhere on the web using <a href="//developer.yahoo.com/boss/search/">Yahoo! BOSS</a> and/or external links present in the text of the page, depending on which options are selected. In comparison mode, the tool will skip the searching step and display a report comparing the article to the given webpage, like the <a href="//tools.wmflabs.org/dupdet/">Duplication Detector</a>.</p>
-<p>Running a full check can take up to 45 seconds if other websites are slow. Please be patient. If you get a timeout, wait a moment and refresh the page.</p>
-<p>Specific websites can be skipped (for example, if their content is in the public domain) by being added to the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/Exclusions">excluded URL list</a>.</p>
+<p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. In <i>search mode</i>, it will check for similar content elsewhere on the web using <a href="//developer.yahoo.com/boss/search/">Yahoo! BOSS</a>, external links present in the text of the page, or <a href="//en.wikipedia.org/wiki/Wikipedia:Turnitin">Turnitin</a> (provided by <a href="//en.wikipedia.org/wiki/User:EranBot">EranBot</a>), depending on which options are selected. In <i>comparison mode</i>, the tool will skip the searching step and display a report comparing the article to the given webpage, like the <a href="//tools.wmflabs.org/dupdet/">Duplication Detector</a>.</p>
+<p>Running a full check can take up to a minute if other websites are slow or if the tool is under heavy use. Please be patient. If you get a timeout, wait a moment and refresh the page.</p>
+<p>Specific websites can be skipped (for example, if they copy from Wikipedia) by being added to the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/Exclusions">excluded URL list</a>.</p>
 <form id="cv-form" action="${request.script_root}" method="get">
     <table id="cv-form-outer">
         <tr>
@@ -171,17 +171,17 @@
         <div id="turnitin-container" class="${'red' if query.turnitin_result.reports else 'green'}-box">
             <div id="turnitin-title">Turnitin Results</div>
             % if query.turnitin_result.reports:
-                <p>Turnitin (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found revisions that may have been plagiarized. Please review them.</p>
+                <p><a href="//en.wikipedia.org/wiki/Wikipedia:Turnitin">Turnitin</a> (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found revisions that may have been plagiarized. Please review them.</p>
 
                 <table id="turnitin-table"><tbody>
-                %for report in turnitin_result.reports:
-                    <tr><td id="turnitin-table-cell"><a href="https://tools.wmflabs.org/eranbot/ithenticate.py?rid=${report.reportid}">Turnitin report ${report.reportid}</a> for text added <a href="https://${query.lang}.wikipedia.org/w/index.php?title=${query.title}&diff=${report.diffid}"> at ${report.time_posted}</a>:
+                % for report in turnitin_result.reports:
+                    <tr><td class="turnitin-table-cell"><a href="https://tools.wmflabs.org/eranbot/ithenticate.py?rid=${report.reportid}">Turnitin report ${report.reportid}</a> for text added <a href="https://${query.lang}.wikipedia.org/w/index.php?title=${query.title}&amp;diff=${report.diffid}"> at ${report.time_posted}</a>:
                     <ul>
                     % for source in report.sources:
                           <li> ${source['percent']}% of revision text (${source['words']} words) found at <a href="${source['url']}">${source['url']}</a></li>
                     % endfor
                     </ul></td></tr>
-                %endfor
+                % endfor
                 </tbody></table>
             % else:
                 <p>Turnitin (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found no matching sources.</p>

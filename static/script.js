@@ -117,10 +117,14 @@ $(document).ready(function() {
 
     $("#cv-form").submit(function() {
         if ($("#action-search").is(":checked")) {
-            if ($("#cv-cb-engine").is(":checked"))
-                $(".cv-search[type='hidden'][name='use_engine']").prop("disabled", true);
-            if ($("#cv-cb-links").is(":checked"))
-                $(".cv-search[type='hidden'][name='use_links']").prop("disabled", true);
+            var hidden = [
+                ["engine", "use_engine"], ["links", "use_links"],
+                ["turnitin", "turnitin"]];
+            $.each(hidden, function(i, val) {
+                if ($("#cv-cb-" + val[0]).is(":checked"))
+                    $("#cv-form input[type='hidden'][name='" + val[1] + "']")
+                        .prop("disabled", true);
+            });
         }
     });
 

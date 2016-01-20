@@ -14,6 +14,7 @@ Dependencies
 * [mako](http://www.makotemplates.org/) >= 0.7.2
 * [mwparserfromhell](https://github.com/earwig/mwparserfromhell) >= 0.3
 * [oursql](http://packages.python.org/oursql/) >= 0.9.3.1
+* [requests](http://python-requests.org/) >= 2.9.1
 * [SQLAlchemy](http://sqlalchemy.org/) >= 0.9.6
 * [uglifycss](https://github.com/fmarcia/UglifyCSS/)
 * [uglifyjs](https://github.com/mishoo/UglifyJS/) >= 1.3.3

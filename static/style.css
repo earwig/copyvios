@@ -111,7 +111,7 @@ table#heading {
 }
 
 table#cv-form-outer {
-    width: 750px;
+    width: 800px;
 }
 
 table#cv-form-inner {
@@ -314,14 +314,13 @@ input.cv-text {
     width: 100%;
 }
 
-input#cv-cb-engine {
-    margin-left: 0;
+input.cv-search {
+    margin-left: 20px;
     margin-right: 5px;
 }
 
-input#cv-cb-links {
-    margin-left: 20px;
-    margin-right: 5px;
+input.cv-search:first-of-type {
+    margin-left: 0;
 }
 
 span.cv-hl {

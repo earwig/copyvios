@@ -31,7 +31,7 @@ def _make_api_request(page_title, lang):
                       'report': 1}
 
     result = requests.get(TURNITIN_API_ENDPOINT, params=api_parameters)
-    # use literal_eval to *safely* parse the resulting dict-containing string
+    # use json.loads to *safely* parse the resulting dict-containing string
     parsed_api_result = json.loads(result.text)
     return parsed_api_result
 

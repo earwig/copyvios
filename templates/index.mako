@@ -167,28 +167,6 @@
         <a href="${request.script_root | h}?lang=${query.lang | h}&amp;project=${query.project | h}&amp;oldid=${query.oldid or query.page.lastrevid | h}&amp;action=${query.action | h}&amp;${"use_engine={0}&use_links={1}".format(int(query.use_engine not in ("0", "false")), int(query.use_links not in ("0", "false"))) if query.action == "search" else "" | h}${"url=" if query.action == "compare" else ""}${query.url if query.action == "compare" else "" | u}">Permalink.</a>
     </div>
 
-    % if query.turnitin_result:
-        <div id="turnitin-container" class="${'red' if query.turnitin_result.reports else 'green'}-box">
-            <div id="turnitin-title">Turnitin Results</div>
-            % if query.turnitin_result.reports:
-                <p><a href="//en.wikipedia.org/wiki/Wikipedia:Turnitin">Turnitin</a> (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found revisions that may have been plagiarized. Please review them.</p>
-
-                <table id="turnitin-table"><tbody>
-                % for report in turnitin_result.reports:
-                    <tr><td class="turnitin-table-cell"><a href="https://tools.wmflabs.org/eranbot/ithenticate.py?rid=${report.reportid}">Turnitin report ${report.reportid}</a> for text added <a href="https://${query.lang}.wikipedia.org/w/index.php?title=${query.title}&amp;diff=${report.diffid}"> at ${report.time_posted}</a>:
-                    <ul>
-                    % for source in report.sources:
-                          <li> ${source['percent']}% of revision text (${source['words']} words) found at <a href="${source['url']}">${source['url']}</a></li>
-                    % endfor
-                    </ul></td></tr>
-                % endfor
-                </tbody></table>
-            % else:
-                <p>Turnitin (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found no matching sources.</p>
-            % endif
-        </div>
-    % endif
-
     <div id="cv-result" class="${'red' if result.confidence >= T_SUSPECT else 'yellow' if result.confidence >= T_POSSIBLE else 'green'}-box">
         <table id="cv-result-head-table">
             <colgroup>
@@ -232,6 +210,29 @@
             </tr>
         </table>
     </div>
+
+    % if query.turnitin_result:
+        <div id="turnitin-container" class="${'red' if query.turnitin_result.reports else 'green'}-box">
+            <div id="turnitin-title">Turnitin Results</div>
+            % if query.turnitin_result.reports:
+                <p><a href="//en.wikipedia.org/wiki/Wikipedia:Turnitin">Turnitin</a> (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found revisions that may have been plagiarized. Please review them.</p>
+
+                <table id="turnitin-table"><tbody>
+                % for report in turnitin_result.reports:
+                    <tr><td class="turnitin-table-cell"><a href="https://tools.wmflabs.org/eranbot/ithenticate.py?rid=${report.reportid}">Turnitin report ${report.reportid}</a> for text added <a href="https://${query.lang}.wikipedia.org/w/index.php?title=${query.title}&amp;diff=${report.diffid}"> at ${report.time_posted}</a>:
+                    <ul>
+                    % for source in report.sources:
+                          <li> ${source['percent']}% of revision text (${source['words']} words) found at <a href="${source['url']}">${source['url']}</a></li>
+                    % endfor
+                    </ul></td></tr>
+                % endfor
+                </tbody></table>
+            % else:
+                <div id="turnitin-summary">No matching sources found.</div>
+            % endif
+        </div>
+    % endif
+
     % if query.action == "search":
         <% skips = False %>
         <div id="sources-container">

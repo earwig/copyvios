@@ -63,20 +63,14 @@ div#info-box {
     margin: 10px 5px;
 }
 
-div#turnitin-container {
-    padding: 5px 10px;
-    margin: 15px 5px 10px 5px;
-}
-
-div#turnitin-title {
-    margin-bottom: -5px;
-    text-align: center;
-    font-weight: bold;
-}
-
 div#cv-result {
     padding: 5px;
     margin: 10px 5px;
+}
+
+div#turnitin-container {
+    padding: 5px;
+    margin: 15px 5px 10px 5px;
 }
 
 div#sources-container {
@@ -86,10 +80,15 @@ div#sources-container {
     border: 1px solid #BBB;
 }
 
-div#sources-title {
+div#turnitin-title, div#sources-title {
     margin-bottom: -5px;
     text-align: center;
     font-weight: bold;
+}
+
+div#turnitin-summary {
+    padding-bottom: 5px;
+    font-style: italic;
 }
 
 div#cv-additional {
@@ -146,6 +145,7 @@ table#cv-result-head-table {
     width: 100%;
     text-align: center;
     table-layout: fixed;
+    border-spacing: 0;
 }
 
 table#cv-result-head-table col:nth-child(odd) {

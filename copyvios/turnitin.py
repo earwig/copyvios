@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ast import literal_eval
+import json
 import re
 
 import requests
@@ -32,10 +32,10 @@ def _make_api_request(page_title, lang):
 
     result = requests.get(TURNITIN_API_ENDPOINT, params=api_parameters)
     # use literal_eval to *safely* parse the resulting dict-containing string
-    parsed_api_result = literal_eval(result.text)
+    parsed_api_result = json.loads(result.text)
     return parsed_api_result
 
-class TurnitinResult:
+class TurnitinResult(object):
     """ Container class for TurnitinReports. Each page may have zero or
     more reports of plagiarism. The list will have multiple
     TurnitinReports if plagiarism has been detected for more than one
@@ -57,7 +57,7 @@ class TurnitinResult:
     def __repr__(self):
         return str(self.__dict__)
 
-class TurnitinReport:
+class TurnitinReport(object):
     """ Contains data for each Turnitin report (one on each potentially
     plagiarized revision).
 

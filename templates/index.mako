@@ -113,6 +113,9 @@
                             <input class="cv-search" type="hidden" name="use_links" value="0" />
                             <input id="cv-cb-links" class="cv-search" type="checkbox" name="use_links" value="1" ${'checked="checked"' if (query.use_links != "0") else ""} />
                             <label for="cv-cb-links">Use&nbsp;links&nbsp;in&nbsp;page</label>
+                            <input class="cv-search" type="hidden" name="use_links" value="0" />
+                            <span style="white-space:nowrap"><input id="cv-cb-turnitin" class="cv-search" type="checkbox" name="turnitin" value="1" ${'checked="checked"' if (query.turnitin != "0") else ""}/>
+                            <label for="cv-cb-turnitin">Use&nbsp;Turnitin&nbsp;database</label></span>
                         </td>
                     </tr>
                     <tr>
@@ -146,6 +149,7 @@
         </tr>
     </table>
 </form>
+
 % if result:
     <div id="generation-time">
         Results
@@ -160,6 +164,29 @@
         % endif
         <a href="${request.script_root | h}?lang=${query.lang | h}&amp;project=${query.project | h}&amp;oldid=${query.oldid or query.page.lastrevid | h}&amp;action=${query.action | h}&amp;${"use_engine={0}&use_links={1}".format(int(query.use_engine not in ("0", "false")), int(query.use_links not in ("0", "false"))) if query.action == "search" else "" | h}${"url=" if query.action == "compare" else ""}${query.url if query.action == "compare" else "" | u}">Permalink.</a>
     </div>
+
+    % if query.turnitin:
+        <div id="turnitin-container" class="${'red' if query.turnitin_result.reports else 'green'}-box">
+            <div id="turnitin-title">Turnitin Results</div>
+            % if query.turnitin_result.reports:
+                <p>Turnitin (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found revisions that may have been plagiarized. Please review them.</p>
+
+                <table id="turnitin-table"><tbody>
+                %for report in turnitin_result.reports:
+                    <tr><td id="turnitin-table-cell"><a href="https://tools.wmflabs.org/eranbot/ithenticate.py?rid=${report.reportid}">Turnitin report ${report.reportid}</a> for text added <a href="https://${query.lang}.wikipedia.org/w/index.php?title=${query.title}&diff=${report.diffid}"> at ${report.time_posted}</a>:
+                    <ul>
+                    % for source in report.sources:
+                          <li> ${source['percent']}% of revision text (${source['words']} words) found at <a href="${source['url']}">${source['url']}</a></li>
+                    % endfor
+                    </ul></td></tr>
+                %endfor
+                </tbody></table>
+            % else:
+                <p>Turnitin (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found no matching sources.</p>
+            % endif
+        </div>
+    % endif
+
     <div id="cv-result" class="${'red' if result.confidence >= T_SUSPECT else 'yellow' if result.confidence >= T_POSSIBLE else 'green'}-box">
         <table id="cv-result-head-table">
             <colgroup>

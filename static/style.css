@@ -315,12 +315,12 @@ input.cv-text {
 }
 
 input.cv-search {
-    margin-left: 20px;
+    margin-left: 0;
     margin-right: 5px;
 }
 
-input.cv-search:first-of-type {
-    margin-left: 0;
+input.cv-search ~ input.cv-search {
+    margin-left: 20px;
 }
 
 span.cv-hl {

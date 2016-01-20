@@ -228,15 +228,6 @@ td#cv-inner-col3 {
     width: 76%;
 }
 
-td#turnitin-table-cell {
-    padding: 0.5em 0 0.3em 0;
-}
-
-td#turnitin-table-cell ul {
-    margin: 0.2em 0 0 0;
-    line-height: 1.4;
-}
-
 h2#cv-result-header {
     margin: 0;
 }
@@ -324,6 +315,15 @@ td.cv-chain-cell:first-child {
 
 td.cv-chain-cell:last-child {
     padding-left: 5px;
+}
+
+td.turnitin-table-cell {
+    padding: 0.5em 0 0.3em 0;
+}
+
+td.turnitin-table-cell ul {
+    margin: 0.2em 0 0 0;
+    line-height: 1.4;
 }
 
 input.cv-text {

@@ -215,14 +215,12 @@
         <div id="turnitin-container" class="${'red' if query.turnitin_result.reports else 'green'}-box">
             <div id="turnitin-title">Turnitin Results</div>
             % if query.turnitin_result.reports:
-                <p><a href="//en.wikipedia.org/wiki/Wikipedia:Turnitin">Turnitin</a> (through <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>) found revisions that may have been plagiarized. Please review them.</p>
-
                 <table id="turnitin-table"><tbody>
                 % for report in turnitin_result.reports:
-                    <tr><td class="turnitin-table-cell"><a href="https://tools.wmflabs.org/eranbot/ithenticate.py?rid=${report.reportid}">Turnitin report ${report.reportid}</a> for text added <a href="https://${query.lang}.wikipedia.org/w/index.php?title=${query.title}&amp;diff=${report.diffid}"> at ${report.time_posted}</a>:
+                    <tr><td class="turnitin-table-cell"><a href="https://tools.wmflabs.org/eranbot/ithenticate.py?rid=${report.reportid}">Report ${report.reportid}</a> for text added at <a href="https://${query.lang}.wikipedia.org/w/index.php?title=${query.title}&amp;diff=${report.diffid}"> ${report.time_posted.strftime("%H:%M, %d %B %Y (UTC)")}</a>:
                     <ul>
                     % for source in report.sources:
-                          <li> ${source['percent']}% of revision text (${source['words']} words) found at <a href="${source['url']}">${source['url']}</a></li>
+                          <li>${source['percent']}% of revision text (${source['words']} words) found at <a href="${source['url'] | h}">${source['url'] | h}</a></li>
                     % endfor
                     </ul></td></tr>
                 % endfor

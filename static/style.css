@@ -184,6 +184,13 @@ table#cv-chain-table {
     table-layout: fixed;
 }
 
+table#turnitin-table {
+    table-layout: fixed;
+    width: 100%;
+    word-wrap: break-word;
+    border-spacing: 0;
+}
+
 tr#source-row-selected {
     background-color: #CFCFCF !important;
 }
@@ -219,6 +226,15 @@ td#cv-inner-col2 {
 
 td#cv-inner-col3 {
     width: 76%;
+}
+
+td#turnitin-table-cell {
+    padding: 0.5em 0 0.3em 0;
+}
+
+td#turnitin-table-cell ul {
+    margin: 0.2em 0 0 0;
+    line-height: 1.4;
 }
 
 h2#cv-result-header {

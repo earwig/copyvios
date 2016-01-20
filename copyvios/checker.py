@@ -64,8 +64,8 @@ def _get_results(query, follow=True):
         conn = get_db()
         use_engine = 0 if query.use_engine in ("0", "false") else 1
         use_links = 0 if query.use_links in ("0", "false") else 1
-        use_turnitin = 0 if query.turnitin in ("0", "false") else 1
-        if not use_engine and not use_links:
+        use_turnitin = 1 if query.turnitin in ("1", "true") else 0
+        if not use_engine and not use_links and not use_turnitin:
             query.error = "no search method"
             return
 

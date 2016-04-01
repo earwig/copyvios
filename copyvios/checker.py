@@ -71,7 +71,7 @@ def _get_results(query, follow=True):
 
         # Handle the turnitin check
         if use_turnitin:
-            query.turnitin_result = search_turnitin(query.title, query.lang)
+            query.turnitin_result = search_turnitin(page.title, query.lang)
 
         # Handle the copyvio check
         mode = "{0}:{1}:".format(use_engine, use_links)

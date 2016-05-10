@@ -151,7 +151,7 @@
                         <td>use_engine</td>
                         <td>boolean</td>
                         <td>No (default: <span class="code">true</span>)</td>
-                        <td>Whether to use a search engine (<a href="https://datamarket.azure.com/dataset/bing/search">Bing</a>) as a source of URLs to compare against the page.</td>
+                        <td>Whether to use a search engine (<a href="https://tech.yandex.com/xml/">Yandex</a>) as a source of URLs to compare against the page.</td>
                     </tr>
                     <tr>
                         <td>use_links</td>

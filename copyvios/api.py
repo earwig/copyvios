@@ -42,8 +42,9 @@ def _serialize_source(source, show_skip=True):
     return data
 
 def _serialize_detail(result):
-    article = highlight_delta(result.article_chain, result.best.chains[1])
-    source = highlight_delta(result.best.chains[0], result.best.chains[1])
+    source_chain, delta = result.best.chains
+    article = highlight_delta(None, result.article_chain, delta)
+    source = highlight_delta(None, source_chain, delta)
     return OrderedDict((("article", article), ("source", source)))
 
 def format_api_error(code, info):

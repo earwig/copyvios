@@ -112,6 +112,12 @@
                         <td>Yes</td>
                         <td>The URL of the suspected violation source that will be compared to the page.</td>
                     </tr>
+                    <tr>
+                        <td>detail</td>
+                        <td>boolean</td>
+                        <td>No (default: <span class="code">false</span>)</td>
+                        <td>Whether to include the detailed HTML text comparison available in the regular interface. If not, only the confidence percentage is available.</td>
+                    </tr>
                 </table>
                 <table class="parameters">
                     <tr>
@@ -219,7 +225,11 @@
             "excluded":    <span class="resp-dtype">boolean</span> <span class="resp-desc">whether the source was skipped for being in the excluded URL list</span>
         },
         ...
-    ]
+    ],
+    <span class="resp-cond">only if action=compare and detail=true</span> "detail": {
+        "article": <span class="resp-dtype">string</span> <span class="resp-desc">article text, with shared passages marked with HTML</span>,
+        "source":  <span class="resp-dtype">string</span> <span class="resp-desc">best source text, with shared passages marked with HTML</span>
+    }
 }</pre>
                 <p>In the case of <span class="code">action=search</span>, <span class="code">sources</span> will contain one entry for each source checked (or skipped if the check ends early), sorted in order of confidence, with skipped and excluded sources at the bottom.</p>
                 <p>In the case of <span class="code">action=compare</span>, <span class="code">best</span> will always contain information about the URL that was given, so <span class="code">response["best"]["url"]</span> will never be <span class="code">null</span>. Also, <span class="code">sources</span> will always contain one entry, with the same data as <span class="code">best</span>, since only one source is checked in comparison mode.</p>
@@ -241,11 +251,8 @@
         ...
     ]
 }</pre>
-                <h2>Caveats</h2>
-                <ul>
-                    <li>There is currently no way to get the contents of the article or suspected source, nor can you get the data behind the visual comparison available from the main tool. This may be changed in a future version if there is sufficient demand for it.</li>
-                    <li>Requests are typically not rate-limited, but the tool uses the same workers to handle all requests, so making simultaneous API calls is only going to slow you down. In general, you are fine making an unlimited number of requests, as long as they are not concurrent and you wait a few seconds between them.</li>
-                </ul>
+                <h2>Etiquette</h2>
+                The tool uses the same workers to handle all requests, so making concurrent API calls is only going to slow you down. Most operations are not rate-limited, but full searches with <span class="code">use_engine=True</span> are globally limited to a few thousand per day. Be respectful!
                 <h2>Example</h2>
                 <p><a class="no-color" href="https://tools.wmflabs.org/copyvios/api.json?version=1&amp;action=search&amp;project=wikipedia&amp;lang=en&amp;title=User:EarwigBot/Copyvios/Tests/2"><span class="code">https://tools.wmflabs.org/copyvios/api.json?<span class="param-key">version</span>=<span class="param-val">1</span>&amp;<span class="param-key">action</span>=<span class="param-val">search</span>&amp;<span class="param-key">project</span>=<span class="param-val">wikipedia</span>&amp;<span class="param-key">lang</span>=<span class="param-val">en</span>&amp;<span class="param-key">title</span>=<span class="param-val">User:EarwigBot/Copyvios/Tests/2</span></span></a></p>
                 <pre>{

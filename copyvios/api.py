@@ -2,6 +2,7 @@
 
 from collections import OrderedDict
 
+from .highlighter import highlight_delta
 from .checker import do_check, T_POSSIBLE, T_SUSPECT
 from .misc import Query, cache
 from .sites import update_sites
@@ -39,6 +40,11 @@ def _serialize_source(source, show_skip=True):
         data["skipped"] = source.skipped
         data["excluded"] = source.excluded
     return data
+
+def _serialize_detail(result):
+    article = highlight_delta(result.article_chain, result.best.chains[1])
+    source = highlight_delta(result.best.chains[0], result.best.chains[1])
+    return OrderedDict((("article", article), ("source", source)))
 
 def format_api_error(code, info):
     if isinstance(info, BaseException):
@@ -90,12 +96,15 @@ def _hook_check(query):
         data["original_page"] = _serialize_page(query.redirected_from)
     data["best"] = _serialize_source(result.best, show_skip=False)
     data["sources"] = [_serialize_source(source) for source in result.sources]
+    if query.detail in ("1", "true"):
+        data["detail"] = _serialize_detail(result)
     return data
 
 def _hook_sites(query):
     update_sites()
-    return OrderedDict((("status", "ok"),
-                        ("langs", cache.langs), ("projects", cache.projects)))
+    return OrderedDict((
+        ("status", "ok"), ("langs", cache.langs), ("projects", cache.projects)
+    ))
 
 _HOOKS = {
     "compare": _hook_check,

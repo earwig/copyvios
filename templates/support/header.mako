@@ -10,7 +10,7 @@
         <title>${title}</title>
         <link rel="stylesheet" href="${request.script_root}${url_for('static', file='style.min.css')}" type="text/css" />
         <script src="//code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>
-        <script src="${request.script_root}/${url_for('static', file='script.min.js')}" type="text/javascript"></script>
+        <script src="${request.script_root}${url_for('static', file='script.min.js')}" type="text/javascript"></script>
     </head>
     <% selected = g.cookies["CopyviosBackground"].value if "CopyviosBackground" in g.cookies else "list" %>\
     % if selected == "plain":

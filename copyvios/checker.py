@@ -81,7 +81,7 @@ def _get_results(query, follow=True):
         if not query.result:
             try:
                 query.result = page.copyvio_check(
-                    min_confidence=T_SUSPECT, max_queries=10, max_time=45,
+                    min_confidence=T_SUSPECT, max_queries=8, max_time=45,
                     no_searches=not use_engine, no_links=not use_links,
                     short_circuit=not query.noskip)
             except exceptions.SearchQueryError as exc:

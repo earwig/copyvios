@@ -52,8 +52,7 @@ def setup_app():
     cache.background_data = {}
     cache.last_background_updates = {}
 
-    getLogger("earwigbot.wiki.cvworker").setLevel(INFO)
-    globalize()
+    globalize(num_workers=12)
 
 @app.before_request
 def prepare_request():

@@ -24,9 +24,9 @@ def get_attribution_info(site, page):
     if site.name not in ATTRIB_TEMPLATES:
         return None
 
-    templates = ATTRIB_TEMPLATES[site.name]
+    base = ATTRIB_TEMPLATES[site.name]
     prefix = site.namespace_id_to_name(NS_TEMPLATE)
-    templates |= {prefix + ":" + tmpl for tmpl in templates if ":" not in tmpl}
+    templates = base | {prefix + ":" + tpl for tpl in base if ":" not in tpl}
 
     for template in page.parse().ifilter_templates():
         if template.name.matches(templates):

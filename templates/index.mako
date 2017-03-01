@@ -214,9 +214,8 @@
 
     <% attrib = get_attribution_info(query.site, query.page) %>
     % if attrib:
-        <% attrib_page = query.site.get_page(unicode(attrib.name)) %>
         <div id="attribution-warning" class="yellow-box">
-            This article contains an attribution template: <tt>{{<a href="${attrib_page.url}">${attrib_page.title | h}</a>}}</tt>. Please verify that any potential copyvios are not from properly attributed sources.
+            This article contains an attribution template: <tt>{{<a href="${attrib[1]}">${attrib[0] | h}</a>}}</tt>. Please verify that any potential copyvios are not from properly attributed sources.
         </div>
     % endif
 

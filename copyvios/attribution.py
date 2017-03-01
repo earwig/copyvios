@@ -18,8 +18,8 @@ ATTRIB_TEMPLATES = {
 def get_attribution_info(site, page):
     """Check to see if the given page has some kind of attribution info.
 
-    If yes, return a mwparserfromhell.nodes.Template object for the attribution
-    template. If no, return None.
+    If yes, return a tuple of (attribution template name, template URL).
+    If no, return None.
     """
     if site.name not in ATTRIB_TEMPLATES:
         return None
@@ -30,5 +30,7 @@ def get_attribution_info(site, page):
 
     for template in page.parse().ifilter_templates():
         if template.name.matches(templates):
-            return template
+            name = unicode(template.name)
+            title = name if ":" in name else prefix + ":" + name
+            return name, site.get_page(title).url
     return None

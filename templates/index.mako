@@ -1,10 +1,10 @@
 <%!
     from flask import g, request
+    from copyvios.attribution import get_attribution_info
     from copyvios.checker import T_POSSIBLE, T_SUSPECT
     from copyvios.misc import cache
 %>\
 <%include file="/support/header.mako" args="title='Earwig\'s Copyvio Detector'"/>
-<%namespace module="copyvios.attribution" import="get_attribution_info"/>\
 <%namespace module="copyvios.highlighter" import="highlight_delta"/>\
 <%namespace module="copyvios.misc" import="httpsfix, urlstrip"/>\
 % if notice:

@@ -30,7 +30,7 @@ def get_attribution_info(site, page):
 
     for template in page.parse().ifilter_templates():
         if template.name.matches(templates):
-            name = unicode(template.name)
+            name = unicode(template.name).strip()
             title = name if ":" in name else prefix + ":" + name
             return name, site.get_page(title).url
     return None

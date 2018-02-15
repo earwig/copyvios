@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json
+from ast import literal_eval
 import re
 
 import requests
@@ -31,9 +31,10 @@ def _make_api_request(page_title, lang):
                       'report': 1}
 
     result = requests.get(TURNITIN_API_ENDPOINT, params=api_parameters)
+    # use literal_eval to *safely* parse the resulting dict-containing string
     try:
-        parsed_api_result = json.loads(result.text)
-    except ValueError:
+        parsed_api_result = literal_eval(result.text)
+    except (SyntaxError, ValueError):
         parsed_api_result = []
     return parsed_api_result
 

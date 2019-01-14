@@ -13,7 +13,7 @@ from traceback import format_exc
 from earwigbot.bot import Bot
 from earwigbot.wiki.copyvios import globalize
 from flask import Flask, g, make_response, request
-from flask.ext.mako import MakoTemplates, render_template, TemplateError
+from flask_mako import MakoTemplates, render_template, TemplateError
 
 from copyvios.api import format_api_error, handle_api_request
 from copyvios.checker import do_check

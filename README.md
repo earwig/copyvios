@@ -16,6 +16,7 @@ Dependencies
 * [oursql](http://packages.python.org/oursql/) >= 0.9.3.1
 * [requests](http://python-requests.org/) >= 2.9.1
 * [SQLAlchemy](http://sqlalchemy.org/) >= 0.9.6
+* [apsw](https://github.com/rogerbinns/apsw) >= 3.26.0
 * [uglifycss](https://github.com/fmarcia/UglifyCSS/)
 * [uglifyjs](https://github.com/mishoo/UglifyJS/) >= 1.3.3
 

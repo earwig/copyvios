@@ -9,7 +9,7 @@ from earwigbot.wiki.copyvios.markov import EMPTY, MarkovChain
 from earwigbot.wiki.copyvios.parsers import ArticleTextParser
 from earwigbot.wiki.copyvios.result import CopyvioSource, CopyvioCheckResult
 
-from .misc import Query, get_db
+from .misc import Query, get_db, get_cursor
 from .sites import get_site
 from .turnitin import search_turnitin
 
@@ -119,7 +119,7 @@ def _get_page_by_revid(site, revid):
         page_data["revisions"][0]["*"]  # Only need to check that these exist
         page_data["revisions"][0]["timestamp"]
     except KeyError:
-        return
+        return None
     page = site.get_page(title)
 
     # EarwigBot doesn't understand old revisions of pages, so we use a somewhat
@@ -140,7 +140,7 @@ def _get_cached_results(page, conn, mode, noskip):
                 WHERE cdata_cache_id = ?"""
     cache_id = buffer(sha256(mode + page.get().encode("utf8")).digest())
 
-    with conn.cursor() as cursor:
+    with get_cursor(conn) as cursor:
         cursor.execute(query1)
         cursor.execute(query2, (cache_id,))
         results = cursor.fetchall()
@@ -202,10 +202,8 @@ def _cache_result(page, result, conn, mode):
     data = [(cache_id, source.url[:1024], source.confidence, source.skipped,
              source.excluded)
             for source in result.sources]
-    with conn.cursor() as cursor:
-        cursor.execute("START TRANSACTION")
+    with get_cursor(conn) as cursor:
         cursor.execute(query1, (cache_id,))
         cursor.execute(query2, (cache_id, result.queries, result.time,
                                 result.possible_miss))
         cursor.executemany(query3, data)
-        cursor.execute("COMMIT")

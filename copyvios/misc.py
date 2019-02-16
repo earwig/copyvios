@@ -1,7 +1,8 @@
 # -*- coding: utf-8  -*-
 
+from contextlib import contextmanager
 import datetime
-from os.path import expanduser
+from os.path import expanduser, join
 
 from flask import g, request
 import oursql
@@ -41,14 +42,35 @@ class _AppCache(object):
 
 cache = _AppCache()
 
-def get_db():
-    if not g._db:
-        args = cache.bot.config.wiki["_copyviosSQL"]
+def _connect_to_db(engine, args):
+    if engine == "mysql":
         args["read_default_file"] = expanduser("~/.my.cnf")
         args["autoping"] = True
         args["autoreconnect"] = True
-        g._db = oursql.connect(**args)
+        return oursql.connect(**args)
+    if engine == "sqlite":
+        import apsw
+        dbpath = join(cache.bot.config.root_dir, "copyvios.db")
+        return apsw.Connection(dbpath)
+    raise ValueError("Unknown engine: %s" % engine)
+
+def get_db():
+    if not g._db:
+        args = cache.bot.config.wiki["_copyviosSQL"].copy()
+        g._engine = engine = args.pop("engine", "mysql").lower()
+        g._db = _connect_to_db(engine, args)
     return g._db
+
+@contextmanager
+def get_cursor(conn):
+    if g._engine == "mysql":
+        with conn.cursor() as cursor:
+            yield cursor
+    elif g._engine == "sqlite":
+        with conn:
+            yield conn.cursor()
+    else:
+        raise ValueError("Unknown engine: %s" % g._engine)
 
 def get_notice():
     try:

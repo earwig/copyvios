@@ -4,6 +4,7 @@ from contextlib import contextmanager
 import datetime
 from os.path import expanduser, join
 
+import apsw
 from flask import g, request
 import oursql
 from sqlalchemy.pool import manage
@@ -49,7 +50,6 @@ def _connect_to_db(engine, args):
         args["autoreconnect"] = True
         return oursql.connect(**args)
     if engine == "sqlite":
-        import apsw
         dbpath = join(cache.bot.config.root_dir, "copyvios.db")
         conn = apsw.Connection(dbpath)
         conn.cursor().execute("PRAGMA foreign_keys = ON")
@@ -73,6 +73,13 @@ def get_cursor(conn):
             yield conn.cursor()
     else:
         raise ValueError("Unknown engine: %s" % g._engine)
+
+def get_sql_error():
+    if g._engine == "mysql":
+        return oursql.Error
+    if g._engine == "sqlite":
+        return apsw.Error
+    raise ValueError("Unknown engine: %s" % g._engine)
 
 def sql_dialect(mysql, sqlite):
     if g._engine == "mysql":

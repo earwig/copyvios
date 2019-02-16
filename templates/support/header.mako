@@ -8,9 +8,9 @@
     <head>
         <meta charset="utf-8">
         <title>${title}</title>
-        <link rel="stylesheet" href="${request.script_root}${url_for('static', file='style.min.css')}" type="text/css" />
-        <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>
-        <script src="${request.script_root}${url_for('static', file='script.min.js')}" type="text/javascript"></script>
+        <link rel="stylesheet" href="${request.script_root}${url_for('static', file='style.min.css')}"/>
+        <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="${request.script_root}${url_for('static', file='script.min.js')}"></script>
     </head>
     <% selected = g.cookies["CopyviosBackground"].value if "CopyviosBackground" in g.cookies else "list" %>\
     % if selected == "plain":

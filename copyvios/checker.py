@@ -1,7 +1,8 @@
 # -*- coding: utf-8  -*-
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from hashlib import sha256
+from logging import getLogger
 from urlparse import urlparse
 
 from earwigbot import exceptions
@@ -9,7 +10,7 @@ from earwigbot.wiki.copyvios.markov import EMPTY, MarkovChain
 from earwigbot.wiki.copyvios.parsers import ArticleTextParser
 from earwigbot.wiki.copyvios.result import CopyvioSource, CopyvioCheckResult
 
-from .misc import Query, get_db, get_cursor, sql_dialect
+from .misc import Query, get_db, get_cursor, get_sql_error, sql_dialect
 from .sites import get_site
 from .turnitin import search_turnitin
 
@@ -17,6 +18,8 @@ __all__ = ["do_check", "T_POSSIBLE", "T_SUSPECT"]
 
 T_POSSIBLE = 0.4
 T_SUSPECT = 0.75
+
+_LOGGER = getLogger("copyvios.checker")
 
 def _coerce_bool(val):
     return val and val not in ("0", "false")
@@ -56,12 +59,12 @@ def _get_results(query, follow=True):
                 pass  # Something's wrong. Continue checking the original page.
             else:
                 query.redirected_from = page
-                return _get_results(query, follow=False)
+                _get_results(query, follow=False)
+                return
 
     if not query.action:
         query.action = "compare" if query.url else "search"
     if query.action == "search":
-        conn = get_db()
         use_engine = 0 if query.use_engine in ("0", "false") else 1
         use_links = 0 if query.use_links in ("0", "false") else 1
         use_turnitin = 1 if query.turnitin in ("1", "true") else 0
@@ -74,22 +77,7 @@ def _get_results(query, follow=True):
             query.turnitin_result = search_turnitin(page.title, query.lang)
 
         # Handle the copyvio check
-        mode = "{0}:{1}:".format(use_engine, use_links)
-        if not _coerce_bool(query.nocache):
-            query.result = _get_cached_results(
-                page, conn, mode, _coerce_bool(query.noskip))
-        if not query.result:
-            try:
-                query.result = page.copyvio_check(
-                    min_confidence=T_SUSPECT, max_queries=8, max_time=45,
-                    no_searches=not use_engine, no_links=not use_links,
-                    short_circuit=not query.noskip)
-            except exceptions.SearchQueryError as exc:
-                query.error = "search error"
-                query.exception = exc
-                return
-            query.result.cached = False
-            _cache_result(page, query.result, conn, mode)
+        _perform_check(query, page, use_engine, use_links)
     elif query.action == "compare":
         if not query.url:
             query.error = "no URL"
@@ -128,32 +116,58 @@ def _get_page_by_revid(site, revid):
     page._load_content(res)
     return page
 
+def _perform_check(query, page, use_engine, use_links):
+    conn = get_db()
+    sql_error = get_sql_error()
+    mode = "{0}:{1}:".format(use_engine, use_links)
+
+    if not _coerce_bool(query.nocache):
+        try:
+            query.result = _get_cached_results(
+                page, conn, mode, _coerce_bool(query.noskip))
+        except sql_error:
+            _LOGGER.exception("Failed to retrieve cached results")
+
+    if not query.result:
+        try:
+            query.result = page.copyvio_check(
+                min_confidence=T_SUSPECT, max_queries=8, max_time=45,
+                no_searches=not use_engine, no_links=not use_links,
+                short_circuit=not query.noskip)
+        except exceptions.SearchQueryError as exc:
+            query.error = "search error"
+            query.exception = exc
+            return
+        query.result.cached = False
+        try:
+            _cache_result(page, query.result, conn, mode)
+        except sql_error:
+            _LOGGER.exception("Failed to cache results")
+
 def _get_cached_results(page, conn, mode, noskip):
-    expiry = sql_dialect(mysql="DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)",
-                         sqlite="STRFTIME('%s', 'now', '-3 days')")
-    query1 = "DELETE FROM cache WHERE cache_time < %s" % expiry
-    query2 = """SELECT cache_time, cache_queries, cache_process_time,
+    query1 = """SELECT cache_time, cache_queries, cache_process_time,
                        cache_possible_miss
                 FROM cache
                 WHERE cache_id = ?"""
-    query3 = """SELECT cdata_url, cdata_confidence, cdata_skipped, cdata_excluded
+    query2 = """SELECT cdata_url, cdata_confidence, cdata_skipped, cdata_excluded
                 FROM cache_data
                 WHERE cdata_cache_id = ?"""
     cache_id = buffer(sha256(mode + page.get().encode("utf8")).digest())
 
-    with get_cursor(conn) as cursor:
-        cursor.execute(query1)
-        cursor.execute(query2, (cache_id,))
-        results = cursor.fetchall()
-        if not results:
-            return None
-        cache_time, queries, check_time, possible_miss = results[0]
-        if possible_miss and noskip:
-            return None
-        if not isinstance(cache_time, datetime):
-            cache_time = datetime.utcfromtimestamp(cache_time)
-        cursor.execute(query3, (cache_id,))
-        data = cursor.fetchall()
+    cursor = conn.cursor()
+    cursor.execute(query1, (cache_id,))
+    results = cursor.fetchall()
+    if not results:
+        return None
+    cache_time, queries, check_time, possible_miss = results[0]
+    if possible_miss and noskip:
+        return None
+    if not isinstance(cache_time, datetime):
+        cache_time = datetime.utcfromtimestamp(cache_time)
+    if datetime.utcnow() - cache_time > timedelta(days=3):
+        return None
+    cursor.execute(query2, (cache_id,))
+    data = cursor.fetchall()
 
     if not data:  # TODO: do something less hacky for this edge case
         article_chain = MarkovChain(ArticleTextParser(page.get()).strip())
@@ -198,10 +212,13 @@ def _format_date(cache_time):
     return formatter(total_seconds, "second")
 
 def _cache_result(page, result, conn, mode):
+    expiry = sql_dialect(mysql="DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)",
+                         sqlite="STRFTIME('%s', 'now', '-3 days')")
     query1 = "DELETE FROM cache WHERE cache_id = ?"
-    query2 = """INSERT INTO cache (cache_id, cache_queries, cache_process_time,
+    query2 = "DELETE FROM cache WHERE cache_time < %s" % expiry
+    query3 = """INSERT INTO cache (cache_id, cache_queries, cache_process_time,
                                    cache_possible_miss) VALUES (?, ?, ?, ?)"""
-    query3 = """INSERT INTO cache_data (cdata_cache_id, cdata_url,
+    query4 = """INSERT INTO cache_data (cdata_cache_id, cdata_url,
                                         cdata_confidence, cdata_skipped,
                                         cdata_excluded) VALUES (?, ?, ?, ?, ?)"""
     cache_id = buffer(sha256(mode + page.get().encode("utf8")).digest())
@@ -210,6 +227,7 @@ def _cache_result(page, result, conn, mode):
             for source in result.sources]
     with get_cursor(conn) as cursor:
         cursor.execute(query1, (cache_id,))
-        cursor.execute(query2, (cache_id, result.queries, result.time,
+        cursor.execute(query2)
+        cursor.execute(query3, (cache_id, result.queries, result.time,
                                 result.possible_miss))
-        cursor.executemany(query3, data)
+        cursor.executemany(query4, data)

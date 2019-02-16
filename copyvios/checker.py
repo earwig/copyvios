@@ -9,7 +9,7 @@ from earwigbot.wiki.copyvios.markov import EMPTY, MarkovChain
 from earwigbot.wiki.copyvios.parsers import ArticleTextParser
 from earwigbot.wiki.copyvios.result import CopyvioSource, CopyvioCheckResult
 
-from .misc import Query, get_db, get_cursor
+from .misc import Query, get_db, get_cursor, sql_dialect
 from .sites import get_site
 from .turnitin import search_turnitin
 
@@ -129,8 +129,9 @@ def _get_page_by_revid(site, revid):
     return page
 
 def _get_cached_results(page, conn, mode, noskip):
-    query1 = """DELETE FROM cache
-                WHERE cache_time < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)"""
+    expiry = sql_dialect(mysql="DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)",
+                         sqlite="STRFTIME('%s', 'now', '-3 days')")
+    query1 = "DELETE FROM cache WHERE cache_time < %s" % expiry
     query2 = """SELECT cache_time, cache_queries, cache_process_time,
                        cache_possible_miss
                 FROM cache
@@ -149,6 +150,8 @@ def _get_cached_results(page, conn, mode, noskip):
         cache_time, queries, check_time, possible_miss = results[0]
         if possible_miss and noskip:
             return None
+        if not isinstance(cache_time, datetime):
+            cache_time = datetime.utcfromtimestamp(cache_time)
         cursor.execute(query3, (cache_id,))
         data = cursor.fetchall()
 
@@ -196,8 +199,11 @@ def _format_date(cache_time):
 
 def _cache_result(page, result, conn, mode):
     query1 = "DELETE FROM cache WHERE cache_id = ?"
-    query2 = "INSERT INTO cache VALUES (?, DEFAULT, ?, ?, ?)"
-    query3 = "INSERT INTO cache_data VALUES (DEFAULT, ?, ?, ?, ?, ?)"
+    query2 = """INSERT INTO cache (cache_id, cache_queries, cache_process_time,
+                                   cache_possible_miss) VALUES (?, ?, ?, ?)"""
+    query3 = """INSERT INTO cache_data (cdata_cache_id, cdata_url,
+                                        cdata_confidence, cdata_skipped,
+                                        cdata_excluded) VALUES (?, ?, ?, ?, ?)"""
     cache_id = buffer(sha256(mode + page.get().encode("utf8")).digest())
     data = [(cache_id, source.url[:1024], source.confidence, source.skipped,
              source.excluded)

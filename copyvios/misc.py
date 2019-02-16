@@ -51,7 +51,9 @@ def _connect_to_db(engine, args):
     if engine == "sqlite":
         import apsw
         dbpath = join(cache.bot.config.root_dir, "copyvios.db")
-        return apsw.Connection(dbpath)
+        conn = apsw.Connection(dbpath)
+        conn.cursor().execute("PRAGMA foreign_keys = ON")
+        return conn
     raise ValueError("Unknown engine: %s" % engine)
 
 def get_db():
@@ -71,6 +73,13 @@ def get_cursor(conn):
             yield conn.cursor()
     else:
         raise ValueError("Unknown engine: %s" % g._engine)
+
+def sql_dialect(mysql, sqlite):
+    if g._engine == "mysql":
+        return mysql
+    if g._engine == "sqlite":
+        return sqlite
+    raise ValueError("Unknown engine: %s" % g._engine)
 
 def get_notice():
     try:

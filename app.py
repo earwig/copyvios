@@ -52,7 +52,7 @@ def setup_app():
     cache.background_data = {}
     cache.last_background_updates = {}
 
-    globalize(num_workers=12)
+    globalize(num_workers=8)
 
 @app.before_request
 def prepare_request():

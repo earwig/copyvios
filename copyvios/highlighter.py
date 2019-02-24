@@ -16,14 +16,13 @@ def highlight_delta(context, chain, delta):
         delta = EMPTY_INTERSECTION
     for word in chain.text.split() + ([chain.END] * degree):
         word = _strip_word(chain, word)
-        tblock = tuple(block)
-        if tblock in delta.chain and word in delta.chain[tblock]:
+        block.append(word)
+        if tuple(block) in delta.chain:
             highlights[-1 * degree:] = [True] * degree
             highlights.append(True)
         else:
             highlights.append(False)
         block.popleft()
-        block.append(word)
 
     i = degree
     numwords = len(chain.text.split())

@@ -28,7 +28,7 @@
             % elif query.error == "timeout":
                 The URL <a href="${query.url | h}">${query.url | h}</a> timed out before any data could be retrieved.
             % elif query.error == "search error":
-                An error occurred while using the search engine (${query.exception}). Try reloading the page. If the error persists, <a href="${request.url | httpsfix, h}&amp;use_engine=0">repeat the check without using the search engine</a>.
+                An error occurred while using the search engine (${query.exception}). <i>Note:</i> there is a daily limit on the number of search queries the tool is allowed to make. You may <a href="${request.url | httpsfix, h}&amp;use_engine=0">repeat the check without using the search engine</a>.
             % else:
                 An unknown error occurred.
             % endif

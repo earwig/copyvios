@@ -126,6 +126,9 @@ $(document).ready(function() {
                         .prop("disabled", true);
             });
         }
+        $("#cv-form button[type='submit']")
+            .prop("disabled", true)
+            .css("cursor", "progress");
     });
 
     if ($("#cv-additional").length >= 0) {

@@ -100,13 +100,16 @@ def _get_results(query, follow=True):
 
 def _get_page_by_revid(site, revid):
     res = site.api_query(action="query", prop="info|revisions", revids=revid,
-                         rvprop="content|timestamp", inprop="protection|url")
+                         rvprop="content|timestamp", inprop="protection|url",
+                         rvslots="main")
     try:
         page_data = res["query"]["pages"].values()[0]
         title = page_data["title"]
-        page_data["revisions"][0]["*"]  # Only need to check that these exist
-        page_data["revisions"][0]["timestamp"]
-    except KeyError:
+        # Only need to check that these exist:
+        revision = page_data["revisions"][0]
+        revision["slots"]["main"]["*"]
+        revision["timestamp"]
+    except (KeyError, IndexError):
         return None
     page = site.get_page(title)
 

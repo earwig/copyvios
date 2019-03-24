@@ -18,22 +18,27 @@ def get_site(query):
         try:
             return wiki.get_site(name=name)
         except exceptions.SiteNotFoundError:
-            try:
-                return wiki.add_site(lang=lang, project=project)
-            except (exceptions.APIError, exceptions.LoginError):
-                return None
+            return _add_site(lang, project)
     try:
         return wiki.get_site(lang=lang, project=project)
     except exceptions.SiteNotFoundError:
-        try:
-            return wiki.add_site(lang=lang, project=project)
-        except (exceptions.APIError, exceptions.LoginError):
-            return None
+        return _add_site(lang, project)
 
 def update_sites():
     if time() - cache.last_sites_update > 60 * 60 * 24 * 7:
         cache.langs, cache.projects = _load_sites()
         cache.last_sites_update = time()
+
+def _add_site(lang, project):
+    update_sites()
+    if not any(project == item[0] for item in cache.projects):
+        return None
+    if lang != "www" and not any(lang == item[0] for item in cache.langs):
+        return None
+    try:
+        return cache.bot.wiki.add_site(lang=lang, project=project)
+    except (exceptions.APIError, exceptions.LoginError):
+        return None
 
 def _load_sites():
     site = cache.bot.wiki.get_site()

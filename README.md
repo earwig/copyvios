@@ -1,21 +1,21 @@
 This is a [copyright violation](https://en.wikipedia.org/wiki/WP:COPYVIO)
-detector running on [Wikimedia Labs](https://tools.wmflabs.org/copyvios).
+detector running on [Wikimedia Cloud Services](https://copyvios.toolforge.org/).
 
 It can search the web for content similar to a given article, and graphically
 compare an article to a specific URL. Some technical details are expanded upon
-[in a blog post](http://benkurtovic.com/2014/08/20/copyvio-detector.html).
+[in a blog post](https://benkurtovic.com/2014/08/20/copyvio-detector.html).
 
 Dependencies
 ============
 
 * [earwigbot](https://github.com/earwig/earwigbot) >= 0.1
-* [flask](http://flask.pocoo.org/) >= 0.10.1
+* [flask](https://flask.palletsprojects.com/) >= 0.10.1
 * [flask-mako](https://pythonhosted.org/Flask-Mako/) >= 0.3
-* [mako](http://www.makotemplates.org/) >= 0.7.2
+* [mako](https://www.makotemplates.org/) >= 0.7.2
 * [mwparserfromhell](https://github.com/earwig/mwparserfromhell) >= 0.3
-* [oursql](http://packages.python.org/oursql/) >= 0.9.3.1
-* [requests](http://python-requests.org/) >= 2.9.1
-* [SQLAlchemy](http://sqlalchemy.org/) >= 0.9.6
+* [oursql](https://pythonhosted.org/oursql/) >= 0.9.3.1
+* [requests](https://requests.readthedocs.io/) >= 2.9.1
+* [SQLAlchemy](https://www.sqlalchemy.org/) >= 0.9.6
 * [apsw](https://github.com/rogerbinns/apsw) >= 3.26.0
 * [uglifycss](https://github.com/fmarcia/UglifyCSS/)
 * [uglifyjs](https://github.com/mishoo/UglifyJS/) >= 1.3.3
@@ -25,7 +25,7 @@ Running
 
 - If using Tool Labs, you should clone the repository to `~/www/python/src`, or
   otherwise symlink it to that directory. A
-  [virtualenv](http://virtualenv.readthedocs.org/) should be created at
+  [virtualenv](https://virtualenv.pypa.io/) should be created at
   `~/www/python/venv`.
 
 - Install all dependencies listed above.

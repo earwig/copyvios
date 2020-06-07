@@ -21,7 +21,7 @@
         <div id="header">
             <table id="heading">
                 <tr>
-                    <td id="head-home"><a id="a-home" href="${request.script_root}">Earwig's Copyvio Detector</a></td>
+                    <td id="head-home"><a id="a-home" href="${request.script_root}/">Earwig's Copyvio Detector</a></td>
                     <td id="head-settings"><a id="a-settings" href="${request.script_root}/settings">Settings</a></td>
                 </tr>
             </table>

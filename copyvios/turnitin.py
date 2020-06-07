@@ -8,7 +8,7 @@ from .misc import parse_wiki_timestamp
 
 __all__ = ['search_turnitin', 'TURNITIN_API_ENDPOINT']
 
-TURNITIN_API_ENDPOINT = 'http://tools.wmflabs.org/eranbot/plagiabot/api.py'
+TURNITIN_API_ENDPOINT = 'https://eranbot.toolforge.org/plagiabot/api.py'
 
 def search_turnitin(page_title, lang):
     """ Search the Plagiabot database for Turnitin reports for a page.

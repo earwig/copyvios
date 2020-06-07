@@ -40,9 +40,9 @@
         % if help:
             <div id="help">
                 <h1>Copyvio Detector API</h1>
-                <p>This is the first version of the <a href="//en.wikipedia.org/wiki/Application_programming_interface">API</a> for <a href="${request.script_root}">Earwig's Copyvio Detector</a>. It works, but some bugs might still need to be ironed out, so please <a href="https://github.com/earwig/copyvios/issues">report any</a> if you see them.</p>
+                <p>This is the first version of the <a href="https://en.wikipedia.org/wiki/Application_programming_interface">API</a> for <a href="${request.script_root}/">Earwig's Copyvio Detector</a>. It works, but some bugs might still need to be ironed out, so please <a href="https://github.com/earwig/copyvios/issues">report any</a> if you see them.</p>
                 <h2>Requests</h2>
-                <p>The API responds to GET requests made to <span class="code">https://tools.wmflabs.org/copyvios/api.json</span>. Parameters are described in the tables below:</p>
+                <p>The API responds to GET requests made to <span class="code">https://copyvios.toolforge.org/api.json</span>. Parameters are described in the tables below:</p>
                 <table class="parameters">
                     <tr>
                         <th colspan="4">Always</th>
@@ -63,7 +63,7 @@
                         <td>format</td>
                         <td><span class="code">json</span>, <span class="code">jsonfm</span></td>
                         <td>No&nbsp;(default:&nbsp;<span class="code">json</span>)</td>
-                        <td>The default output format is <a href="http://json.org/">JSON</a>. <span class="code">jsonfm</span> mode produces the same output, but renders it as a formatted HTML document for debugging.</td>
+                        <td>The default output format is <a href="https://www.json.org/">JSON</a>. <span class="code">jsonfm</span> mode produces the same output, but renders it as a formatted HTML document for debugging.</td>
                     </tr>
                     <tr>
                         <td>version</td>
@@ -254,7 +254,7 @@
                 <h2>Etiquette</h2>
                 The tool uses the same workers to handle all requests, so making concurrent API calls is only going to slow you down. Most operations are not rate-limited, but full searches with <span class="code">use_engine=True</span> are globally limited to around a thousand per day. Be respectful!
                 <h2>Example</h2>
-                <p><a class="no-color" href="https://tools.wmflabs.org/copyvios/api.json?version=1&amp;action=search&amp;project=wikipedia&amp;lang=en&amp;title=User:EarwigBot/Copyvios/Tests/2"><span class="code">https://tools.wmflabs.org/copyvios/api.json?<span class="param-key">version</span>=<span class="param-val">1</span>&amp;<span class="param-key">action</span>=<span class="param-val">search</span>&amp;<span class="param-key">project</span>=<span class="param-val">wikipedia</span>&amp;<span class="param-key">lang</span>=<span class="param-val">en</span>&amp;<span class="param-key">title</span>=<span class="param-val">User:EarwigBot/Copyvios/Tests/2</span></span></a></p>
+                <p><a class="no-color" href="https://copyvios.toolforge.org/api.json?version=1&amp;action=search&amp;project=wikipedia&amp;lang=en&amp;title=User:EarwigBot/Copyvios/Tests/2"><span class="code">https://copyvios.toolforge.org/api.json?<span class="param-key">version</span>=<span class="param-val">1</span>&amp;<span class="param-key">action</span>=<span class="param-val">search</span>&amp;<span class="param-key">project</span>=<span class="param-val">wikipedia</span>&amp;<span class="param-key">lang</span>=<span class="param-val">en</span>&amp;<span class="param-key">title</span>=<span class="param-val">User:EarwigBot/Copyvios/Tests/2</span></span></a></p>
                 <pre>{
     "status": "ok",
     "meta": {

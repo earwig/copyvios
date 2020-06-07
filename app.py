@@ -58,7 +58,7 @@ def setup_app():
 def prepare_request():
     g._db = None
     g.cookies = parse_cookies(
-        request.script_root, request.environ.get("HTTP_COOKIE"))
+        request.script_root or "/", request.environ.get("HTTP_COOKIE"))
     g.new_cookies = []
 
 @app.after_request

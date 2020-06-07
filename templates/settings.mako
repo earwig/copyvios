@@ -42,7 +42,7 @@
         </tr>
         <%
             background_options = [
-                ("list", 'Randomly select from <a href="http://commons.wikimedia.org/wiki/User:The_Earwig/POTD">a subset</a> of previous <a href="//commons.wikimedia.org/">Wikimedia Commons</a> <a href="//commons.wikimedia.org/wiki/Commons:Picture_of_the_day">Pictures of the Day</a> that work well as widescreen backgrounds, refreshed daily (default).'),
+                ("list", 'Randomly select from <a href="https://commons.wikimedia.org/wiki/User:The_Earwig/POTD">a subset</a> of previous <a href="https://commons.wikimedia.org/">Wikimedia Commons</a> <a href="https://commons.wikimedia.org/wiki/Commons:Picture_of_the_day">Pictures of the Day</a> that work well as widescreen backgrounds, refreshed daily (default).'),
                 ("potd", 'Use the current Commons Picture of the Day, unfiltered. Certain POTDs may be unsuitable as backgrounds due to their aspect ratio or subject matter.'),
                 ("plain", "Use a plain background."),
             ]

@@ -35,11 +35,11 @@
         </p></div>
     % elif not query.site:
         <div id="info-box" class="red-box">
-            <p>The given site (project=<b><span class="mono">${query.project | h}</span></b>, language=<b><span class="mono">${query.lang | h}</span></b>) doesn't seem to exist. It may also be closed or private. <a href="//${query.lang | h}.${query.project | h}.org/">Confirm its URL.</a></p>
+            <p>The given site (project=<b><span class="mono">${query.project | h}</span></b>, language=<b><span class="mono">${query.lang | h}</span></b>) doesn't seem to exist. It may also be closed or private. <a href="https://${query.lang | h}.${query.project | h}.org/">Confirm its URL.</a></p>
         </div>
     % elif query.oldid and not result:
         <div id="info-box" class="red-box">
-            <p>The given revision ID doesn't seem to exist: <a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>.</p>
+            <p>The given revision ID doesn't seem to exist: <a href="https://${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>.</p>
         </div>
     % elif query.title and not result:
         <div id="info-box" class="red-box">
@@ -47,10 +47,10 @@
         </div>
     % endif
 %endif
-<p>This tool attempts to detect <a href="//en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. In <i>search mode</i>, it will check for similar content elsewhere on the web using <a href="https://developers.google.com/custom-search/">Google</a>, external links present in the text of the page, or <a href="//en.wikipedia.org/wiki/Wikipedia:Turnitin">Turnitin</a> (provided by <a href="//en.wikipedia.org/wiki/User:EranBot">EranBot</a>), depending on which options are selected. In <i>comparison mode</i>, the tool will compare the article to a specific webpage without making additional searches, like the <a href="//tools.wmflabs.org/dupdet/">Duplication Detector</a>.</p>
+<p>This tool attempts to detect <a href="https://en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. In <i>search mode</i>, it will check for similar content elsewhere on the web using <a href="https://developers.google.com/custom-search/">Google</a>, external links present in the text of the page, or <a href="https://en.wikipedia.org/wiki/Wikipedia:Turnitin">Turnitin</a> (provided by <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>), depending on which options are selected. In <i>comparison mode</i>, the tool will compare the article to a specific webpage without making additional searches, like the <a href="https://dupdet.toolforge.org/">Duplication Detector</a>.</p>
 <p>Running a full check can take up to a minute if other websites are slow or if the tool is under heavy use. Please be patient. If you get a timeout, wait a moment and refresh the page.</p>
-<p>Be aware that other websites can copy from Wikipedia, so check the results carefully, especially for older or well-developed articles. Specific websites can be skipped by being added to the <a href="//en.wikipedia.org/wiki/User:EarwigBot/Copyvios/Exclusions">excluded URL list</a>.</p>
-<form id="cv-form" action="${request.script_root}" method="get">
+<p>Be aware that other websites can copy from Wikipedia, so check the results carefully, especially for older or well-developed articles. Specific websites can be skipped by being added to the <a href="https://en.wikipedia.org/wiki/User:EarwigBot/Copyvios/Exclusions">excluded URL list</a>.</p>
+<form id="cv-form" action="${request.script_root}/" method="get">
     <table id="cv-form-outer">
         <tr>
             <td>Site:</td>
@@ -165,7 +165,7 @@
         % else:
             seconds.
         % endif
-        <a href="${request.script_root | h}?lang=${query.lang | h}&amp;project=${query.project | h}&amp;oldid=${query.oldid or query.page.lastrevid | h}&amp;action=${query.action | h}&amp;${"use_engine={0}&use_links={1}".format(int(query.use_engine not in ("0", "false")), int(query.use_links not in ("0", "false"))) if query.action == "search" else "" | h}${"url=" if query.action == "compare" else ""}${query.url if query.action == "compare" else "" | u}">Permalink.</a>
+        <a href="${request.script_root | h}/?lang=${query.lang | h}&amp;project=${query.project | h}&amp;oldid=${query.oldid or query.page.lastrevid | h}&amp;action=${query.action | h}&amp;${"use_engine={0}&use_links={1}".format(int(query.use_engine not in ("0", "false")), int(query.use_links not in ("0", "false"))) if query.action == "search" else "" | h}${"url=" if query.action == "compare" else ""}${query.url if query.action == "compare" else "" | u}">Permalink.</a>
     </div>
 
     <div id="cv-result" class="${'red' if result.confidence >= T_SUSPECT else 'yellow' if result.confidence >= T_POSSIBLE else 'green'}-box">
@@ -179,11 +179,11 @@
                 <td>
                     <a href="${query.page.url}">${query.page.title | h}</a>
                     % if query.oldid:
-                        @<a href="//${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>
+                        @<a href="https://${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>
                     % endif
                     % if query.redirected_from:
                         <br />
-                        <span id="redirected-from">Redirected from <a href="//${query.site.domain | h}/w/index.php?title=${query.redirected_from.title | u}&amp;redirect=no">${query.redirected_from.title | h}</a>. <a href="${request.url | httpsfix, h}&amp;noredirect=1">Check original.</a></span>
+                        <span id="redirected-from">Redirected from <a href="https://${query.site.domain | h}/w/index.php?title=${query.redirected_from.title | u}&amp;redirect=no">${query.redirected_from.title | h}</a>. <a href="${request.url | httpsfix, h}&amp;noredirect=1">Check original.</a></span>
                     % endif
                 </td>
                 <td>
@@ -225,7 +225,7 @@
             % if query.turnitin_result.reports:
                 <table id="turnitin-table"><tbody>
                 % for report in turnitin_result.reports:
-                    <tr><td class="turnitin-table-cell"><a href="https://tools.wmflabs.org/eranbot/ithenticate.py?rid=${report.reportid}">Report ${report.reportid}</a> for text added at <a href="https://${query.lang}.wikipedia.org/w/index.php?title=${query.title}&amp;diff=${report.diffid}"> ${report.time_posted.strftime("%H:%M, %d %B %Y (UTC)")}</a>:
+                    <tr><td class="turnitin-table-cell"><a href="https://eranbot.toolforge.org/ithenticate.py?rid=${report.reportid}">Report ${report.reportid}</a> for text added at <a href="https://${query.lang}.wikipedia.org/w/index.php?title=${query.title}&amp;diff=${report.diffid}"> ${report.time_posted.strftime("%H:%M, %d %B %Y (UTC)")}</a>:
                     <ul>
                     % for source in report.sources:
                           <li>${source['percent']}% of revision text (${source['words']} words) found at <a href="${source['url'] | h}">${source['url'] | h}</a></li>
@@ -269,7 +269,7 @@
                                 % endif
                             </td>
                             <td>
-                                <a href="${request.script_root | h}?lang=${query.lang | h}&amp;project=${query.project | h}&amp;oldid=${query.oldid or query.page.lastrevid | h}&amp;action=compare&amp;url=${source.url | u}">Compare</a>
+                                <a href="${request.script_root | h}/?lang=${query.lang | h}&amp;project=${query.project | h}&amp;oldid=${query.oldid or query.page.lastrevid | h}&amp;action=compare&amp;url=${source.url | u}">Compare</a>
                             </td>
                         </tr>
                     % endfor

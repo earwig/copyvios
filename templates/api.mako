@@ -40,7 +40,7 @@
         % if help:
             <div id="help">
                 <h1>Copyvio Detector API</h1>
-                <p>This is the first version of the <a href="https://en.wikipedia.org/wiki/Application_programming_interface">API</a> for <a href="${request.script_root}/">Earwig's Copyvio Detector</a>. It works, but some bugs might still need to be ironed out, so please <a href="https://github.com/earwig/copyvios/issues">report any</a> if you see them.</p>
+                <p>This is the first version of the <a href="https://en.wikipedia.org/wiki/Application_programming_interface">API</a> for <a href="${request.script_root}/">Earwig's Copyvio Detector</a>. Please <a href="https://github.com/earwig/copyvios/issues">report any issues</a> you encounter.</p>
                 <h2>Requests</h2>
                 <p>The API responds to GET requests made to <span class="code">https://copyvios.toolforge.org/api.json</span>. Parameters are described in the tables below:</p>
                 <table class="parameters">
@@ -252,7 +252,8 @@
     ]
 }</pre>
                 <h2>Etiquette</h2>
-                The tool uses the same workers to handle all requests, so making concurrent API calls is only going to slow you down. Most operations are not rate-limited, but full searches with <span class="code">use_engine=True</span> are globally limited to around a thousand per day. Be respectful!
+                <p>The tool uses the same workers to handle all requests, so making concurrent API calls is only going to slow you down. Most operations are not rate-limited, but full searches with <span class="code">use_engine=True</span> are globally limited to around a thousand per day. Be respectful!</p>
+                <p>Aside from testing, you must set a reasonable <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent">user agent</a> that identifies your bot and and gives some way to contact you. You may be blocked if using an improper user agent (for example, the default user agent set by your HTTP library), or if your bot makes requests too frequently.</p>
                 <h2>Example</h2>
                 <p><a class="no-color" href="https://copyvios.toolforge.org/api.json?version=1&amp;action=search&amp;project=wikipedia&amp;lang=en&amp;title=User:EarwigBot/Copyvios/Tests/2"><span class="code">https://copyvios.toolforge.org/api.json?<span class="param-key">version</span>=<span class="param-val">1</span>&amp;<span class="param-key">action</span>=<span class="param-val">search</span>&amp;<span class="param-key">project</span>=<span class="param-val">wikipedia</span>&amp;<span class="param-key">lang</span>=<span class="param-val">en</span>&amp;<span class="param-key">title</span>=<span class="param-val">User:EarwigBot/Copyvios/Tests/2</span></span></a></p>
                 <pre>{

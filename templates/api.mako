@@ -116,7 +116,7 @@
                         <td>detail</td>
                         <td>boolean</td>
                         <td>No (default: <span class="code">false</span>)</td>
-                        <td>Whether to include the detailed HTML text comparison available in the regular interface. If not, only the confidence percentage is available.</td>
+                        <td>Whether to include the detailed HTML text comparison available in the regular interface. If not, only the similarity percentage is available.</td>
                     </tr>
                 </table>
                 <table class="parameters">
@@ -181,7 +181,7 @@
                         <td>noskip</td>
                         <td>boolean</td>
                         <td>No (default: <span class="code">false</span>)</td>
-                        <td>If a suspected source is found during a check to have a sufficiently high confidence value, the check will end prematurely, and other pending URLs will be skipped. Passing this option will prevent this behavior, resulting in complete (but more time-consuming) checks.</td>
+                        <td>If a suspected source is found during a check to have a sufficiently high similarity value, the check will end prematurely, and other pending URLs will be skipped. Passing this option will prevent this behavior, resulting in complete (but more time-consuming) checks.</td>
                     </tr>
                 </table>
                 <h2>Responses</h2>
@@ -213,13 +213,13 @@
     },
     "best": {
         "url":        <span class="resp-dtype">string</span> <span class="resp-desc">the URL of the best match found, or null if no matches were found</span>,
-        "confidence": <span class="resp-dtype">float</span> <span class="resp-desc">the confidence of a violation in the best match, or 0.0 if no matches were found</span>,
+        "confidence": <span class="resp-dtype">float</span> <span class="resp-desc">the similarity of a violation in the best match, or 0.0 if no matches were found</span>,
         "violation":  <span class="resp-dtype">string</span> <span class="resp-desc">one of "suspected", "possible", or "none"</span>
     },
     "sources": [
         {
             "url":        <span class="resp-dtype">string</span> <span class="resp-desc">the URL of the source</span>,
-            "confidence": <span class="resp-dtype">float</span> <span class="resp-desc">the confidence of a violation in the source</span>,
+            "confidence": <span class="resp-dtype">float</span> <span class="resp-desc">the similarity of the source to the page checked as a ratio between 0.0 and 1.0</span>,
             "violation":  <span class="resp-dtype">string</span> <span class="resp-desc">one of "suspected", "possible", or "none"</span>,
             "skipped":    <span class="resp-dtype">boolean</span> <span class="resp-desc">whether the source was skipped due to the check finishing early (see note about noskip above) or an exclusion</span>,
             "excluded":    <span class="resp-dtype">boolean</span> <span class="resp-desc">whether the source was skipped for being in the excluded URL list</span>
@@ -231,7 +231,7 @@
         "source":  <span class="resp-dtype">string</span> <span class="resp-desc">source text, with shared passages marked with HTML</span>
     }
 }</pre>
-                <p>In the case of <span class="code">action=search</span>, <span class="code">sources</span> will contain one entry for each source checked (or skipped if the check ends early), sorted in order of confidence, with skipped and excluded sources at the bottom.</p>
+                <p>In the case of <span class="code">action=search</span>, <span class="code">sources</span> will contain one entry for each source checked (or skipped if the check ends early), sorted by similarity, with skipped and excluded sources at the bottom.</p>
                 <p>In the case of <span class="code">action=compare</span>, <span class="code">best</span> will always contain information about the URL that was given, so <span class="code">response["best"]["url"]</span> will never be <span class="code">null</span>. Also, <span class="code">sources</span> will always contain one entry, with the same data as <span class="code">best</span>, since only one source is checked in comparison mode.</p>
                 <p>Valid responses for <span class="code">action=sites</span> are formatted like this:</p>
                 <pre>{

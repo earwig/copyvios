@@ -362,7 +362,7 @@ span.mono   { font-family: monospace; }
 span.light  { color: #CCC; }
 span.medium { color: #AAA; }
 
-span.source-confidence { font-weight: bold; }
+span.source-similarity { font-weight: bold; }
 span.source-suspect    { color: #900; }
 span.source-possible   { color: #990; }
 span.source-novio      { color: #090; }

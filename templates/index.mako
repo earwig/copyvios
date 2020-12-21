@@ -199,7 +199,7 @@
                         % endif
                     </div>
                     <div>${round(result.confidence * 100, 1)}%</div>
-                    <div>confidence</div>
+                    <div>similarity</div>
                 </td>
                 <td>
                     % if result.url:
@@ -252,7 +252,7 @@
                     </colgroup>
                     <tr>
                         <th>URL</th>
-                        <th>Confidence</th>
+                        <th>Similarity</th>
                         <th>Compare</th>
                     </tr>
                     % for i, source in enumerate(result.sources):
@@ -265,7 +265,7 @@
                                     <% skips = True %>
                                     <span class="source-skipped">Skipped</span>
                                 % else:
-                                    <span class="source-confidence ${"source-suspect" if source.confidence >= T_SUSPECT else "source-possible" if source.confidence >= T_POSSIBLE else "source-novio"}">${round(source.confidence * 100, 1)}%</span>
+                                    <span class="source-similarity ${"source-suspect" if source.confidence >= T_SUSPECT else "source-possible" if source.confidence >= T_POSSIBLE else "source-novio"}">${round(source.confidence * 100, 1)}%</span>
                                 % endif
                             </td>
                             <td>
@@ -281,12 +281,12 @@
             % endif
             % if len(result.sources) > 10:
                 <div id="cv-additional" class="cv-source-footer">
-                    ${len(result.sources) - 10} URL${"s" if len(result.sources) > 11 else ""} with lower confidence hidden. <a id="show-additional-sources" href="#">Show them.</a>
+                    ${len(result.sources) - 10} URL${"s" if len(result.sources) > 11 else ""} with lower similarity hidden. <a id="show-additional-sources" href="#">Show them.</a>
                 </div>
             % endif
             % if skips or result.possible_miss:
                 <div class="cv-source-footer">
-                    The search ended early because a match was found with high confidence. <a href="${request.url | httpsfix, h}&amp;noskip=1">Do a complete check.</a>
+                    The search ended early because a match was found with high similarity. <a href="${request.url | httpsfix, h}&amp;noskip=1">Do a complete check.</a>
                 </div>
             % endif
         </div>

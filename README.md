@@ -17,13 +17,14 @@ Dependencies
 * [requests](https://requests.readthedocs.io/) >= 2.9.1
 * [SQLAlchemy](https://www.sqlalchemy.org/) >= 0.9.6
 * [apsw](https://github.com/rogerbinns/apsw) >= 3.26.0
-* [uglifycss](https://github.com/fmarcia/UglifyCSS/)
-* [uglifyjs](https://github.com/mishoo/UglifyJS/) >= 1.3.3
+* [uglifyjs](https://github.com/mishoo/UglifyJS) >= 3.12.6
+* [cssnano](https://github.com/cssnano/cssnano) >= 4.1.10
+* [postcss-cli](https://github.com/postcss/postcss-cli) >= 8.3.1
 
 Running
 =======
 
-- If using Tool Labs, you should clone the repository to `~/www/python/src`, or
+- If using Toolforge, you should clone the repository to `~/www/python/src`, or
   otherwise symlink it to that directory. A
   [virtualenv](https://virtualenv.pypa.io/) should be created at
   `~/www/python/venv`.
@@ -46,4 +47,4 @@ Running
 
 - Run `./build.py` to minify JS and CSS files.
 
-- Start the web server (on Tool Labs, `webservice2 uwsgi-python start`).
+- Start the web server (on Toolforge, `webservice uwsgi-python start`).

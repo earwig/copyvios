@@ -6,91 +6,91 @@ pre {
     white-space: pre-wrap;
 }
 
-div#help {
+#help {
     margin: auto;
     max-width: 1200px;
 }
 
-div.json {
+.json {
     font-family: monospace;
 }
 
-div.indent {
+.indent {
     display: inline-block;
     padding-left: 2em;
 }
 
-span.code {
+.code {
     font-family: monospace;
 }
 
-span.resp-dtype, span.resp-desc, span.resp-cond {
+.resp-dtype, .resp-desc, .resp-cond {
     padding: 0 0.25em;
     background-color: #EEE;
 }
 
-span.resp-dtype {
+.resp-dtype {
     color: #009;
 }
 
-span.resp-dtype:before, span.resp-cond:before {
+.resp-dtype:before, .resp-cond:before {
     content: "(";
 }
 
-span.resp-dtype:after, span.resp-cond:after {
+.resp-dtype:after, .resp-cond:after {
     content: ")";
 }
 
-span.resp-desc {
+.resp-desc {
     color: #050;
 }
 
-span.resp-cond {
+.resp-cond {
     color: #900;
     font-style: italic;
 }
 
-span.param-key {
+.param-key {
     color: #009;
     font-weight: bold;
 }
 
-span.param-val {
+.param-val {
     color: #900;
     font-weight: bold;
 }
 
-table.parameters {
+.parameters {
     margin: 1em 0;
 }
 
-table.parameters tr:first-child {
+.parameters tr:first-child {
     font-family: sans-serif;
     font-size: 1.17em;
     color: white;
 }
 
-table.parameters tr:first-child th {
+.parameters tr:first-child th {
     background-color: #369;
 }
 
-table.parameters td, table.parameters th {
+.parameters td, .parameters th {
     padding: 0.2em 0.5em;
 }
 
-table.parameters th {
+.parameters th {
     background-color: #F0F0F0;
 }
 
-table.parameters td:first-child {
+.parameters td:first-child {
     font-family: monospace;
 }
 
-table.parameters tr:nth-child(2n + 3) {
+.parameters tr:nth-child(2n + 3) {
     background-color: #E0E0E0;
 }
 
-table.parameters tr:nth-child(2n + 4) {
+.parameters tr:nth-child(2n + 4) {
     background-color: #F0F0F0;
 }
 
@@ -99,7 +99,7 @@ a:visited { color: #373; text-decoration: none; }
 a:hover   { color: #040; text-decoration: underline; }
 a:active  { color: #404; text-decoration: underline; }
 
-a.no-color:link    { color: #000; text-decoration: none; }
-a.no-color:visited { color: #000; text-decoration: none; }
-a.no-color:hover   { color: #000; text-decoration: underline; }
-a.no-color:active  { color: #000; text-decoration: underline; }
+.no-color:link    { color: #000; text-decoration: none; }
+.no-color:visited { color: #000; text-decoration: none; }
+.no-color:hover   { color: #000; text-decoration: underline; }
+.no-color:active  { color: #000; text-decoration: underline; }

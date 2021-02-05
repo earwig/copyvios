@@ -3,7 +3,7 @@
     "title" : "Copyvios",
     "description" : "Detects copyright violations in pages by searching for their contents online. Can also compare a page and a specific URL.",
     "url" : "https://copyvios.toolforge.org/",
-    "keywords" : "copyvios, copyright violations",
+    "keywords" : "copyvios, copyright violations, plagiarism",
     "author" : "The Earwig",
     "repository" : "https://github.com/earwig/copyvios"
 }

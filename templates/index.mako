@@ -19,6 +19,8 @@
                 Unknown action: <b><span class="mono">${query.action | h}</span></b>.
             % elif query.error == "no search method":
                 No copyvio search methods were selected. A check can only be made using the search engine, links present in the page, Turnitin, or some combination of these.
+            % elif query.error == "bad oldid":
+                The revision ID <code>${query.oldid | h}</code> is invalid. It should be an integer.
             % elif query.error == "no URL":
                 URL comparison mode requires a URL to be entered. Enter one in the text box below, or choose copyvio search mode to look for content similar to the article elsewhere on the web.
             % elif query.error == "bad URI":
@@ -215,7 +217,7 @@
     <% attrib = get_attribution_info(query.site, query.page) %>
     % if attrib:
         <div id="attribution-warning" class="yellow-box">
-            This article contains an attribution template: <tt>{{<a href="${attrib[1]}">${attrib[0] | h}</a>}}</tt>. Please verify that any potential copyvios are not from properly attributed sources.
+            This article contains an attribution template: <code>{{<a href="${attrib[1]}">${attrib[0] | h}</a>}}</code>. Please verify that any potential copyvios are not from properly attributed sources.
         </div>
     % endif
 

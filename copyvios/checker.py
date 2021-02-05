@@ -3,6 +3,7 @@
 from datetime import datetime, timedelta
 from hashlib import sha256
 from logging import getLogger
+import re
 from urlparse import urlparse
 
 from earwigbot import exceptions
@@ -28,11 +29,16 @@ def do_check(query=None):
     if not query:
         query = Query()
     if query.lang:
-        query.lang = query.orig_lang = query.lang.lower()
+        query.lang = query.orig_lang = query.lang.strip().lower()
         if "::" in query.lang:
             query.lang, query.name = query.lang.split("::", 1)
     if query.project:
-        query.project = query.project.lower()
+        query.project = query.project.strip().lower()
+    if query.oldid:
+        query.oldid = query.oldid.strip().lstrip("0")
+        if not re.match(r"^\d+$", query.oldid):
+            query.error = "bad oldid"
+            return
 
     query.submitted = query.project and query.lang and (query.title or query.oldid)
     if query.submitted:

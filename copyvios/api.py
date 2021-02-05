@@ -11,6 +11,7 @@ __all__ = ["format_api_error", "handle_api_request"]
 
 _CHECK_ERRORS = {
     "no search method": "Either 'use_engine' or 'use_links' must be true",
+    "bad oldid": "The revision ID is invalid",
     "no URL": "The parameter 'url' is required for URL comparisons",
     "bad URI": "The given URI scheme is unsupported",
     "no data": "No text could be found in the given URL (note that only HTML "

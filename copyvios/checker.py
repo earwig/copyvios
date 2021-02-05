@@ -36,9 +36,6 @@ def do_check(query=None):
         query.project = query.project.strip().lower()
     if query.oldid:
         query.oldid = query.oldid.strip().lstrip("0")
-        if not re.match(r"^\d+$", query.oldid):
-            query.error = "bad oldid"
-            return query
 
     query.submitted = query.project and query.lang and (query.title or query.oldid)
     if query.submitted:
@@ -49,6 +46,9 @@ def do_check(query=None):
 
 def _get_results(query, follow=True):
     if query.oldid:
+        if not re.match(r"^\d+$", query.oldid):
+            query.error = "bad oldid"
+            return
         page = query.page = _get_page_by_revid(query.site, query.oldid)
         if not page:
             return

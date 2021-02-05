@@ -75,10 +75,10 @@ def _hook_check(query):
         return format_api_error("bad_site", info)
     elif not query.result:
         if query.oldid:
-            info = u"The given revision ID doesn't seem to exist: {0}"
+            info = u"The revision ID couldn't be found: {0}"
             return format_api_error("bad_oldid", info.format(query.oldid))
         else:
-            info = u"The given page doesn't seem to exist: {0}"
+            info = u"The page couldn't be found: {0}"
             return format_api_error("bad_title", info.format(query.page.title))
 
     result = query.result

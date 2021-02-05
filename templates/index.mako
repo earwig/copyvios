@@ -41,11 +41,11 @@
         </div>
     % elif query.oldid and not result:
         <div id="info-box" class="red-box">
-            <p>The given revision ID doesn't seem to exist: <a href="https://${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>.</p>
+            <p>The revision ID couldn't be found: <a href="https://${query.site.domain | h}/w/index.php?oldid=${query.oldid | h}">${query.oldid | h}</a>.</p>
         </div>
     % elif query.title and not result:
         <div id="info-box" class="red-box">
-            <p>The given page doesn't seem to exist: <a href="${query.page.url}">${query.page.title | h}</a>.</p>
+            <p>The page couldn't be found: <a href="${query.page.url}">${query.page.title | h}</a>.</p>
         </div>
     % endif
 %endif

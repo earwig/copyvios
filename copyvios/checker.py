@@ -38,7 +38,7 @@ def do_check(query=None):
         query.oldid = query.oldid.strip().lstrip("0")
         if not re.match(r"^\d+$", query.oldid):
             query.error = "bad oldid"
-            return
+            return query
 
     query.submitted = query.project and query.lang and (query.title or query.oldid)
     if query.submitted:

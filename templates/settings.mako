@@ -3,7 +3,7 @@
     from flask import g, request
     from copyvios.misc import cache
 %>\
-<%include file="/support/header.mako" args="title='Settings | Earwig\'s Copyvio Detector'"/>
+<%include file="/support/header.mako" args="title='Settings | Earwig\'s Copyvio Detector', splash=True"/>
 % if status:
     <div id="info-box" class="green-box">
         <p>${status}</p>

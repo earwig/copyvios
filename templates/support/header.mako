@@ -1,4 +1,4 @@
-<%page args="title"/>\
+<%page args="title, splash=False"/>\
 <%!
     from flask import g, request, url_for
     from copyvios.background import set_background
@@ -18,8 +18,8 @@
 % else:
     <body onload="update_screen_size()" style="background-image: url('${set_background(selected) | h}');">
 % endif
-    <div id="container">
-        <div>
+    <div id="container"${' class="splash"' if splash else ''}>
+        <div id="content">
             <header>
                 <h1><a href="/">Earwig&apos;s <strong>Copyvio Detector</strong></a></h1>
                 <a id="settings-link" href="/settings">Settings</a>

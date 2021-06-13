@@ -4,6 +4,7 @@
 %>\
             </main>
         </div>
+        <div class="padding"></div>
     </div>
     <footer>
         <ul>

@@ -4,7 +4,14 @@
     from copyvios.checker import T_POSSIBLE, T_SUSPECT
     from copyvios.misc import cache
 %>\
-<%include file="/support/header.mako" args="title='Earwig\'s Copyvio Detector'"/>
+<%
+    titleparts = []
+    if query.page:
+        titleparts.append(query.page.title)
+    titleparts.append("Earwig's Copyvio Detector")
+    title = " | ".join(titleparts)
+%>\
+<%include file="/support/header.mako" args="title=title"/>
 <%namespace module="copyvios.highlighter" import="highlight_delta"/>\
 <%namespace module="copyvios.misc" import="httpsfix, urlstrip"/>\
 % if notice:
@@ -49,9 +56,9 @@
         </div>
     % endif
 %endif
-<p>This tool attempts to detect <a href="https://en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. In <i>search mode</i>, it will check for similar content elsewhere on the web using <a href="https://developers.google.com/custom-search/">Google</a>, external links present in the text of the page, or <a href="https://en.wikipedia.org/wiki/Wikipedia:Turnitin">Turnitin</a> (provided by <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>), depending on which options are selected. In <i>comparison mode</i>, the tool will compare the article to a specific webpage without making additional searches, like the <a href="https://dupdet.toolforge.org/">Duplication Detector</a>.</p>
+<p>This tool attempts to detect <a href="https://en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. In <i>search mode</i>, it will check for similar content elsewhere on the web using <a href="https://developers.google.com/custom-search/">Google</a>, external links present in the text of the page, or <a href="https://en.wikipedia.org/wiki/Wikipedia:Turnitin">Turnitin</a> (via <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>), depending on which options are selected. In <i>comparison mode</i>, the tool will compare the article to a specific webpage without making additional searches, like the <a href="https://dupdet.toolforge.org/">Duplication Detector</a>.</p>
 <p>Running a full check can take up to a minute if other websites are slow or if the tool is under heavy use. Please be patient. If you get a timeout, wait a moment and refresh the page.</p>
-<p>Be aware that other websites can copy from Wikipedia, so check the results carefully, especially for older or well-developed articles. Specific websites can be skipped by being added to the <a href="https://en.wikipedia.org/wiki/User:EarwigBot/Copyvios/Exclusions">excluded URL list</a>.</p>
+<p>Be aware that other websites can copy from Wikipedia, so check the results carefully, especially for older or well-developed articles. Specific websites can be skipped by adding them to the <a href="https://en.wikipedia.org/wiki/User:EarwigBot/Copyvios/Exclusions">excluded URL list</a>.</p>
 <form id="cv-form" action="${request.script_root}/" method="get">
     <table id="cv-form-outer">
         <tr>

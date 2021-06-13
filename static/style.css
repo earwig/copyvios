@@ -1,5 +1,5 @@
 body {
-    font-family: helvetica, arial, clean, sans-serif;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
     font-size: 14px;
     color: #000;
     background-color: #000;
@@ -378,10 +378,20 @@ h2 {
 .source-skipped    { font-style: italic; }
 .source-excluded   { font-style: italic; }
 
-a:link    { color: #373; text-decoration: none; }
-a:visited { color: #373; text-decoration: none; }
-a:hover   { color: #040; text-decoration: underline; }
-a:active  { color: #404; text-decoration: underline; }
+a:link, a:visited {
+    color: #002bb8;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #002bb8;
+    text-decoration: underline;
+}
+
+a:active {
+    color: #404;
+    text-decoration: underline;
+}
 
 #a-home:link    { color: #777; }
 #a-home:visited { color: #777; }

@@ -11,7 +11,7 @@
     titleparts.append("Earwig's Copyvio Detector")
     title = " | ".join(titleparts)
 %>\
-<%include file="/support/header.mako" args="title=title, splash=bool(result)"/>
+<%include file="/support/header.mako" args="title=title, splash=not result"/>
 <%namespace module="copyvios.highlighter" import="highlight_delta"/>\
 <%namespace module="copyvios.misc" import="httpsfix, urlstrip"/>\
 % if notice:

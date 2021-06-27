@@ -106,10 +106,14 @@ $(document).ready(function() {
     $("#action-search").change(function() {
         $(".cv-search").prop("disabled", false);
         $(".cv-compare").prop("disabled", true);
+        $(".cv-search-oo-ui").addClass("oo-ui-widget-enabled").removeClass("oo-ui-widget-disabled");
+        $(".cv-compare-oo-ui").addClass("oo-ui-widget-disabled").removeClass("oo-ui-widget-enabled");
     });
     $("#action-compare").change(function() {
         $(".cv-search").prop("disabled", true);
         $(".cv-compare").prop("disabled", false);
+        $(".cv-search-oo-ui").addClass("oo-ui-widget-disabled").removeClass("oo-ui-widget-enabled");
+        $(".cv-compare-oo-ui").addClass("oo-ui-widget-enabled").removeClass("oo-ui-widget-disabled");
     });
 
     if ($("#action-search" ).is(":checked")) $("#action-search" ).change();
@@ -128,7 +132,10 @@ $(document).ready(function() {
         }
         $("#cv-form button[type='submit']")
             .prop("disabled", true)
-            .css("cursor", "progress");
+            .css("cursor", "progress")
+            .parent()
+            .addClass("oo-ui-widget-disabled")
+            .removeClass("oo-ui-widget-enabled");
     });
 
     if ($("#cv-additional").length >= 0) {

@@ -29,7 +29,7 @@
             % elif query.error == "bad oldid":
                 The revision ID <code>${query.oldid | h}</code> is invalid. It should be an integer.
             % elif query.error == "no URL":
-                URL comparison mode requires a URL to be entered. Enter one in the text box below, or choose copyvio search mode to look for content similar to the article elsewhere on the web.
+                Compare mode requires a URL to be entered. Enter one in the text box below, or choose copyvio search mode to look for content similar to the article elsewhere on the web.
             % elif query.error == "bad URI":
                 Unsupported URI scheme: <a href="${query.url | h}">${query.url | h}</a>.
             % elif query.error == "no data":
@@ -56,118 +56,125 @@
         </div>
     % endif
 %endif
-<p>This tool attempts to detect <a href="https://en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. In <i>search mode</i>, it will check for similar content elsewhere on the web using <a href="https://developers.google.com/custom-search/">Google</a>, external links present in the text of the page, or <a href="https://en.wikipedia.org/wiki/Wikipedia:Turnitin">Turnitin</a> (via <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>), depending on which options are selected. In <i>comparison mode</i>, the tool will compare the article to a specific webpage without making additional searches, like the <a href="https://dupdet.toolforge.org/">Duplication Detector</a>.</p>
+<p>This tool attempts to detect <a href="https://en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in articles. In <i>search mode</i>, it will check for similar content elsewhere on the web using <a href="https://developers.google.com/custom-search/">Google</a>, external links present in the text of the page, or <a href="https://en.wikipedia.org/wiki/Wikipedia:Turnitin">Turnitin</a> (via <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>), depending on which options are selected. In <i>compare mode</i>, the tool will compare the article to a specific webpage without making additional searches, like the <a href="https://dupdet.toolforge.org/">Duplication Detector</a>.</p>
 <p>Running a full check can take up to a minute if other websites are slow or if the tool is under heavy use. Please be patient. If you get a timeout, wait a moment and refresh the page.</p>
 <p>Be aware that other websites can copy from Wikipedia, so check the results carefully, especially for older or well-developed articles. Specific websites can be skipped by adding them to the <a href="https://en.wikipedia.org/wiki/User:EarwigBot/Copyvios/Exclusions">excluded URL list</a>.</p>
 <form id="cv-form" action="${request.script_root}/" method="get">
-    <table id="cv-form-outer">
-        <tr>
-            <td>Site:</td>
-            <td colspan="3">
-                <span class="mono">https://</span>
-                <select name="lang">
-                    <% selected_lang = query.orig_lang if query.orig_lang else g.cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in g.cookies else cache.bot.wiki.get_site().lang %>\
-                    % for code, name in cache.langs:
-                        % if code == selected_lang:
-                            <option value="${code | h}" selected="selected">${name}</option>
-                        % else:
-                            <option value="${code | h}">${name}</option>
-                        % endif
-                    % endfor
-                </select>
-                <span class="mono">.</span>
-                <select name="project">
-                    <% selected_project = query.project if query.project else g.cookies["CopyviosDefaultProject"].value if "CopyviosDefaultProject" in g.cookies else cache.bot.wiki.get_site().project %>\
-                    % for code, name in cache.projects:
-                        % if code == selected_project:
-                            <option value="${code | h}" selected="selected">${name}</option>
-                        % else:
-                            <option value="${code | h}">${name}</option>
-                        % endif
-                    % endfor
-                </select>
-                <span class="mono">.org</span>
-            </td>
-        </tr>
-        <tr>
-            <td id="cv-col1">Page&nbsp;title:</td>
-            <td id="cv-col2">
+    <div class="oo-ui-layout oo-ui-horizontalLayout">
+        <label class="site oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">Site</label>
+        <div class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-dropdownInputWidget oo-ui-dropdownInputWidget-php">
+            <select name="lang" required="" class="oo-ui-inputWidget-input oo-ui-indicator-down" title="Language">
+                <% selected_lang = query.orig_lang if query.orig_lang else g.cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in g.cookies else cache.bot.wiki.get_site().lang %>\
+                % for code, name in cache.langs:
+                    % if code == selected_lang:
+                        <option value="${code | h}" selected="selected">${name}</option>
+                    % else:
+                        <option value="${code | h}">${name}</option>
+                    % endif
+                % endfor
+            </select>
+        </div>
+        <div class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-dropdownInputWidget oo-ui-dropdownInputWidget-php">
+            <select name="project" required="" class="oo-ui-inputWidget-input oo-ui-indicator-down" title="Project">
+                <% selected_project = query.project if query.project else g.cookies["CopyviosDefaultProject"].value if "CopyviosDefaultProject" in g.cookies else cache.bot.wiki.get_site().project %>\
+                % for code, name in cache.projects:
+                    % if code == selected_project:
+                        <option value="${code | h}" selected="selected">${name}</option>
+                    % else:
+                        <option value="${code | h}">${name}</option>
+                    % endif
+                % endfor
+            </select>
+        </div>
+    </div>
+    <div class="oo-ui-layout oo-ui-horizontalLayout">
+        <label for="cv-title" class="page oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">Page</label>
+        <div class="page-title oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-textInputWidget oo-ui-textInputWidget-type-text oo-ui-textInputWidget-php">
+            <input id="cv-title" type="text" class="oo-ui-inputWidget-input" name="title" placeholder="Title" title="Page title"
                 % if query.title:
-                    <input class="cv-text" type="text" name="title" value="${query.page.title if query.page else query.title | h}" />
-                % else:
-                    <input class="cv-text" type="text" name="title" />
+                    value="${query.page.title if query.page else query.title | h}"
                 % endif
-            </td>
-            <td id="cv-col3">or&nbsp;revision&nbsp;ID:</td>
-            <td id="cv-col4">
+            >
+        </div>
+        <label class="oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">or</label>
+        <div class="page-oldid oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-textInputWidget oo-ui-textInputWidget-type-text oo-ui-textInputWidget-php">
+            <input id="cv-oldid" type="text" class="oo-ui-inputWidget-input" name="oldid" placeholder="Revision ID" title="Revision ID"
                 % if query.oldid:
-                    <input class="cv-text" type="text" name="oldid" value="${query.oldid | h}" />
-                % else:
-                    <input class="cv-text" type="text" name="oldid" />
+                    value="${query.oldid | h}"
                 % endif
-            </td>
-        </tr>
-        <tr>
-            <td>Action:</td>
-            <td colspan="3">
-                <table id="cv-form-inner">
-                    <tr>
-                        <td id="cv-inner-col1">
-                            <input id="action-search" type="radio" name="action" value="search" ${'checked="checked"' if (query.action == "search" or not query.action) else ""} />
-                        </td>
-                        <td id="cv-inner-col2"><label for="action-search">Copyvio&nbsp;search:</label></td>
-                        <td id="cv-inner-col3">
-                            <input type="hidden" name="use_engine" value="0" />
-                            <input id="cv-cb-engine" class="cv-search" type="checkbox" name="use_engine" value="1" ${'checked="checked"' if query.use_engine not in ("0", "false") else ""} />
-                            <label for="cv-cb-engine">Use&nbsp;search&nbsp;engine</label>
+            >
+        </div>
+    </div>
+    <div class="oo-ui-layout oo-ui-horizontalLayout">
+        <span class="oo-ui-widget oo-ui-widget-enabled">
+            <span class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-radioInputWidget">
+                <input id="action-search" class="oo-ui-inputWidget-input" type="radio" name="action" value="search" ${'checked="checked"' if (query.action == "search" or not query.action) else ""}><span></span>
+            </span>
+            <label for="action-search" class="action oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">Copyvio search</label>
+        </span>
 
-                            <input type="hidden" name="use_links" value="0" />
-                            <input id="cv-cb-links" class="cv-search" type="checkbox" name="use_links" value="1" ${'checked="checked"' if query.use_links not in ("0", "false") else ""} />
-                            <label for="cv-cb-links">Use&nbsp;links&nbsp;in&nbsp;page</label>
+        <input type="hidden" name="use_engine" value="0">
+        <span class="oo-ui-widget oo-ui-widget-enabled">
+            <span class="cv-search-oo-ui oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-checkboxInputWidget">
+                <input id="cv-cb-engine" class="cv-search oo-ui-inputWidget-input" type="checkbox" name="use_engine" value="1" ${'checked="checked"' if query.use_engine not in ("0", "false") else ""}>
+                <span class="oo-ui-checkboxInputWidget-checkIcon oo-ui-widget oo-ui-widget-enabled oo-ui-iconElement-icon oo-ui-icon-check oo-ui-iconElement oo-ui-labelElement-invisible oo-ui-iconWidget oo-ui-image-invert"></span>
+            </span>
+            <label for="cv-cb-engine" class="oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">Use search engine</label>
+        </span>
 
-                            <input type="hidden" name="turnitin" value="0" />
-                            <input id="cv-cb-turnitin" class="cv-search" type="checkbox" name="turnitin" value="1" ${'checked="checked"' if query.turnitin in ("1", "true") else ""}/>
-                            <label for="cv-cb-turnitin">Use&nbsp;Turnitin</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input id="action-compare" type="radio" name="action" value="compare" ${'checked="checked"' if query.action == "compare" else ""} />
-                        </td>
-                        <td><label for="action-compare">URL&nbsp;comparison:</label></td>
-                        <td>
-                            <input class="cv-compare cv-text" type="text" name="url"
-                            % if query.url:
-                                value="${query.url | h}"
-                            % endif
-                            />
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        % if query.nocache or (result and result.cached):
-            <tr>
-                <td><label for="cb-nocache">Bypass&nbsp;cache:</label></td>
-                <td colspan="3">
-                    <input id="cb-nocache" type="checkbox" name="nocache" value="1" ${'checked="checked"' if query.nocache else ""}  />
-                </td>
-            </tr>
-        % endif
-        <tr>
-            <td colspan="4">
-                <button type="submit">Submit</button>
-            </td>
-        </tr>
-    </table>
+        <input type="hidden" name="use_links" value="0">
+        <span class="oo-ui-widget oo-ui-widget-enabled">
+            <span class="cv-search-oo-ui oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-checkboxInputWidget">
+                <input id="cv-cb-links" class="cv-search oo-ui-inputWidget-input" type="checkbox" name="use_links" value="1" ${'checked="checked"' if query.use_links not in ("0", "false") else ""}>
+                <span class="oo-ui-checkboxInputWidget-checkIcon oo-ui-widget oo-ui-widget-enabled oo-ui-iconElement-icon oo-ui-icon-check oo-ui-iconElement oo-ui-labelElement-invisible oo-ui-iconWidget oo-ui-image-invert"></span>
+            </span>
+            <label for="cv-cb-links" class="oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">Use links in page</label>
+        </span>
+
+        <input type="hidden" name="turnitin" value="0">
+        <span class="oo-ui-widget oo-ui-widget-enabled">
+            <span class="cv-search-oo-ui oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-checkboxInputWidget">
+                <input id="cv-cb-turnitin" class="cv-search oo-ui-inputWidget-input" type="checkbox" name="turnitin" value="1" ${'checked="checked"' if query.turnitin in ("1", "true") else ""}>
+                <span class="oo-ui-checkboxInputWidget-checkIcon oo-ui-widget oo-ui-widget-enabled oo-ui-iconElement-icon oo-ui-icon-check oo-ui-iconElement oo-ui-labelElement-invisible oo-ui-iconWidget oo-ui-image-invert"></span>
+            </span>
+            <label for="cv-cb-turnitin" class="oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">Use Turnitin</label>
+        </span>
+    </div>
+    <div class="oo-ui-layout oo-ui-horizontalLayout">
+        <span class="oo-ui-widget oo-ui-widget-enabled">
+            <span class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-radioInputWidget">
+                <input id="action-compare" class="oo-ui-inputWidget-input" type="radio" name="action" value="compare" ${'checked="checked"' if query.action == "compare" else ""}><span></span>
+            </span>
+            <label for="action-compare" class="action oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">Copyvio compare</label>
+        </span>
+        <div class="compare-url cv-compare-oo-ui oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-textInputWidget oo-ui-textInputWidget-type-text oo-ui-textInputWidget-php">
+            <input type="text" class="cv-compare oo-ui-inputWidget-input" name="url" placeholder="URL" title="URL to compare"
+                % if query.url:
+                    value="${query.url | h}"
+                % endif
+            >
+        </div>
+    </div>
+    % if query.nocache or (result and result.cached):
+        <div class="oo-ui-layout oo-ui-horizontalLayout">
+            <span class="cv-search-oo-ui oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-checkboxInputWidget">
+                <input id="cb-nocache" class="oo-ui-inputWidget-input" type="checkbox" name="nocache" value="1" ${'checked="checked"' if query.nocache else ""}>
+                <span class="oo-ui-checkboxInputWidget-checkIcon oo-ui-widget oo-ui-widget-enabled oo-ui-iconElement-icon oo-ui-icon-check oo-ui-iconElement oo-ui-labelElement-invisible oo-ui-iconWidget oo-ui-image-invert"></span>
+            </span>
+            <label for="cb-nocache">Bypass cache</label>
+        </div>
+    % endif
+    <div class="oo-ui-layout oo-ui-horizontalLayout">
+        <span class="oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive oo-ui-buttonWidget">
+            <button type="submit" class="oo-ui-buttonElement-button">Submit</button>
+        </span>
+    </div>
 </form>
 
 % if result:
     <div id="generation-time">
         Results
-        % if result.cached:
-            <a id="cv-cached" href="#">cached<span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URLs of the checked sources, but neither their content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span></a> from <abbr title="${result.cache_time}">${result.cache_age} ago</abbr>. Originally
-        % endif
+        <a id="cv-cached" href="#">cached<span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URLs of the checked sources, but neither their content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span></a> from some time ago. Originally
         generated in <span class="mono">${round(result.time, 3)}</span>
         % if query.action == "search":
             seconds using <span class="mono">${result.queries}</span> quer${"y" if result.queries == 1 else "ies"}.
@@ -198,13 +205,13 @@
                 <td>
                     <div>
                         % if result.confidence >= T_SUSPECT:
-                            Violation&nbsp;Suspected
+                            Violation suspected
                         % elif result.confidence >= T_POSSIBLE:
-                            Violation&nbsp;Possible
+                            Violation possible
                         % elif result.sources:
-                            Violation&nbsp;Unlikely
+                            Violation unlikely
                         % else:
-                            No&nbsp;Violation
+                            No violation
                         % endif
                     </div>
                     <div>${round(result.confidence * 100, 1)}%</div>
@@ -300,13 +307,11 @@
             % endif
         </div>
     % endif
-    <div id="cv-chain-container">
-        <table id="cv-chain-table">
-            <tr>
-                <td class="cv-chain-cell">Article: <div class="cv-chain-detail"><p>${highlight_delta(result.article_chain, result.best.chains[1] if result.best else None)}</p></div></td>
-                <td class="cv-chain-cell">Source: <div class="cv-chain-detail"><p>${highlight_delta(result.best.chains[0], result.best.chains[1]) if result.best else ""}</p></div></td>
-            </tr>
-        </table>
-    </div>
+    <table id="cv-chain-table">
+        <tr>
+            <td class="cv-chain-cell">Article: <div class="cv-chain-detail"><p>${highlight_delta(result.article_chain, result.best.chains[1] if result.best else None)}</p></div></td>
+            <td class="cv-chain-cell">Source: <div class="cv-chain-detail"><p>${highlight_delta(result.best.chains[0], result.best.chains[1]) if result.best else ""}</p></div></td>
+        </tr>
+    </table>
 % endif
 <%include file="/support/footer.mako"/>

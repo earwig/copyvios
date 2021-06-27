@@ -166,7 +166,9 @@
     % endif
     <div class="oo-ui-layout oo-ui-horizontalLayout">
         <span class="oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive oo-ui-buttonWidget">
-            <button type="submit" class="oo-ui-buttonElement-button">Submit</button>
+            <button type="submit" class="oo-ui-inputWidget-input oo-ui-buttonElement-button">
+                <span class="oo-ui-labelElement-label">Submit</span>
+            </button>
         </span>
     </div>
 </form>
@@ -174,7 +176,9 @@
 % if result:
     <div id="generation-time">
         Results
-        <a id="cv-cached" href="#">cached<span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URLs of the checked sources, but neither their content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span></a> from some time ago. Originally
+        % if result.cached:
+            <a id="cv-cached" href="#">cached<span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URLs of the checked sources, but neither their content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span></a> from <abbr title="${result.cache_time}">${result.cache_age} ago</abbr>. Originally
+        % endif
         generated in <span class="mono">${round(result.time, 3)}</span>
         % if query.action == "search":
             seconds using <span class="mono">${result.queries}</span> quer${"y" if result.queries == 1 else "ies"}.

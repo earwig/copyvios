@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from json import loads
 import random
 import re
+import urllib
 
 from earwigbot import exceptions
 from flask import g
@@ -52,7 +53,7 @@ def _build_url(screen, filename, url, imgwidth, imgheight):
     if width >= imgwidth:
         return url
     url = url.replace("/commons/", "/commons/thumb/")
-    return url + "/" + str(width) + "px-" + filename
+    return "%s/%dpx-%s" % (url, width, urllib.quote(filename))
 
 _BACKGROUNDS = {
     "potd": _get_fresh_potd,

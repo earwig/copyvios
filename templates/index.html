@@ -1,0 +1,114 @@
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Earwig's Copyvio Detector</title>
+	<link rel="stylesheet" href="/static/style.css"><!-- TODO: add hash -->
+  <style>
+    /* TODO: add dynamic background style */
+  </style>
+</head>
+<body style="background-image: url('{{ background.image_url }}');">
+	<div id="container">
+		<div id="container-inner">
+			<header>
+				<a id="a-home" href="/">
+          Earwig's <strong>Copyvio Detector</strong></a>
+          <a id="a-language" href="/language">Language</a>
+          <a id="a-settings" href="/settings">Settings</a>
+			</header>
+			<p>This tool attempts to detect <a href="https://en.wikipedia.org/wiki/WP:COPYVIO">copyright violations</a> in Wikipedia articles. In <i>search mode</i>, it will check for similar content elsewhere on the web using <a href="https://developers.google.com/custom-search/">Google</a>, external links present in the page, or <a href="https://en.wikipedia.org/wiki/Wikipedia:Turnitin">Turnitin</a> (via <a href="https://en.wikipedia.org/wiki/User:EranBot">EranBot</a>), depending on the selected options. In <i>comparison mode</i>, the tool will compare the article to a specific webpage without making any searches, like the <a href="https://dupdet.toolforge.org/">Duplication Detector</a>.</p>
+			<p>Be aware that other websites can copy from Wikipedia, so check the results carefully, especially for older or well-developed articles. Specific websites can be skipped by being added to the <a href="https://en.wikipedia.org/wiki/User:EarwigBot/Copyvios/Exclusions">excluded URL list</a>.</p>
+			<form id="cv-form" action="/" method="get">
+				<table id="cv-form-outer">
+					<tr>
+						<td style="width: 4em;">Site:</td>
+						<td colspan="3">
+							<select name="lang" style="width: 10em;">
+								<option value="en" selected="selected">en (English)</option>
+							</select>
+							<select name="project" style="margin-left: 1em;">
+								<option value="wikipedia" selected="selected">Wikipedia</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td id="cv-col1">Page:</td>
+						<td id="cv-col2" colspan="3">
+							<table class="cv-form-inner">
+								<tr>
+									<td style="width: 8em;">
+										<label for="cv-page-title">Title:</label>
+									</td>
+									<td>
+										<input class="cv-text" type="text" name="title" id="cv-page-title">
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="cv-rev-id">or revision ID:</label>
+									</td>
+									<td>
+										<input class="cv-text" type="text" name="oldid" id="cv-rev-id" style="width: 10em;">
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>Action:</td>
+						<td colspan="3">
+							<table class="cv-form-inner">
+								<tr>
+									<td style="width: 12em;">
+										<input id="action-search" type="radio" name="action" value="search" checked="checked" style="vertical-align: middle;">
+										<label for="action-search" style="vertical-align: middle;">Copyvio search:</label>
+									</td>
+									<td id="cv-tmp1">
+										<div class="cv-tmp2">
+											<input type="hidden" name="use_engine" value="0">
+											<input id="cv-cb-engine" class="cv-search" type="checkbox" name="use_engine" value="1" checked="checked">
+											<label for="cv-cb-engine">Use search engine</label>
+										</div>
+										<div class="cv-tmp2">
+											<input type="hidden" name="use_links" value="0">
+											<input id="cv-cb-links" class="cv-search" type="checkbox" name="use_links" value="1" checked="checked">
+											<label for="cv-cb-links">Use links in page</label>
+										</div>
+										<div class="cv-tmp2">
+											<input type="hidden" name="turnitin" value="0">
+											<input id="cv-cb-turnitin" class="cv-search" type="checkbox" name="turnitin" value="1">
+											<label for="cv-cb-turnitin">Use Turnitin</label>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<input id="action-compare" type="radio" name="action" value="compare" style="vertical-align: middle;">
+										<label for="action-compare" style="vertical-align: middle;">URL comparison:</label>
+									</td>
+									<td>
+										<input class="cv-compare cv-text" type="text" name="url" disabled="">
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="4">
+							<input type="submit">
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+	<footer>
+		<ul>
+			<li>Maintained by <a href="https://en.wikipedia.org/wiki/User:The_Earwig">Ben Kurtovic</a></li>
+			<li><a href="/api">API</a></li>
+			<li><a href="https://github.com/earwig/copyvios">Source code</a></li>
+			<li><a href="{{ background.source_url }}">Background image</a></li>
+		</ul>
+	</footer>
+</body>
+</html>

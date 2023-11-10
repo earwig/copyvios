@@ -1,0 +1,37 @@
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>
+    {% if title %}
+      {{ title }} -
+    {% endif %}
+    Earwig's Copyvio Detector
+  </title>
+	<link rel="stylesheet" href="/static/style.css"><!-- TODO: add hash -->
+  <style>
+    /* TODO: add dynamic background style */
+  </style>
+</head>
+<body style="background-image: url('{{ background.image_url }}');">
+	<div id="container">
+		<div id="container-inner">
+			<header>
+				<a id="a-home" href="/">
+          Earwig's <strong>Copyvio Detector</strong></a>
+          <a id="a-language" href="/language">Language</a>
+          <a id="a-settings" href="/settings">Settings</a>
+			</header>
+      {% block content %}
+      {% endblock %}
+		</div>
+	</div>
+	<footer>
+		<ul>
+			<li>Maintained by <a href="https://en.wikipedia.org/wiki/User:The_Earwig">Ben Kurtovic</a></li>
+			<li><a href="/api">API</a></li>
+			<li><a href="https://github.com/earwig/copyvios">Source code</a></li>
+			<li><a href="{{ background.source_url }}">Background image</a></li>
+		</ul>
+	</footer>
+</body>
+</html>

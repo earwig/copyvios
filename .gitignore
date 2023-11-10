@@ -1,9 +1,1 @@
-*.pyc
-*.egg
-*.egg-info
-.DS_Store
-__pycache__
-
-.earwigbot
-logs/*
-!logs/.gitinclude
+/target

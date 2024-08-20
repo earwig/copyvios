@@ -53,7 +53,7 @@ def _build_url(screen, filename, url, imgwidth, imgheight):
     if width >= imgwidth:
         return url
     url = url.replace("/commons/", "/commons/thumb/")
-    return "%s/%dpx-%s" % (url, width, urllib.quote(filename))
+    return "%s/%dpx-%s" % (url, width, urllib.quote(filename.encode("utf8")))
 
 _BACKGROUNDS = {
     "potd": _get_fresh_potd,
@@ -78,8 +78,9 @@ def set_background(selected):
         screen_cache = g.cookies["CopyviosScreenCache"].value
         try:
             screen = loads(screen_cache)
-            int(screen["width"])
-            int(screen["height"])
+            screen = {"width": int(screen["width"]), "height": int(screen["height"])}
+            if screen["width"] <= 0 or screen["height"] <= 0:
+                raise ValueError()
         except (ValueError, KeyError):
             screen = {"width": 1024, "height": 768}
     else:

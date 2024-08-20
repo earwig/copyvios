@@ -30,7 +30,7 @@ def _make_api_request(page_title, lang):
                       'lang': lang,
                       'report': 1}
 
-    result = requests.get(TURNITIN_API_ENDPOINT, params=api_parameters)
+    result = requests.get(TURNITIN_API_ENDPOINT, params=api_parameters, verify=False)
     # use literal_eval to *safely* parse the resulting dict-containing string
     try:
         parsed_api_result = literal_eval(result.text)

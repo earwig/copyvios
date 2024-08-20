@@ -94,10 +94,16 @@ def _get_results(query, follow=True):
         elif scheme not in ["http", "https"]:
             query.error = "bad URI"
             return
+        degree = 5
+        if query.degree:
+            try:
+                degree = int(query.degree)
+            except ValueError:
+                pass
         result = page.copyvio_compare(query.url, min_confidence=T_SUSPECT,
-                                      max_time=30)
+                                      max_time=10, degree=degree)
         if result.best.chains[0] is EMPTY:
-            query.error = "timeout" if result.time > 30 else "no data"
+            query.error = "timeout" if result.time > 10 else "no data"
             return
         query.result = result
         query.result.cached = False
@@ -140,7 +146,7 @@ def _perform_check(query, page, use_engine, use_links):
     if not query.result:
         try:
             query.result = page.copyvio_check(
-                min_confidence=T_SUSPECT, max_queries=8, max_time=45,
+                min_confidence=T_SUSPECT, max_queries=8, max_time=30,
                 no_searches=not use_engine, no_links=not use_links,
                 short_circuit=not query.noskip)
         except exceptions.SearchQueryError as exc:
@@ -190,7 +196,7 @@ def _get_cached_results(page, conn, mode, noskip):
     url, confidence, skipped, excluded = data.pop(0)
     if skipped:  # Should be impossible: data must be bad; run a new check
         return None
-    result = page.copyvio_compare(url, min_confidence=T_SUSPECT, max_time=30)
+    result = page.copyvio_compare(url, min_confidence=T_SUSPECT, max_time=10)
     if abs(result.confidence - confidence) >= 0.0001:
         return None
 

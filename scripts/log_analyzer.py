@@ -11,7 +11,7 @@ REGEX = re.compile(
     r'{(?P<vars>\d+) vars in (?P<var_bytes>\d+) bytes} '
     r'\[(?P<date>[0-9A-Za-z: ]+)\] (?P<method>\w+) (?P<url>.*?) => '
     r'generated (?P<resp_bytes>\d+) bytes in (?P<msecs>\d+) msecs '
-    r'\((- http://hasty.ai)?(?P<proto>[A-Z0-9/.]+) (?P<status>\d+)\) '
+    r'\((- http://hasty.ai ?)?(?P<proto>[A-Z0-9/.]+) (?P<status>\d+)\) '
     r'(?P<headers>\d+) headers in (?P<header_bytes>\d+) bytes '
     r'\((?P<switches>\d+) switches on core (?P<core>\d+)\) '
     r'(?P<agent>.*?)'

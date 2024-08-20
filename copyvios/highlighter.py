@@ -8,20 +8,24 @@ from markupsafe import escape
 
 __all__ = ["highlight_delta"]
 
-def highlight_delta(context, chain, delta):
+def highlight_delta(context, chain, deltas, index=1):
     degree = chain.degree - 1
-    highlights = [False] * degree
+    highlights = [None] * degree
     block = deque([chain.START] * degree)
-    if not delta:
-        delta = EMPTY_INTERSECTION
+    if deltas is None:
+        deltas = [EMPTY_INTERSECTION]
+    if not isinstance(deltas, list):
+        deltas = [deltas]
     for word in chain.text.split() + ([chain.END] * degree):
         word = _strip_word(chain, word)
         block.append(word)
-        if tuple(block) in delta.chain:
-            highlights[-1 * degree:] = [True] * degree
-            highlights.append(True)
+        for i, delta in enumerate(deltas, index):
+            if tuple(block) in delta.chain:
+                highlights[-1 * degree:] = [i] * degree
+                highlights.append(i)
+                break
         else:
-            highlights.append(False)
+            highlights.append(None)
         block.popleft()
 
     i = degree
@@ -36,7 +40,7 @@ def highlight_delta(context, chain, delta):
                 after = highlights[i + 1]
                 first = i == degree
                 last = i - degree + 1 == numwords
-                words.append(_highlight_word(word, before, after, first, last))
+                words.append(_highlight_word(word, highlights[i], before, after, first, last))
             else:
                 words.append(unicode(escape(word)))
         result.append(u" ".join(words))
@@ -58,24 +62,25 @@ def _get_next(paragraphs):
                 break
     return body
 
-def _highlight_word(word, before, after, first, last):
-    if before and after:
+def _highlight_word(word, this, before, after, first, last):
+    open_span = u'<span class="cv-hl cv-hl-%s">' % this
+    if this == before and this == after:
         # Word is in the middle of a highlighted block:
         res = unicode(escape(word))
         if first:
-            res = u'<span class="cv-hl">' + res
+            res = open_span + res
         if last:
             res += u'</span>'
-    elif after:
+    elif this == after:
         # Word is the first in a highlighted block:
-        res = u'<span class="cv-hl">' + _fade_word(word, u"in")
+        res = open_span + _fade_word(word, u"in")
         if last:
             res += u"</span>"
-    elif before:
+    elif this == before:
         # Word is the last in a highlighted block:
         res = _fade_word(word, u"out") + u"</span>"
         if first:
-            res = u'<span class="cv-hl">' + res
+            res = open_span + res
     else:
         res = unicode(escape(word))
     return res
@@ -96,4 +101,4 @@ def _fade_word(word, dir):
 def _strip_word(chain, word):
     if word == chain.START or word == chain.END:
         return word
-    return sub("[^\w\s-]", "", word.lower(), flags=UNICODE)
+    return sub(r"[^\w\s-]", "", word.lower(), flags=UNICODE)

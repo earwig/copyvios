@@ -1,8 +1,10 @@
 # -*- coding: utf-8  -*-
 
 from contextlib import contextmanager
+from collections import OrderedDict
 import datetime
 from os.path import expanduser, join
+import urllib
 
 import apsw
 from flask import g, request
@@ -116,3 +118,19 @@ def urlstrip(context, url):
     if url.endswith("/"):
         url = url[:-1]
     return url
+
+def get_permalink(context, query):
+    params = OrderedDict()
+    params["lang"] = query.lang
+    params["project"] = query.project
+    params["oldid"] = query.oldid or query.page.lastrevid
+    params["action"] = query.action
+    if query.action == "search":
+        params["use_engine"] = int(query.use_engine not in ("0", "false"))
+        params["use_links"] = int(query.use_links not in ("0", "false"))
+        params["turnitin"] = int(query.turnitin in ("1", "true"))
+    elif query.action == "compare":
+        params["url"] = query.url
+        for i, url in enumerate(query.urls[1:], 2):
+            params["url%d" % i] = url
+    return "%s/?%s" % (request.script_root, urllib.urlencode(params))

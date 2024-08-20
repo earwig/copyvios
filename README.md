@@ -45,6 +45,6 @@ Running
   If additional arguments are needed by `oursql.connect()`, like usernames or
   passwords, they should be added to the `_copyviosSQL` section.
 
-- Run `./build.py` to minify JS and CSS files.
+- Run `make` to minify JS and CSS files.
 
 - Start the web server (on Toolforge, `webservice uwsgi-python start`).

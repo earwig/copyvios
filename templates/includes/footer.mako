@@ -1,13 +1,13 @@
 <%!
     from datetime import datetime
     from flask import g, request
-%>\
+%>
             </main>
         </div>
         <div class="padding"></div>
     </div>
     <footer>
-        <ul>
+        <ul class="hlist">
             <li>Maintained by <a href="https://en.wikipedia.org/wiki/User:The_Earwig">Ben Kurtovic</a></li>
             <li><a href="${request.script_root}/api">API</a></li>
             <li><a href="https://github.com/earwig/copyvios">Source code</a></li>

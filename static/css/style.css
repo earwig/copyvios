@@ -46,8 +46,8 @@ body {
 
 #content {
     background-color: #fff;
-    border: 1px solid #c8ccd1;
-    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.25));
+    border: 1px solid #a2a9b1;
+    filter: drop-shadow(0 0 1em rgba(0, 0, 0, 0.25));
     margin: 1.5em 3em;
     padding: 1em;
 }
@@ -102,20 +102,8 @@ footer {
     font-size: 0.9em;
     text-align: center;
     line-height: 1.5;
-    border-top: 1px solid #c8ccd1;
+    border-top: 1px solid #a2a9b1;
     background: #fff;
-}
-
-footer ul {
-    margin: 0;
-}
-
-footer li {
-    display: inline;
-}
-
-footer li:not(:last-child)::after {
-    content: ' \00b7';
 }
 
 footer a {
@@ -158,8 +146,7 @@ h2 {
 #sources-container {
     padding: 0.5em 1em 1em;
     margin: 1em 0;
-    background-color: #eee;
-    border: 1px solid #bbb;
+    border: 1px solid #a2a9b1;
 }
 
 #turnitin-title, #sources-title {
@@ -183,29 +170,34 @@ h2 {
     }
 }
 
-#heading {
-    width: 100%;
-}
-
 #cv-result-sources {
     width: 100%;
     border-spacing: 0 0.4em;
-    table-layout: fixed;
 }
 
-#cv-result-sources col:nth-child(1) { width: 80%; }
-#cv-result-sources col:nth-child(2) { width: 10%; }
-#cv-result-sources col:nth-child(3) { width: 10%; }
+#cv-result-sources tr:first-child th:nth-child(1) { width: 4em; }
+#cv-result-sources tr:first-child th:nth-child(3) { width: 7em; }
+#cv-result-sources tr:first-child th:nth-child(4) { width: 10em; }
+
+@media only screen and (max-width: 1000px) {
+    #cv-result-sources tr:first-child th:nth-child(1) { width: 3em; }
+    #cv-result-sources tr:first-child th:nth-child(3) { width: 5em; }
+    #cv-result-sources tr:first-child th:nth-child(4) { width: 8em; }
+}
 
 #cv-result-sources th {
     text-align: left;
 }
 
 #cv-result-sources tr:nth-child(even) {
-    background-color: #e0e0e0;
+    background-color: #eaecf0;
 }
 
-#cv-result-sources td:first-child {
+#cv-result-sources th:first-child, #cv-result-sources td:first-child {
+    text-align: center;
+}
+
+#cv-result-sources td:nth-child(2) {
     overflow: hidden;
     word-wrap: break-word;
 }
@@ -247,12 +239,6 @@ h2 {
     font-size: 0.8em;
 }
 
-#cv-chain-table {
-    width: 100%;
-    border-spacing: 0;
-    table-layout: fixed;
-}
-
 #turnitin-table {
     table-layout: fixed;
     width: 100%;
@@ -260,12 +246,20 @@ h2 {
     border-spacing: 0;
 }
 
-#source-row-selected {
-    background-color: #cfcfcf !important;
+#cv-result-sources tr.source-row-selected {
+    background-color: #d0d2d5;
 }
 
-#head-settings {
-    text-align: right;
+.source-row-selected .source-url {
+    font-weight: bold;
+}
+
+.source-row-selected .source-compare {
+    display: none;
+}
+
+.source-row:not(.source-row-selected) .source-compare-selected {
+    display: none;
 }
 
 #cv-result-header {
@@ -282,47 +276,37 @@ h2 {
     font-style: italic;
 }
 
-#source-selected {
-    font-weight: bold;
+.hlist {
+    margin: 0;
+    padding: 0;
 }
 
-#cv-cached {
-    position: relative;
+.hlist li {
+    display: inline;
 }
 
-#cv-cached span {
-    display: none;
-    position: absolute;
-    top: 1.5em;
-    left: -5em;
-    width: 30em;
-    padding: 1em;
-    z-index: 1;
-    background: #f3f3f3;
-    border: 1px solid #aaa;
-    color: black;
-    font-style: normal;
-    text-align: left;
+.hlist li:not(:last-child)::after {
+    content: ' \00b7';
 }
 
 .green-box {
-    background-color: #efe;
-    border: 1px solid #7f7;
+    background-color: #e0fdf4;
+    border: 1px solid #54a66d;
 }
 
 .yellow-box {
-    background-color: #ffd;
-    border: 1px solid #ee5;
+    background-color: #fef6e7;
+    border: 1px solid #fc3;
 }
 
 .red-box {
-    background-color: #fee;
-    border: 1px solid #f77;
+    background-color: #fee7e6;
+    border: 1px solid #d33;
 }
 
 .gray-box {
-    background-color: #eee;
-    border: 1px solid #aaa;
+    background-color: #eaecf0;
+    border: 1px solid #a2a9b1;
 }
 
 .indentable {
@@ -338,23 +322,28 @@ h2 {
     font-style: normal;
 }
 
-.cv-chain-detail {
-    padding: 0 1em;
-    background-color: #fff;
-    border: 1px solid #bbb;
+.cv-chain-table {
+    width: 100%;
+    border-spacing: 0;
+    table-layout: fixed;
 }
 
-.cv-chain-cell {
+.cv-chain-table td {
     vertical-align: top;
     word-wrap: break-word;
 }
 
-.cv-chain-cell:first-child {
+.cv-chain-table td:first-child {
     padding-right: 0.5em;
 }
 
-.cv-chain-cell:last-child {
+.cv-chain-table td:not(:first-child) {
     padding-left: 0.5em;
+}
+
+.cv-chain-cell > div {
+    padding: 0 1em;
+    border: 1px solid #a2a9b1;
 }
 
 .turnitin-table-cell {
@@ -366,18 +355,10 @@ h2 {
     line-height: 1.4;
 }
 
-.cv-hl {
-    background: #faa;
-}
-
-.cv-hl-in {
-    background: #fcc;
-    background: linear-gradient(to left, #faa, #fff);
-}
-
-.cv-hl-out {
-    background: #fcc;
-    background: linear-gradient(to right, #faa, #fff);
+.highlight-demo {
+    display: inline-block;
+    border: 1px solid #777;
+    padding: 0.25em 0.5em;
 }
 
 .mono   { font-family: monospace; }
@@ -414,14 +395,48 @@ header a:active {
     color: #333;
 }
 
-#cv-cached:active     { color: #040; text-decoration: none; }
-#cv-cached:hover      { text-decoration: none; }
-#cv-cached:hover span { display: block; }
+.source-num {
+    display: inline-block;
+    min-width: 1.5em;
+    text-align: center;
+}
 
-.source-url:link    { color: #357; }
-.source-url:visited { color: #357; }
-.source-url:hover   { color: #035; }
-.source-url:active  { color: #404; }
+.source-num-included {
+    border: 1px solid #777;
+}
+
+a.source-num-included {
+    color: #000;
+}
+
+.source-num-included:hover, .source-num-included:active {
+    text-decoration: none;
+}
+
+.hidden {
+    display: none;
+}
+
+#source-tooltips {
+    position: relative;
+}
+
+.source-tooltip-selected a.selector {
+    display: none;
+}
+
+.source-tooltip:not(.source-tooltip-selected) strong.selector {
+    display: none;
+}
+
+.source-tooltip .selector, .source-tooltip .domain, .source-tooltip .wordcount {
+    display: inline-block;
+}
+
+.cv-chain-cell .cv-hl:hover, .cv-selected {
+    outline: 1px dashed #333;
+    cursor: pointer;
+}
 
 .oo-ui-horizontalLayout > .oo-ui-textInputWidget,
 .oo-ui-horizontalLayout > .oo-ui-dropdownInputWidget {
@@ -454,12 +469,46 @@ label.site, label.page {
     min-width: 4em;
 }
 
-label.action {
-    min-width: 10em;
-}
-
 @media only screen and (max-width: 720px) {
     .oo-ui-horizontalLayout > .oo-ui-widget {
         width: 100%;
     }
 }
+
+/* https://colorbrewer2.org/?type=qualitative&scheme=Pastel1&n=8 */
+
+.cv-hl              { background: #dddddd; }
+.cv-hl .cv-hl-in    { background: linear-gradient(to left,  #dddddd, #fff); }
+.cv-hl .cv-hl-out   { background: linear-gradient(to right, #dddddd, #fff); }
+
+.cv-hl-1            { background: #fed9a6; }
+.cv-hl-1 .cv-hl-in  { background: linear-gradient(to left,  #fed9a6, #fff); }
+.cv-hl-1 .cv-hl-out { background: linear-gradient(to right, #fed9a6, #fff); }
+
+.cv-hl-2            { background: #b3cde3; }
+.cv-hl-2 .cv-hl-in  { background: linear-gradient(to left,  #b3cde3, #fff); }
+.cv-hl-2 .cv-hl-out { background: linear-gradient(to right, #b3cde3, #fff); }
+
+.cv-hl-3            { background: #ccebc5; }
+.cv-hl-3 .cv-hl-in  { background: linear-gradient(to left,  #ccebc5, #fff); }
+.cv-hl-3 .cv-hl-out { background: linear-gradient(to right, #ccebc5, #fff); }
+
+.cv-hl-4            { background: #fbb4ae; }
+.cv-hl-4 .cv-hl-in  { background: linear-gradient(to left,  #fbb4ae, #fff); }
+.cv-hl-4 .cv-hl-out { background: linear-gradient(to right, #fbb4ae, #fff); }
+
+.cv-hl-5            { background: #decbe4; }
+.cv-hl-5 .cv-hl-in  { background: linear-gradient(to left,  #decbe4, #fff); }
+.cv-hl-5 .cv-hl-out { background: linear-gradient(to right, #decbe4, #fff); }
+
+.cv-hl-6            { background: #ffffcc; }
+.cv-hl-6 .cv-hl-in  { background: linear-gradient(to left,  #ffffcc, #fff); }
+.cv-hl-6 .cv-hl-out { background: linear-gradient(to right, #ffffcc, #fff); }
+
+.cv-hl-7            { background: #e5d8bd; }
+.cv-hl-7 .cv-hl-in  { background: linear-gradient(to left,  #e5d8bd, #fff); }
+.cv-hl-7 .cv-hl-out { background: linear-gradient(to right, #e5d8bd, #fff); }
+
+.cv-hl-8            { background: #fddaec; }
+.cv-hl-8 .cv-hl-in  { background: linear-gradient(to left,  #fddaec, #fff); }
+.cv-hl-8 .cv-hl-out { background: linear-gradient(to right, #fddaec, #fff); }

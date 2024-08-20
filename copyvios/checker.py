@@ -37,6 +37,21 @@ def do_check(query=None):
     if query.oldid:
         query.oldid = query.oldid.strip().lstrip("0")
 
+    urls = {}
+    for key, value in query.query.items():
+        if not value:
+            continue
+        if key == "url":
+            urls[0] = value
+        elif key.startswith("url"):
+            try:
+                num = int(key[3:])
+            except ValueError:
+                continue
+            urls[num] = value
+    query.urls = [url for _, url in sorted(urls.items())]
+    query.url = query.urls[0] if query.urls else None
+
     query.submitted = query.project and query.lang and (query.title or query.oldid)
     if query.submitted:
         query.site = get_site(query)
@@ -69,7 +84,7 @@ def _get_results(query, follow=True):
                 return
 
     if not query.action:
-        query.action = "compare" if query.url else "search"
+        query.action = "compare" if query.urls else "search"
     if query.action == "search":
         use_engine = 0 if query.use_engine in ("0", "false") else 1
         use_links = 0 if query.use_links in ("0", "false") else 1
@@ -85,15 +100,17 @@ def _get_results(query, follow=True):
         # Handle the copyvio check
         _perform_check(query, page, use_engine, use_links)
     elif query.action == "compare":
-        if not query.url:
+        if not query.urls:
             query.error = "no URL"
             return
-        scheme = urlparse(query.url).scheme
-        if not scheme and query.url[0] not in ":/":
-            query.url = "http://" + query.url
-        elif scheme not in ["http", "https"]:
-            query.error = "bad URI"
-            return
+        for i, url in enumerate(query.urls):
+            scheme = urlparse(url).scheme
+            if not scheme and url[0] not in ":/":
+                query.urls[i] = "http://" + url
+            elif scheme not in ["http", "https"]:
+                query.error = "bad URI"
+                query.bad_uri = url
+                return
         degree = 5
         if query.degree:
             try:

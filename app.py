@@ -110,10 +110,7 @@ def index():
 def settings():
     status = process_settings() if request.method == "POST" else None
     update_sites()
-    default = cache.bot.wiki.get_site()
-    kwargs = {"status": status, "default_lang": default.lang,
-              "default_project": default.project}
-    return render_template("settings.mako", **kwargs)
+    return render_template("settings.mako", status=status)
 
 @app.route("/api")
 @catch_errors

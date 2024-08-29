@@ -1,13 +1,12 @@
-# -*- coding: utf-8  -*-
-
 from time import time
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 from earwigbot import exceptions
 
 from .misc import cache
 
 __all__ = ["get_site", "update_sites"]
+
 
 def get_site(query):
     lang, project, name = query.lang, query.project, query.name
@@ -24,10 +23,12 @@ def get_site(query):
     except exceptions.SiteNotFoundError:
         return _add_site(lang, project)
 
+
 def update_sites():
     if time() - cache.last_sites_update > 60 * 60 * 24 * 7:
         cache.langs, cache.projects = _load_sites()
         cache.last_sites_update = time()
+
 
 def _add_site(lang, project):
     update_sites()
@@ -40,12 +41,13 @@ def _add_site(lang, project):
     except (exceptions.APIError, exceptions.LoginError):
         return None
 
+
 def _load_sites():
     site = cache.bot.wiki.get_site()
     matrix = site.api_query(action="sitematrix")["sitematrix"]
     del matrix["count"]
     langs, projects = set(), set()
-    for site in matrix.itervalues():
+    for site in matrix.values():
         if isinstance(site, list):  # Special sites
             bad_sites = ["closed", "private", "fishbowl"]
             for special in site:
@@ -55,19 +57,19 @@ def _load_sites():
                         lang, project = "www", full.split(".")[0]
                     else:
                         lang, project = full.rsplit(".", 2)[:2]
-                    code = u"{0}::{1}".format(lang, special["dbname"])
+                    code = "{}::{}".format(lang, special["dbname"])
                     name = special["code"].capitalize()
-                    langs.add((code, u"{0} ({1})".format(lang, name)))
+                    langs.add((code, f"{lang} ({name})"))
                     projects.add((project, project.capitalize()))
         else:
             this = set()
             for web in site["site"]:
                 if "closed" in web:
                     continue
-                proj = "wikipedia" if web["code"] == u"wiki" else web["code"]
+                proj = "wikipedia" if web["code"] == "wiki" else web["code"]
                 this.add((proj, proj.capitalize()))
             if this:
                 code = site["code"]
-                langs.add((code, u"{0} ({1})".format(code, site["name"])))
+                langs.add((code, "{} ({})".format(code, site["name"])))
                 projects |= this
     return list(sorted(langs)), list(sorted(projects))

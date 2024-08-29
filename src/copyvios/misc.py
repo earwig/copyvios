@@ -1,19 +1,18 @@
-# -*- coding: utf-8  -*-
-
-from contextlib import contextmanager
 import datetime
+from contextlib import contextmanager
 from os.path import expanduser, join
 
 import apsw
-from flask import g, request
 import oursql
+from flask import g, request
 from sqlalchemy.pool import manage
 
 oursql = manage(oursql)
 
 __all__ = ["Query", "cache", "get_db", "get_notice", "httpsfix", "urlstrip"]
 
-class Query(object):
+
+class Query:
     def __init__(self, method="GET"):
         self.query = {}
         data = request.form if method == "POST" else request.args
@@ -25,14 +24,14 @@ class Query(object):
 
     def __setattr__(self, key, value):
         if key == "query":
-            super(Query, self).__setattr__(key, value)
+            super().__setattr__(key, value)
         else:
             self.query[key] = value
 
 
-class _AppCache(object):
+class _AppCache:
     def __init__(self):
-        super(_AppCache, self).__setattr__("_data", {})
+        super().__setattr__("_data", {})
 
     def __getattr__(self, key):
         return self._data[key]
@@ -42,6 +41,7 @@ class _AppCache(object):
 
 
 cache = _AppCache()
+
 
 def _connect_to_db(engine, args):
     if engine == "mysql":
@@ -54,14 +54,16 @@ def _connect_to_db(engine, args):
         conn = apsw.Connection(dbpath)
         conn.cursor().execute("PRAGMA foreign_keys = ON")
         return conn
-    raise ValueError("Unknown engine: %s" % engine)
+    raise ValueError(f"Unknown engine: {engine}")
+
 
 def get_db():
     if not g._db:
-        args = cache.bot.config.wiki["_copyviosSQL"].copy()
+        args = cache.bot.config.wiki["copyvios"].copy()
         g._engine = engine = args.pop("engine", "mysql").lower()
         g._db = _connect_to_db(engine, args)
     return g._db
+
 
 @contextmanager
 def get_cursor(conn):
@@ -72,21 +74,24 @@ def get_cursor(conn):
         with conn:
             yield conn.cursor()
     else:
-        raise ValueError("Unknown engine: %s" % g._engine)
+        raise ValueError(f"Unknown engine: {g._engine}")
+
 
 def get_sql_error():
     if g._engine == "mysql":
         return oursql.Error
     if g._engine == "sqlite":
         return apsw.Error
-    raise ValueError("Unknown engine: %s" % g._engine)
+    raise ValueError(f"Unknown engine: {g._engine}")
+
 
 def sql_dialect(mysql, sqlite):
     if g._engine == "mysql":
         return mysql
     if g._engine == "sqlite":
         return sqlite
-    raise ValueError("Unknown engine: %s" % g._engine)
+    raise ValueError(f"Unknown engine: {g._engine}")
+
 
 def get_notice():
     try:
@@ -95,16 +100,19 @@ def get_notice():
             if lines[0] == "<!-- active -->":
                 return "\n".join(lines[1:])
             return None
-    except IOError:
+    except OSError:
         return None
+
 
 def httpsfix(context, url):
     if url.startswith("http://"):
-        url = url[len("http:"):]
+        url = url[len("http:") :]
     return url
 
+
 def parse_wiki_timestamp(timestamp):
-    return datetime.datetime.strptime(timestamp, '%Y%m%d%H%M%S')
+    return datetime.datetime.strptime(timestamp, "%Y%m%d%H%M%S")
+
 
 def urlstrip(context, url):
     if url.startswith("http://"):

@@ -1,12 +1,11 @@
-# -*- coding: utf-8  -*-
-
 from flask import g
 from markupsafe import escape
 
-from .cookies import set_cookie, delete_cookie
+from .cookies import delete_cookie, set_cookie
 from .misc import Query
 
 __all__ = ["process_settings"]
+
 
 def process_settings():
     query = Query(method="POST")
@@ -17,6 +16,7 @@ def process_settings():
     else:
         status = None
     return status
+
 
 def _do_set(query):
     cookies = g.cookies
@@ -39,18 +39,19 @@ def _do_set(query):
             changes.add("background")
     if changes:
         changes = ", ".join(sorted(list(changes)))
-        return "Updated {0}.".format(changes)
+        return f"Updated {changes}."
     return None
+
 
 def _do_delete(query):
     cookies = g.cookies
     if query.cookie in cookies:
         delete_cookie(query.cookie.encode("utf8"))
-        template = u'Deleted cookie <b><span class="mono">{0}</span></b>.'
+        template = 'Deleted cookie <b><span class="mono">{0}</span></b>.'
         return template.format(escape(query.cookie))
     elif query.all:
         number = len(cookies)
-        for cookie in cookies.values():
+        for cookie in list(cookies.values()):
             delete_cookie(cookie.key)
-        return "Deleted <b>{0}</b> cookies.".format(number)
+        return f"Deleted <b>{number}</b> cookies."
     return None

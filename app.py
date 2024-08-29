@@ -1,10 +1,9 @@
 #! /usr/bin/env python
-# -*- coding: utf-8  -*-
 import datetime
+import logging
 from functools import wraps
 from hashlib import md5
 from json import dumps
-from logging import DEBUG, INFO, getLogger
 from logging.handlers import TimedRotatingFileHandler
 from multiprocessing import Value
 from os import path
@@ -15,7 +14,7 @@ from urllib import quote_plus, quote
 from earwigbot.bot import Bot
 from earwigbot.wiki.copyvios import globalize
 from flask import Flask, g, make_response, request, redirect, session
-from flask_mako import MakoTemplates, render_template, TemplateError
+from flask_mako import MakoTemplates, TemplateError, render_template
 
 from copyvios.api import format_api_error, handle_api_request
 from copyvios.checker import do_check
@@ -34,10 +33,11 @@ app.config['SESSION_COOKIE_SAMESITE'] = "Lax"
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
 
 hand = TimedRotatingFileHandler("logs/app.log", when="midnight", backupCount=7)
-hand.setLevel(DEBUG)
+hand.setLevel(logging.DEBUG)
 app.logger.addHandler(hand)
-app.logger.info(u"Flask server started " + asctime())
+app.logger.info("Flask server started " + asctime())
 app._hash_cache = {}
+
 
 def catch_errors(func):
     @wraps(func)
@@ -45,12 +45,14 @@ def catch_errors(func):
         try:
             return func(*args, **kwargs)
         except TemplateError as exc:
-            app.logger.error(u"Caught exception:\n{0}".format(exc.text))
+            app.logger.error(f"Caught exception:\n{exc.text}")
             return render_template("error.mako", traceback=exc.text)
         except Exception:
-            app.logger.exception(u"Caught exception:")
+            app.logger.exception("Caught exception:")
             return render_template("error.mako", traceback=format_exc())
+
     return inner
+
 
 @app.before_first_request
 def setup_app():
@@ -68,12 +70,15 @@ def setup_app():
 
     globalize(num_workers=8)
 
+
 @app.before_request
 def prepare_request():
     g._db = None
     g.cookies = parse_cookies(
-        request.script_root or "/", request.environ.get("HTTP_COOKIE"))
+        request.script_root or "/", request.environ.get("HTTP_COOKIE")
+    )
     g.new_cookies = []
+
 
 @app.after_request
 def add_new_cookies(response):
@@ -81,17 +86,26 @@ def add_new_cookies(response):
         response.headers.add("Set-Cookie", cookie)
     return response
 
+
 @app.after_request
 def write_access_log(response):
-    msg = u"%s %s %s %s -> %s"
-    app.logger.debug(msg, asctime(), request.method, request.path,
-                     request.values.to_dict(), response.status_code)
+    msg = "%s %s %s %s -> %s"
+    app.logger.debug(
+        msg,
+        asctime(),
+        request.method,
+        request.path,
+        request.values.to_dict(),
+        response.status_code,
+    )
     return response
+
 
 @app.teardown_appcontext
 def close_databases(error):
     if g._db:
         g._db.close()
+
 
 def external_url_handler(error, endpoint, values):
     if endpoint == "static" and "file" in values:
@@ -104,10 +118,12 @@ def external_url_handler(error, endpoint, values):
             with open(fpath, "rb") as f:
                 hashstr = md5(f.read()).hexdigest()
             app._hash_cache[fpath] = (mtime, hashstr)
-        return "/static/{0}?v={1}".format(values["file"], hashstr)
+        return f"/static/{values['file']}?v={hashstr}"
     raise error
 
+
 app.url_build_error_handlers.append(external_url_handler)
+
 
 @app.route("/")
 @catch_errors
@@ -119,8 +135,13 @@ def index():
         return redirect("/login?next=" + quote("/?" + request.query_string), 302)
 
     return render_template(
-        "index.mako", notice=notice, query=query, result=query.result,
-        turnitin_result=query.turnitin_result)
+        "index.mako",
+        notice=notice,
+        query=query,
+        result=query.result,
+        turnitin_result=query.turnitin_result,
+    )
+
 
 @app.route("/login", methods=["GET", "POST"])
 @catch_errors
@@ -165,14 +186,19 @@ def settings():
     status = process_settings() if request.method == "POST" else None
     update_sites()
     default = cache.bot.wiki.get_site()
-    kwargs = {"status": status, "default_lang": default.lang,
-              "default_project": default.project}
+    kwargs = {
+        "status": status,
+        "default_lang": default.lang,
+        "default_project": default.project,
+    }
     return render_template("settings.mako", **kwargs)
+
 
 @app.route("/api")
 @catch_errors
 def api():
     return render_template("api.mako", help=True)
+
 
 @app.route("/api.json")
 @catch_errors
@@ -188,7 +214,7 @@ def api_json():
         except Exception as exc:
             result = format_api_error("unhandled_exception", exc)
     else:
-        errmsg = u"Unknown format: '{0}'".format(format)
+        errmsg = f"Unknown format: '{format}'"
         result = format_api_error("unknown_format", errmsg)
 
     if format == "jsonfm":
@@ -198,5 +224,6 @@ def api_json():
     resp.headers["Access-Control-Allow-Origin"] = "*"
     return resp
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run()

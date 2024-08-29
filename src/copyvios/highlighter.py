@@ -1,12 +1,11 @@
-# -*- coding: utf-8  -*-
-
 from collections import deque
-from re import sub, UNICODE
+from re import UNICODE, sub
 
 from earwigbot.wiki.copyvios.markov import EMPTY_INTERSECTION
 from markupsafe import escape
 
 __all__ = ["highlight_delta"]
+
 
 def highlight_delta(context, chain, delta):
     degree = chain.degree - 1
@@ -18,7 +17,7 @@ def highlight_delta(context, chain, delta):
         word = _strip_word(chain, word)
         block.append(word)
         if tuple(block) in delta.chain:
-            highlights[-1 * degree:] = [True] * degree
+            highlights[-1 * degree :] = [True] * degree
             highlights.append(True)
         else:
             highlights.append(False)
@@ -38,11 +37,12 @@ def highlight_delta(context, chain, delta):
                 last = i - degree + 1 == numwords
                 words.append(_highlight_word(word, before, after, first, last))
             else:
-                words.append(unicode(escape(word)))
-        result.append(u" ".join(words))
+                words.append(str(escape(word)))
+        result.append(" ".join(words))
         i += 1
 
-    return u"<br /><br />".join(result)
+    return "<br /><br />".join(result)
+
 
 def _get_next(paragraphs):
     body = []
@@ -58,40 +58,43 @@ def _get_next(paragraphs):
                 break
     return body
 
+
 def _highlight_word(word, before, after, first, last):
     if before and after:
         # Word is in the middle of a highlighted block:
-        res = unicode(escape(word))
+        res = str(escape(word))
         if first:
-            res = u'<span class="cv-hl">' + res
+            res = '<span class="cv-hl">' + res
         if last:
-            res += u'</span>'
+            res += "</span>"
     elif after:
         # Word is the first in a highlighted block:
-        res = u'<span class="cv-hl">' + _fade_word(word, u"in")
+        res = '<span class="cv-hl">' + _fade_word(word, "in")
         if last:
-            res += u"</span>"
+            res += "</span>"
     elif before:
         # Word is the last in a highlighted block:
-        res = _fade_word(word, u"out") + u"</span>"
+        res = _fade_word(word, "out") + "</span>"
         if first:
-            res = u'<span class="cv-hl">' + res
+            res = '<span class="cv-hl">' + res
     else:
-        res = unicode(escape(word))
+        res = str(escape(word))
     return res
+
 
 def _fade_word(word, dir):
     if len(word) <= 4:
-        word = unicode(escape(word))
-        return u'<span class="cv-hl-{0}">{1}</span>'.format(dir, word)
-    if dir == u"out":
-        before, after = unicode(escape(word[:-4])), unicode(escape(word[-4:]))
-        base = u'{0}<span class="cv-hl-out">{1}</span>'
+        word = str(escape(word))
+        return f'<span class="cv-hl-{dir}">{word}</span>'
+    if dir == "out":
+        before, after = str(escape(word[:-4])), str(escape(word[-4:]))
+        base = '{0}<span class="cv-hl-out">{1}</span>'
         return base.format(before, after)
     else:
-        before, after = unicode(escape(word[:4])), unicode(escape(word[4:]))
-        base = u'<span class="cv-hl-in">{0}</span>{1}'
+        before, after = str(escape(word[:4])), str(escape(word[4:]))
+        base = '<span class="cv-hl-in">{0}</span>{1}'
         return base.format(before, after)
+
 
 def _strip_word(chain, word):
     if word == chain.START or word == chain.END:

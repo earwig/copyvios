@@ -1,11 +1,9 @@
-# -*- coding: utf-8  -*-
-
-from datetime import datetime, timedelta
-from json import loads
 import bisect
 import random
 import re
-import urllib
+import urllib.parse
+from datetime import UTC, datetime, timedelta
+from json import loads
 
 from earwigbot import exceptions
 from flask import g
@@ -14,38 +12,49 @@ from .misc import cache
 
 __all__ = ["set_background"]
 
+
 def _get_commons_site():
     try:
         return cache.bot.wiki.get_site("commonswiki")
     except exceptions.SiteNotFoundError:
         return cache.bot.wiki.add_site(project="wikimedia", lang="commons")
 
+
 def _load_file(site, filename):
     data = site.api_query(
-        action="query", prop="imageinfo", iiprop="url|size|canonicaltitle",
-        titles="File:" + filename)
-    res = data["query"]["pages"].values()[0]["imageinfo"][0]
-    name = res["canonicaltitle"][len("File:"):].replace(" ", "_")
+        action="query",
+        prop="imageinfo",
+        iiprop="url|size|canonicaltitle",
+        titles="File:" + filename,
+    )
+    res = list(data["query"]["pages"].values())[0]["imageinfo"][0]
+    name = res["canonicaltitle"][len("File:") :].replace(" ", "_")
     return name, res["url"], res["descriptionurl"], res["width"], res["height"]
+
 
 def _get_fresh_potd():
     site = _get_commons_site()
-    date = datetime.utcnow().strftime("%Y-%m-%d")
+    date = datetime.now(UTC).strftime("%Y-%m-%d")
     page = site.get_page("Template:Potd/" + date)
-    regex = ur"\{\{Potd filename\|(?:1=)?(.*?)\|.*?\}\}"
-    filename = re.search(regex, page.get()).group(1)
+    regex = r"\{\{Potd filename\|(?:1=)?(.*?)\|.*?\}\}"
+    match = re.search(regex, page.get())
+    if not match:
+        return None
+    filename = match.group(1)
     return _load_file(site, filename)
+
 
 def _get_fresh_list():
     site = _get_commons_site()
     page = site.get_page("User:The Earwig/POTD")
-    regex = ur"\*\*?\s*\[\[:File:(.*?)\]\]"
+    regex = r"\*\*?\s*\[\[:File:(.*?)\]\]"
     filenames = re.findall(regex, page.get())
 
     # Ensure all workers share the same background each day:
-    random.seed(datetime.utcnow().strftime("%Y%m%d"))
+    random.seed(datetime.now(tz=UTC).strftime("%Y%m%d"))
     filename = random.choice(filenames)
     return _load_file(site, filename)
+
 
 def _build_url(screen, filename, url, imgwidth, imgheight):
     width = screen["width"]
@@ -57,12 +66,11 @@ def _build_url(screen, filename, url, imgwidth, imgheight):
     if width >= imgwidth:
         return url
     url = url.replace("/commons/", "/commons/thumb/")
-    return "%s/%dpx-%s" % (url, width, urllib.quote(filename.encode("utf8")))
+    return "%s/%dpx-%s" % (url, width, urllib.parse.quote(filename.encode("utf8")))
 
-_BACKGROUNDS = {
-    "potd": _get_fresh_potd,
-    "list": _get_fresh_list
-}
+
+_BACKGROUNDS = {"potd": _get_fresh_potd, "list": _get_fresh_list}
+
 
 def _get_background(selected):
     if not cache.last_background_updates:
@@ -70,12 +78,13 @@ def _get_background(selected):
             cache.last_background_updates[key] = datetime.min
 
     plus_one = cache.last_background_updates[selected] + timedelta(days=1)
-    max_age = datetime(plus_one.year, plus_one.month, plus_one.day)
-    if datetime.utcnow() > max_age:
+    max_age = datetime(plus_one.year, plus_one.month, plus_one.day, tzinfo=UTC)
+    if datetime.now(UTC) > max_age:
         update_func = _BACKGROUNDS.get(selected, _get_fresh_list)
         cache.background_data[selected] = update_func()
-        cache.last_background_updates[selected] = datetime.utcnow().date()
+        cache.last_background_updates[selected] = datetime.now(UTC).date()
     return cache.background_data[selected]
+
 
 def set_background(selected):
     if "CopyviosScreenCache" in g.cookies:

@@ -1,119 +1,136 @@
+__all__ = ["T_POSSIBLE", "T_SUSPECT", "do_check"]
+
+import hashlib
+import logging
 import re
-from datetime import datetime, timedelta
-from hashlib import sha256
-from logging import getLogger
-from urllib.parse import urlparse
+import typing
+import urllib.parse
+from datetime import UTC, datetime, timedelta
+from enum import Enum
 
 from earwigbot import exceptions
-from earwigbot.wiki.copyvios.markov import EMPTY, MarkovChain
-from earwigbot.wiki.copyvios.parsers import ArticleTextParser
+from earwigbot.wiki import Page, Site
+from earwigbot.wiki.copyvios import CopyvioChecker
+from earwigbot.wiki.copyvios.markov import DEFAULT_DEGREE, EMPTY
 from earwigbot.wiki.copyvios.result import CopyvioCheckResult, CopyvioSource
+from earwigbot.wiki.copyvios.workers import CopyvioWorkspace
+from flask import g
+from sqlalchemy import PoolProxiedConnection
 
-from .misc import Query, get_cursor, get_db, get_sql_error, sql_dialect
+from .cache import cache
+from .misc import get_sql_error, sql_dialect
+from .query import CheckQuery
 from .sites import get_site
 from .turnitin import search_turnitin
-
-__all__ = ["do_check", "T_POSSIBLE", "T_SUSPECT"]
 
 T_POSSIBLE = 0.4
 T_SUSPECT = 0.75
 
-_LOGGER = getLogger("copyvios.checker")
+_LOGGER = logging.getLogger("copyvios.checker")
 
 
-def _coerce_bool(val):
-    return val and val not in ("0", "false")
+class ErrorCode(Enum):
+    BAD_ACTION = "bad action"
+    BAD_OLDID = "bad oldid"
+    BAD_URI = "bad URI"
+    NO_DATA = "no data"
+    NO_SEARCH_METHOD = "no search method"
+    NO_URL = "no URL"
+    SEARCH_ERROR = "search error"
+    TIMEOUT = "timeout"
 
 
-def do_check(query=None):
-    if not query:
-        query = Query()
-    if query.lang:
-        query.lang = query.orig_lang = query.lang.strip().lower()
-        if "::" in query.lang:
-            query.lang, query.name = query.lang.split("::", 1)
-    if query.project:
-        query.project = query.project.strip().lower()
-    if query.oldid:
-        query.oldid = query.oldid.strip().lstrip("0")
+class CopyvioCheckError(Exception):
+    def __init__(self, code: ErrorCode):
+        super().__init__(code.value)
+        self.code = code
 
-    query.submitted = query.project and query.lang and (query.title or query.oldid)
+
+def do_check(query: CheckQuery) -> CopyvioCheckResult | None:
     if query.submitted:
-        query.site = get_site(query)
-        if query.site:
-            _get_results(query, follow=not _coerce_bool(query.noredirect))
-    return query
+        site = get_site(query)
+        if site:
+            return _get_results(query, site, follow=not query.noredirect)
+    return None
 
 
-def _get_results(query, follow=True):
+def _get_results(
+    query: CheckQuery, site: Site, follow: bool = True
+) -> CopyvioCheckResult | None:
     if query.oldid:
         if not re.match(r"^\d+$", query.oldid):
-            query.error = "bad oldid"
-            return
-        page = query.page = _get_page_by_revid(query.site, query.oldid)
+            raise CopyvioCheckError(ErrorCode.BAD_OLDID)
+        page = _get_page_by_revid(site, query.oldid)
         if not page:
-            return
+            return None
+        g.page = page
     else:
-        page = query.page = query.site.get_page(query.title)
+        assert query.title
+        g.page = page = site.get_page(query.title)
         try:
-            page.get()  # Make sure that the page exists before we check it!
+            page.get()  # Make sure that the page exists before we check it
         except (exceptions.PageNotFoundError, exceptions.InvalidPageError):
-            return
+            return None
         if page.is_redirect and follow:
             try:
                 query.title = page.get_redirect_target()
             except exceptions.RedirectError:
-                pass  # Something's wrong. Continue checking the original page.
+                pass  # Something's wrong; continue checking the original page
             else:
-                query.redirected_from = page
-                _get_results(query, follow=False)
-                return
+                result = _get_results(query, site, follow=False)
+                if result:
+                    result.metadata.redirected_from = page
+                return result
 
     if not query.action:
         query.action = "compare" if query.url else "search"
-    if query.action == "search":
-        use_engine = 0 if query.use_engine in ("0", "false") else 1
-        use_links = 0 if query.use_links in ("0", "false") else 1
-        use_turnitin = 1 if query.turnitin in ("1", "true") else 0
-        if not use_engine and not use_links and not use_turnitin:
-            query.error = "no search method"
-            return
 
-        # Handle the turnitin check
-        if use_turnitin:
-            query.turnitin_result = search_turnitin(page.title, query.lang)
+    if query.action == "search":
+        if not query.use_engine and not query.use_links and not query.turnitin:
+            raise CopyvioCheckError(ErrorCode.NO_SEARCH_METHOD)
+
+        # Handle the Turnitin check
+        turnitin_result = None
+        if query.turnitin:
+            assert query.lang
+            turnitin_result = search_turnitin(page.title, query.lang)
 
         # Handle the copyvio check
-        _perform_check(query, page, use_engine, use_links)
+        conn = cache.engine.raw_connection()
+        try:
+            result = _perform_check(query, page, conn)
+        finally:
+            conn.close()
+        if turnitin_result:
+            result.metadata.turnitin_result = turnitin_result
+
     elif query.action == "compare":
         if not query.url:
-            query.error = "no URL"
-            return
-        scheme = urlparse(query.url).scheme
+            raise CopyvioCheckError(ErrorCode.NO_URL)
+        scheme = urllib.parse.urlparse(query.url).scheme
         if not scheme and query.url[0] not in ":/":
             query.url = "http://" + query.url
         elif scheme not in ["http", "https"]:
-            query.error = "bad URI"
-            return
-        degree = 5
-        if query.degree:
-            try:
-                degree = int(query.degree)
-            except ValueError:
-                pass
+            raise CopyvioCheckError(ErrorCode.BAD_URI)
+
+        degree = query.degree or DEFAULT_DEGREE
         result = page.copyvio_compare(
             query.url, min_confidence=T_SUSPECT, max_time=10, degree=degree
         )
-        if result.best.chains[0] is EMPTY:
-            query.error = "timeout" if result.time > 10 else "no data"
-            return
-        query.result = result
-        query.result.cached = False
+        result.metadata.cached = False
+
+        if not result.best or result.best.chains[0] is EMPTY:
+            if result.time > 10:
+                raise CopyvioCheckError(ErrorCode.TIMEOUT)
+            else:
+                raise CopyvioCheckError(ErrorCode.NO_DATA)
+        return result
+
     else:
-        query.error = "bad action"
+        raise CopyvioCheckError(ErrorCode.BAD_ACTION)
 
 
-def _get_page_by_revid(site, revid):
+def _get_page_by_revid(site: Site, revid: str) -> Page | None:
     try:
         res = site.api_query(
             action="query",
@@ -140,104 +157,118 @@ def _get_page_by_revid(site, revid):
     return page
 
 
-def _perform_check(query, page, use_engine, use_links):
-    conn = get_db()
+def _perform_check(
+    query: CheckQuery, page: Page, conn: PoolProxiedConnection
+) -> CopyvioCheckResult:
     sql_error = get_sql_error()
-    mode = f"{use_engine}:{use_links}:"
+    mode = f"{query.use_engine}:{query.use_links}:"
+    result: CopyvioCheckResult | None = None
 
-    if not _coerce_bool(query.nocache):
+    if not query.nocache:
         try:
-            query.result = _get_cached_results(
-                page, conn, mode, _coerce_bool(query.noskip)
-            )
+            result = _get_cached_results(page, conn, mode, query.noskip)
         except sql_error:
             _LOGGER.exception("Failed to retrieve cached results")
 
-    if not query.result:
+    if not result:
         try:
-            query.result = page.copyvio_check(
+            result = page.copyvio_check(
                 min_confidence=T_SUSPECT,
                 max_queries=8,
                 max_time=30,
-                no_searches=not use_engine,
-                no_links=not use_links,
+                no_searches=not query.use_engine,
+                no_links=not query.use_links,
                 short_circuit=not query.noskip,
             )
         except exceptions.SearchQueryError as exc:
-            query.error = "search error"
-            query.exception = exc
-            return
-        query.result.cached = False
+            raise CopyvioCheckError(ErrorCode.SEARCH_ERROR) from exc
+        result.metadata.cached = False
         try:
-            _cache_result(page, query.result, conn, mode)
+            _cache_result(page, result, conn, mode)
         except sql_error:
             _LOGGER.exception("Failed to cache results")
 
+    return result
 
-def _get_cached_results(page, conn, mode, noskip):
-    query1 = """SELECT cache_time, cache_queries, cache_process_time,
-                       cache_possible_miss
-                FROM cache
-                WHERE cache_id = ?"""
-    query2 = """SELECT cdata_url, cdata_confidence, cdata_skipped, cdata_excluded
-                FROM cache_data
-                WHERE cdata_cache_id = ?"""
-    cache_id = sha256(mode + page.get().encode("utf8")).digest()
 
+def _get_cache_id(page: Page, mode: str) -> bytes:
+    return hashlib.sha256((mode + page.get()).encode("utf8")).digest()
+
+
+def _get_cached_results(
+    page: Page, conn: PoolProxiedConnection, mode: str, noskip: bool
+) -> CopyvioCheckResult | None:
+    cache_id = _get_cache_id(page, mode)
     cursor = conn.cursor()
-    cursor.execute(query1, (cache_id,))
+    cursor.execute(
+        """SELECT cache_time, cache_queries, cache_process_time, cache_possible_miss
+        FROM cache
+        WHERE cache_id = ?""",
+        (cache_id,),
+    )
     results = cursor.fetchall()
+
     if not results:
         return None
     cache_time, queries, check_time, possible_miss = results[0]
     if possible_miss and noskip:
         return None
+
     if not isinstance(cache_time, datetime):
-        cache_time = datetime.utcfromtimestamp(cache_time)
-    if datetime.utcnow() - cache_time > timedelta(days=3):
+        cache_time = datetime.fromtimestamp(cache_time, tz=UTC)
+    elif cache_time.tzinfo is None:
+        cache_time = cache_time.replace(tzinfo=UTC)
+    if datetime.now(UTC) - cache_time > timedelta(days=3):
         return None
-    cursor.execute(query2, (cache_id,))
+
+    cursor.execute(
+        """SELECT cdata_url, cdata_confidence, cdata_skipped, cdata_excluded
+        FROM cache_data
+        WHERE cdata_cache_id = ?""",
+        (cache_id,),
+    )
     data = cursor.fetchall()
 
     if not data:  # TODO: do something less hacky for this edge case
-        article_chain = MarkovChain(ArticleTextParser(page.get()).strip())
+        article_chain = CopyvioChecker(page).article_chain
         result = CopyvioCheckResult(
             False, [], queries, check_time, article_chain, possible_miss
         )
-        result.cached = True
-        result.cache_time = cache_time.strftime("%b %d, %Y %H:%M:%S UTC")
-        result.cache_age = _format_date(cache_time)
+        result.metadata.cached = True
+        result.metadata.cache_time = cache_time.strftime("%b %d, %Y %H:%M:%S UTC")
+        result.metadata.cache_age = _format_date(cache_time)
         return result
 
-    url, confidence, skipped, excluded = data.pop(0)
+    url, confidence, skipped, excluded = data[0]
     if skipped:  # Should be impossible: data must be bad; run a new check
         return None
     result = page.copyvio_compare(url, min_confidence=T_SUSPECT, max_time=10)
     if abs(result.confidence - confidence) >= 0.0001:
         return None
 
-    for url, confidence, skipped, excluded in data:
+    for url, confidence, skipped, excluded in data[1:]:
         if noskip and skipped:
             return None
-        source = CopyvioSource(None, url)
+        source = CopyvioSource(typing.cast(CopyvioWorkspace, None), url)
         source.confidence = confidence
         source.skipped = bool(skipped)
         source.excluded = bool(excluded)
         result.sources.append(source)
+
     result.queries = queries
     result.time = check_time
     result.possible_miss = possible_miss
-    result.cached = True
-    result.cache_time = cache_time.strftime("%b %d, %Y %H:%M:%S UTC")
-    result.cache_age = _format_date(cache_time)
+    result.metadata.cached = True
+    result.metadata.cache_time = cache_time.strftime("%b %d, %Y %H:%M:%S UTC")
+    result.metadata.cache_age = _format_date(cache_time)
     return result
 
 
-def _format_date(cache_time):
-    def formatter(n, w):
-        return "{} {}{}".format(n, w, "" if n == 1 else "s")
+def _format_date(cache_time: datetime) -> str:
+    def formatter(val: float, unit: str):
+        return f"{int(val)} {unit}{'' if val == 1 else 's'}"
 
-    diff = datetime.utcnow() - cache_time
+    diff = datetime.now(UTC) - cache_time
     total_seconds = diff.days * 86400 + diff.seconds
     if total_seconds > 3600:
         return formatter(total_seconds / 3600, "hour")
@@ -246,19 +277,14 @@ def _format_date(cache_time):
     return formatter(total_seconds, "second")
 
 
-def _cache_result(page, result, conn, mode):
+def _cache_result(
+    page: Page, result: CopyvioCheckResult, conn: PoolProxiedConnection, mode: str
+) -> None:
     expiry = sql_dialect(
         mysql="DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)",
         sqlite="STRFTIME('%s', 'now', '-3 days')",
     )
-    query1 = "DELETE FROM cache WHERE cache_id = ?"
-    query2 = f"DELETE FROM cache WHERE cache_time < {expiry}"
-    query3 = """INSERT INTO cache (cache_id, cache_queries, cache_process_time,
-                                   cache_possible_miss) VALUES (?, ?, ?, ?)"""
-    query4 = """INSERT INTO cache_data (cdata_cache_id, cdata_url,
-                                        cdata_confidence, cdata_skipped,
-                                        cdata_excluded) VALUES (?, ?, ?, ?, ?)"""
-    cache_id = sha256(mode + page.get().encode("utf8")).digest()
+    cache_id = _get_cache_id(page, mode)
     data = [
         (
             cache_id,
@@ -269,10 +295,29 @@ def _cache_result(page, result, conn, mode):
         )
         for source in result.sources
     ]
-    with get_cursor(conn) as cursor:
-        cursor.execute(query1, (cache_id,))
-        cursor.execute(query2)
-        cursor.execute(
-            query3, (cache_id, result.queries, result.time, result.possible_miss)
+
+    # TODO: Switch to proper SQLAlchemy
+    cur = conn.cursor()
+    try:
+        cur.execute("DELETE FROM cache WHERE cache_id = ?", (cache_id,))
+        cur.execute(f"DELETE FROM cache WHERE cache_time < {expiry}")
+        cur.execute(
+            """INSERT INTO cache (
+                cache_id, cache_queries, cache_process_time, cache_possible_miss
+            ) VALUES (?, ?, ?, ?)""",
+            (cache_id, result.queries, result.time, result.possible_miss),
         )
-        cursor.executemany(query4, data)
+        cur.executemany(
+            """INSERT INTO cache_data (
+                cdata_cache_id, cdata_url, cdata_confidence, cdata_skipped,
+                cdata_excluded
+            ) VALUES (?, ?, ?, ?, ?)""",
+            data,
+        )
+    except Exception:
+        conn.rollback()
+        raise
+    else:
+        conn.commit()
+    finally:
+        cur.close()

@@ -1,7 +1,8 @@
 <%!
-    from flask import g, request
+    from flask import request
     from copyvios.attribution import get_attribution_info
     from copyvios.checker import T_POSSIBLE, T_SUSPECT
+    from copyvios.cookies import get_cookies
     from copyvios.misc import cache
 %>\
 <%
@@ -10,6 +11,7 @@
         titleparts.append(query.page.title)
     titleparts.append("Earwig's Copyvio Detector")
     title = " | ".join(titleparts)
+    cookies = get_cookies()
 %>\
 <%include file="/support/header.mako" args="title=title, splash=not result"/>
 <%namespace module="copyvios.highlighter" import="highlight_delta"/>\
@@ -37,7 +39,7 @@
             % elif query.error == "timeout":
                 The URL <a href="${query.url | h}">${query.url | h}</a> timed out before any data could be retrieved.
             % elif query.error == "search error":
-                An error occurred while using the search engine (${query.exception}). <i>Note:</i> there is a daily limit on the number of search queries the tool is allowed to make. You may <a href="${request.url | httpsfix, h}&amp;use_engine=0">repeat the check without using the search engine</a>.
+                An error occurred while using the search engine (${query.error.__cause__}). <i>Note:</i> there is a daily limit on the number of search queries the tool is allowed to make. You may <a href="${request.url | httpsfix, h}&amp;use_engine=0">repeat the check without using the search engine</a>.
             % else:
                 An unknown error occurred.
             % endif
@@ -64,7 +66,7 @@
         <label class="site oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">Site</label>
         <div class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-dropdownInputWidget oo-ui-dropdownInputWidget-php">
             <select name="lang" required="" class="oo-ui-inputWidget-input oo-ui-indicator-down" title="Language">
-                <% selected_lang = query.orig_lang if query.orig_lang else g.cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in g.cookies else cache.bot.wiki.get_site().lang %>\
+                <% selected_lang = query.orig_lang if query.orig_lang else cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in cookies else cache.bot.wiki.get_site().lang %>\
                 % for code, name in cache.langs:
                     % if code == selected_lang:
                         <option value="${code | h}" selected="selected">${name}</option>
@@ -76,7 +78,7 @@
         </div>
         <div class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-dropdownInputWidget oo-ui-dropdownInputWidget-php">
             <select name="project" required="" class="oo-ui-inputWidget-input oo-ui-indicator-down" title="Project">
-                <% selected_project = query.project if query.project else g.cookies["CopyviosDefaultProject"].value if "CopyviosDefaultProject" in g.cookies else cache.bot.wiki.get_site().project %>\
+                <% selected_project = query.project if query.project else cookies["CopyviosDefaultProject"].value if "CopyviosDefaultProject" in cookies else cache.bot.wiki.get_site().project %>\
                 % for code, name in cache.projects:
                     % if code == selected_project:
                         <option value="${code | h}" selected="selected">${name}</option>

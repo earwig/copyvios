@@ -1,7 +1,11 @@
 <%!
     from json import dumps, loads
-    from flask import g, request
-    from copyvios.misc import cache
+    from flask import request
+    from copyvios.cookies import get_cookies
+    from copyvios.cache import cache
+%>\
+<%
+    cookies = get_cookies()
 %>\
 <%include file="/support/header.mako" args="title='Settings | Earwig\'s Copyvio Detector', splash=True"/>
 % if status:
@@ -20,7 +24,7 @@
                     <div class="oo-ui-layout oo-ui-horizontalLayout">
                         <div class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-dropdownInputWidget oo-ui-dropdownInputWidget-php">
                             <select name="lang" required="" class="oo-ui-inputWidget-input oo-ui-indicator-down">
-                                <% selected_lang = g.cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in g.cookies else default_lang %>\
+                                <% selected_lang = cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in cookies else default_lang %>\
                                 % for code, name in cache.langs:
                                     % if code == selected_lang:
                                         <option value="${code | h}" selected="selected">${name}</option>
@@ -32,7 +36,7 @@
                         </div>
                         <div class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-dropdownInputWidget oo-ui-dropdownInputWidget-php">
                             <select name="project" required="" class="oo-ui-inputWidget-input oo-ui-indicator-down">
-                                <% selected_project = g.cookies["CopyviosDefaultProject"].value if "CopyviosDefaultProject" in g.cookies else default_project %>\
+                                <% selected_project = cookies["CopyviosDefaultProject"].value if "CopyviosDefaultProject" in cookies else default_project %>\
                                 % for code, name in cache.projects:
                                     % if code == selected_project:
                                         <option value="${code | h}" selected="selected">${name}</option>
@@ -55,7 +59,7 @@
             ("potd", 'Use the current Commons Picture of the Day, unfiltered. Certain POTDs may be unsuitable as backgrounds due to their aspect ratio or subject matter.'),
             ("plain", "Use a plain background."),
         ]
-        selected = g.cookies["CopyviosBackground"].value if "CopyviosBackground" in g.cookies else "list"
+        selected = cookies["CopyviosBackground"].value if "CopyviosBackground" in cookies else "list"
     %>\
     <div class="oo-ui-layout oo-ui-labelElement oo-ui-fieldLayout oo-ui-fieldLayout-align-top">
         <div class="oo-ui-fieldLayout-body">

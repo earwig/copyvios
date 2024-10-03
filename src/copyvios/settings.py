@@ -1,54 +1,58 @@
-from flask import g
-from markupsafe import escape
-
-from .cookies import delete_cookie, set_cookie
-from .misc import Query
-
 __all__ = ["process_settings"]
 
+import typing
 
-def process_settings():
-    query = Query(method="POST")
-    if query.action == "set":
-        status = _do_set(query)
-    elif query.action == "delete":
-        status = _do_delete(query)
-    else:
-        status = None
-    return status
+import markupsafe
+
+from .cookies import delete_cookie, get_cookies, set_cookie
+from .query import SettingsQuery
+
+COOKIE_EXPIRY = 3 * 365  # Days
 
 
-def _do_set(query):
-    cookies = g.cookies
-    changes = set()
+def process_settings() -> str | None:
+    query = SettingsQuery.from_post_data()
+    match query.action:
+        case "set":
+            return _do_set(query)
+        case "delete":
+            return _do_delete(query)
+        case None:
+            return None
+        case _:
+            typing.assert_never(query.action)
+
+
+def _do_set(query: SettingsQuery) -> str | None:
+    cookies = get_cookies()
+    changes: set[str] = set()
     if query.lang:
         key = "CopyviosDefaultLang"
         if key not in cookies or cookies[key].value != query.lang:
-            set_cookie(key, query.lang, 1095)
+            set_cookie(key, query.lang, COOKIE_EXPIRY)
             changes.add("site")
     if query.project:
         key = "CopyviosDefaultProject"
         if key not in cookies or cookies[key].value != query.project:
-            set_cookie(key, query.project, 1095)
+            set_cookie(key, query.project, COOKIE_EXPIRY)
             changes.add("site")
     if query.background:
         key = "CopyviosBackground"
         if key not in cookies or cookies[key].value != query.background:
-            set_cookie(key, query.background, 1095)
-            delete_cookie("EarwigBackgroundCache")
+            set_cookie(key, query.background, COOKIE_EXPIRY)
+            delete_cookie("EarwigBackgroundCache")  # Old name
             changes.add("background")
     if changes:
-        changes = ", ".join(sorted(list(changes)))
-        return f"Updated {changes}."
+        return f"Updated {', '.join(sorted(changes))}."
     return None
 
 
-def _do_delete(query):
-    cookies = g.cookies
-    if query.cookie in cookies:
-        delete_cookie(query.cookie.encode("utf8"))
-        template = 'Deleted cookie <b><span class="mono">{0}</span></b>.'
-        return template.format(escape(query.cookie))
+def _do_delete(query: SettingsQuery) -> str | None:
+    cookies = get_cookies()
+    cookie = query.cookie
+    if cookie and cookie in cookies:
+        delete_cookie(cookie)
+        return f'Deleted cookie <b><span class="mono">{markupsafe.escape(cookie)}</span></b>.'
     elif query.all:
         number = len(cookies)
         for cookie in list(cookies.values()):

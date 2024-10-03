@@ -1,100 +1,162 @@
+__all__ = ["get_background"]
+
+import json
+import logging
 import random
 import re
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime, timedelta
-from json import loads
+from dataclasses import dataclass
+from datetime import UTC, date, datetime, timedelta
+from typing import Self
 
 from earwigbot import exceptions
+from earwigbot.wiki import Site
 from flask import g
 
-from .misc import cache
+from .cache import cache
+from .cookies import get_cookies
 
-__all__ = ["set_background"]
+logger = logging.getLogger(__name__)
 
 
-def _get_commons_site():
+@dataclass(frozen=True)
+class BackgroundInfo:
+    filename: str
+    url: str
+    descurl: str
+    width: int
+    height: int
+
+
+@dataclass(frozen=True)
+class ScreenInfo:
+    width: int = 1024
+    height: int = 768
+
+    @classmethod
+    def from_cookie(cls, value: str) -> Self:
+        try:
+            screen = json.loads(value)
+            screen = cls(width=int(screen["width"]), height=int(screen["height"]))
+            if screen.width <= 0 or screen.height <= 0:
+                raise ValueError()
+        except (ValueError, KeyError):
+            screen = cls()
+        return screen
+
+
+def _get_commons_site() -> Site:
     try:
         return cache.bot.wiki.get_site("commonswiki")
     except exceptions.SiteNotFoundError:
         return cache.bot.wiki.add_site(project="wikimedia", lang="commons")
 
 
-def _load_file(site, filename):
-    data = site.api_query(
-        action="query",
-        prop="imageinfo",
-        iiprop="url|size|canonicaltitle",
-        titles="File:" + filename,
+def _load_file(site: Site, filename: str) -> BackgroundInfo | None:
+    prefix = "File:"
+    try:
+        data = site.api_query(
+            action="query",
+            prop="imageinfo",
+            iiprop="url|size|canonicaltitle",
+            titles=prefix + filename,
+        )
+        res = list(data["query"]["pages"].values())[0]["imageinfo"][0]
+        name = res["canonicaltitle"]
+        assert isinstance(name, str), name
+    except Exception:
+        logger.exception(f"Failed to get info for file {prefix + filename!r}")
+        return None
+    name = name.removeprefix(prefix).replace(" ", "_")
+    return BackgroundInfo(
+        name, res["url"], res["descriptionurl"], res["width"], res["height"]
     )
-    res = list(data["query"]["pages"].values())[0]["imageinfo"][0]
-    name = res["canonicaltitle"][len("File:") :].replace(" ", "_")
-    return name, res["url"], res["descriptionurl"], res["width"], res["height"]
 
 
-def _get_fresh_potd():
+def _get_fresh_from_potd() -> BackgroundInfo | None:
     site = _get_commons_site()
-    date = datetime.utcnow().strftime("%Y-%m-%d")
-    page = site.get_page("Template:Potd/" + date)
+    date = datetime.now(UTC).strftime("%Y-%m-%d")
+    page = site.get_page(f"Template:Potd/{date}")
     regex = r"\{\{Potd filename\|(?:1=)?(.*?)\|.*?\}\}"
-    filename = re.search(regex, page.get()).group(1)
+    try:
+        match = re.search(regex, page.get())
+    except exceptions.EarwigBotError:
+        logger.exception(f"Failed to load today's POTD from {page.title!r}")
+        return None
+    if not match:
+        logger.exception(f"Failed to extract POTD from {page.title!r}")
+        return None
+    filename = match.group(1)
     return _load_file(site, filename)
 
 
-def _get_fresh_list():
+def _get_fresh_from_list() -> BackgroundInfo | None:
     site = _get_commons_site()
     page = site.get_page("User:The Earwig/POTD")
     regex = r"\*\*?\s*\[\[:File:(.*?)\]\]"
-    filenames = re.findall(regex, page.get())
+    try:
+        filenames = re.findall(regex, page.get())
+    except exceptions.EarwigBotError:
+        logger.exception(f"Failed to load images from {page.title!r}")
+        return None
 
-    # Ensure all workers share the same background each day:
-    random.seed(datetime.utcnow().strftime("%Y%m%d"))
-    filename = random.choice(filenames)
+    # Ensure all workers share the same background each day
+    rand = random.Random()
+    rand.seed(datetime.now(UTC).strftime("%Y%m%d"))
+    try:
+        filename = rand.choice(filenames)
+    except IndexError:
+        logger.exception(f"Failed to find any images on {page.title!r}")
+        return None
     return _load_file(site, filename)
 
 
-def _build_url(screen, filename, url, imgwidth, imgheight):
-    width = screen["width"]
-    if float(imgwidth) / imgheight > float(screen["width"]) / screen["height"]:
-        width = int(float(imgwidth) / imgheight * screen["height"])
-    if width >= imgwidth:
-        return url
-    url = url.replace("/commons/", "/commons/thumb/")
-    return "%s/%dpx-%s" % (url, width, urllib.parse.quote(filename.encode("utf8")))
+def _build_url(screen: ScreenInfo, background: BackgroundInfo) -> str:
+    width = screen.width
+    if background.width / background.height > screen.width / screen.height:
+        width = int(background.width / background.height * screen.height)
+    if width >= background.width:
+        return background.url
+    url = background.url.replace("/commons/", "/commons/thumb/")
+    return f"{url}/{width}px-{urllib.parse.quote(background.filename)}"
 
 
-_BACKGROUNDS = {"potd": _get_fresh_potd, "list": _get_fresh_list}
+_BACKGROUNDS = {
+    "potd": _get_fresh_from_potd,
+    "list": _get_fresh_from_list,
+}
+
+_BACKGROUND_CACHE: dict[str, BackgroundInfo | None] = {}
+_LAST_BACKGROUND_UPDATES: dict[str, date] = {
+    key: datetime.min.date() for key in _BACKGROUNDS
+}
 
 
-def _get_background(selected):
-    if not cache.last_background_updates:
-        for key in _BACKGROUNDS:
-            cache.last_background_updates[key] = datetime.min
-
-    plus_one = cache.last_background_updates[selected] + timedelta(days=1)
-    max_age = datetime(plus_one.year, plus_one.month, plus_one.day)
-    if datetime.utcnow() > max_age:
-        update_func = _BACKGROUNDS.get(selected, _get_fresh_list)
-        cache.background_data[selected] = update_func()
-        cache.last_background_updates[selected] = datetime.utcnow().date()
-    return cache.background_data[selected]
+def _get_background(selected: str) -> BackgroundInfo | None:
+    next_day = _LAST_BACKGROUND_UPDATES[selected] + timedelta(days=1)
+    max_age = datetime(next_day.year, next_day.month, next_day.day, tzinfo=UTC)
+    if datetime.now(UTC) > max_age:
+        update_func = _BACKGROUNDS.get(selected, _get_fresh_from_list)
+        _BACKGROUND_CACHE[selected] = update_func()
+        _LAST_BACKGROUND_UPDATES[selected] = datetime.now(UTC).date()
+    return _BACKGROUND_CACHE[selected]
 
 
-def set_background(selected):
-    if "CopyviosScreenCache" in g.cookies:
-        screen_cache = g.cookies["CopyviosScreenCache"].value
-        try:
-            screen = loads(screen_cache)
-            screen = {"width": int(screen["width"]), "height": int(screen["height"])}
-            if screen["width"] <= 0 or screen["height"] <= 0:
-                raise ValueError()
-        except (ValueError, KeyError):
-            screen = {"width": 1024, "height": 768}
+def get_background(selected: str) -> str:
+    cookies = get_cookies()
+    if "CopyviosScreenCache" in cookies:
+        cookie = cookies["CopyviosScreenCache"].value
+        screen = ScreenInfo.from_cookie(cookie)
     else:
-        screen = {"width": 1024, "height": 768}
+        screen = ScreenInfo()
 
-    filename, url, descurl, width, height = _get_background(selected)
-    bg_url = _build_url(screen, filename, url, width, height)
-    g.descurl = descurl
+    background = _get_background(selected)
+    if background:
+        bg_url = _build_url(screen, background)
+        g.descurl = background.descurl
+    else:
+        bg_url = ""
+        g.descurl = None
     return bg_url

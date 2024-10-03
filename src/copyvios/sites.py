@@ -1,40 +1,53 @@
-from time import time
-from urllib.parse import urlparse
-
-from earwigbot import exceptions
-
-from .misc import cache
-
 __all__ = ["get_site", "update_sites"]
 
+import urllib.parse
+from datetime import UTC, datetime, timedelta
 
-def get_site(query):
-    lang, project, name = query.lang, query.project, query.name
-    wiki = cache.bot.wiki
-    if project not in [proj[0] for proj in cache.projects]:
+from earwigbot import exceptions
+from earwigbot.wiki import Site
+from flask import g
+
+from .cache import Lang, Project, cache
+from .query import CheckQuery
+
+_LAST_SITES_UPDATE = datetime.min.replace(tzinfo=UTC)
+
+
+def _get_site(query: CheckQuery) -> Site | None:
+    if not any(proj.code == query.project for proj in cache.projects):
         return None
-    if project == "wikimedia" and name:  # Special sites:
-        try:
-            return wiki.get_site(name=name)
-        except exceptions.SiteNotFoundError:
-            return _add_site(lang, project)
     try:
-        return wiki.get_site(lang=lang, project=project)
+        if query.project == "wikimedia" and query.name:  # Special sites
+            return cache.bot.wiki.get_site(name=query.name)
+        else:
+            return cache.bot.wiki.get_site(lang=query.lang, project=query.project)
     except exceptions.SiteNotFoundError:
-        return _add_site(lang, project)
+        assert query.lang and query.project, (query.lang, query.project)
+        return _add_site(query.lang, query.project)
 
 
-def update_sites():
-    if time() - cache.last_sites_update > 60 * 60 * 24 * 7:
+def get_site(query: CheckQuery | None = None) -> Site | None:
+    if "site" not in g:
+        assert query is not None, "get_site() called with no cached site nor query"
+        g.site = _get_site(query)
+    assert g.site is None or isinstance(g.site, Site), g.site
+    return g.site
+
+
+def update_sites() -> None:
+    global _LAST_SITES_UPDATE
+
+    now = datetime.now(UTC)
+    if now - _LAST_SITES_UPDATE > timedelta(days=1):
         cache.langs, cache.projects = _load_sites()
-        cache.last_sites_update = time()
+        _LAST_SITES_UPDATE = now
 
 
-def _add_site(lang, project):
+def _add_site(lang: str, project: str) -> Site | None:
     update_sites()
-    if not any(project == item[0] for item in cache.projects):
+    if not any(project == proj.code for proj in cache.projects):
         return None
-    if lang != "www" and not any(lang == item[0] for item in cache.langs):
+    if lang != "www" and not any(lang == item.code for item in cache.langs):
         return None
     try:
         return cache.bot.wiki.add_site(lang=lang, project=project)
@@ -42,34 +55,38 @@ def _add_site(lang, project):
         return None
 
 
-def _load_sites():
+def _load_sites() -> tuple[list[Lang], list[Project]]:
     site = cache.bot.wiki.get_site()
     matrix = site.api_query(action="sitematrix")["sitematrix"]
     del matrix["count"]
-    langs, projects = set(), set()
+    langs: set[Lang] = set()
+    projects: set[Project] = set()
+
     for site in matrix.values():
         if isinstance(site, list):  # Special sites
             bad_sites = ["closed", "private", "fishbowl"]
             for special in site:
-                if all([key not in special for key in bad_sites]):
-                    full = urlparse(special["url"]).netloc
-                    if full.count(".") == 1:  # No subdomain, so use "www"
-                        lang, project = "www", full.split(".")[0]
-                    else:
-                        lang, project = full.rsplit(".", 2)[:2]
-                    code = "{}::{}".format(lang, special["dbname"])
-                    name = special["code"].capitalize()
-                    langs.add((code, f"{lang} ({name})"))
-                    projects.add((project, project.capitalize()))
+                if any(key in special for key in bad_sites):
+                    continue
+                full = urllib.parse.urlparse(special["url"]).netloc
+                if full.count(".") == 1:  # No subdomain, so use "www"
+                    lang, project = "www", full.split(".")[0]
+                else:
+                    lang, project = full.rsplit(".", 2)[:2]
+                langcode = f"{lang}::{special['dbname']}"
+                langname = special["code"].capitalize()
+                langs.add(Lang(langcode, f"{lang} ({langname})"))
+                projects.add(Project(project, project.capitalize()))
         else:
-            this = set()
+            this: set[Project] = set()
             for web in site["site"]:
                 if "closed" in web:
                     continue
                 proj = "wikipedia" if web["code"] == "wiki" else web["code"]
-                this.add((proj, proj.capitalize()))
+                this.add(Project(proj, proj.capitalize()))
             if this:
                 code = site["code"]
-                langs.add((code, "{} ({})".format(code, site["name"])))
+                langs.add(Lang(code, f"{code} ({site['name']})"))
                 projects |= this
-    return list(sorted(langs)), list(sorted(projects))
+
+    return sorted(langs), sorted(projects)

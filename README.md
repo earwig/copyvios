@@ -18,13 +18,13 @@ Installation
   this should be in `~/www/python/venv`, otherwise it can be in a subdirectory
   of the git project named `venv`:
 
-    python3 -m venv venv
-    . venv/bin/activate
-    pip install -e .
+      python3 -m venv venv
+      . venv/bin/activate
+      pip install -e .
 
 - If you intend to modify CSS or JS, install the frontend dependencies:
 
-    npm install -g uglify-js cssnano postcss postcss-cli
+      npm install -g uglify-js cssnano postcss postcss-cli
 
 - Create an SQL database with the tables defined by `schema.sql`.
 
@@ -40,7 +40,7 @@ Installation
 Running
 =======
 
-- Run `./build.py` to minify JS and CSS files after making any frontend
-  changes.
+- Run `make` to minify JS and CSS files after making any frontend changes.
 
-- Start your WSGI server pointing to app:app.
+- Start your WSGI server pointing to app:app. For production, uWSGI or
+  Gunicorn are likely good options. For development, use `flask run`.

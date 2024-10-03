@@ -1,6 +1,6 @@
-from earwigbot.wiki import NS_TEMPLATE
-
 __all__ = ["get_attribution_info"]
+
+from earwigbot.wiki import NS_TEMPLATE, Page, Site
 
 ATTRIB_TEMPLATES = {
     "enwiki": {
@@ -14,11 +14,11 @@ ATTRIB_TEMPLATES = {
 }
 
 
-def get_attribution_info(site, page):
-    """Check to see if the given page has some kind of attribution info.
+def get_attribution_info(site: Site, page: Page) -> tuple[str, str] | None:
+    """
+    Check to see if the given page has some kind of attribution info.
 
-    If yes, return a tuple of (attribution template name, template URL).
-    If no, return None.
+    Return a tuple of (attribution template name, template URL) or None if no template.
     """
     if site.name not in ATTRIB_TEMPLATES:
         return None
@@ -32,4 +32,5 @@ def get_attribution_info(site, page):
             name = str(template.name).strip()
             title = name if ":" in name else prefix + ":" + name
             return name, site.get_page(title).url
+
     return None

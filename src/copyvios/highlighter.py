@@ -1,20 +1,28 @@
-from collections import deque
-from re import UNICODE, sub
-
-from earwigbot.wiki.copyvios.markov import EMPTY_INTERSECTION
-from markupsafe import escape
-
 __all__ = ["highlight_delta"]
 
+import re
+from collections import deque
+from typing import Literal
 
-def highlight_delta(context, chain, delta):
+import markupsafe
+from earwigbot.wiki.copyvios.markov import (
+    EMPTY_INTERSECTION,
+    MarkovChain,
+    MarkovChainIntersection,
+    Sentinel,
+)
+
+
+def highlight_delta(
+    context, chain: MarkovChain, delta: MarkovChainIntersection | None
+) -> str:
     degree = chain.degree - 1
     highlights = [False] * degree
-    block = deque([chain.START] * degree)
+    block: deque[str | Sentinel] = deque([Sentinel.START] * degree)
     if not delta:
         delta = EMPTY_INTERSECTION
-    for word in chain.text.split() + ([chain.END] * degree):
-        word = _strip_word(chain, word)
+    for word in chain.text.split() + ([Sentinel.END] * degree):
+        word = _strip_word(word)
         block.append(word)
         if tuple(block) in delta.chain:
             highlights[-1 * degree :] = [True] * degree
@@ -25,7 +33,7 @@ def highlight_delta(context, chain, delta):
 
     i = degree
     numwords = len(chain.text.split())
-    result = []
+    result: list[str] = []
     paragraphs = deque(chain.text.split("\n"))
     while paragraphs:
         words = []
@@ -37,15 +45,15 @@ def highlight_delta(context, chain, delta):
                 last = i - degree + 1 == numwords
                 words.append(_highlight_word(word, before, after, first, last))
             else:
-                words.append(str(escape(word)))
+                words.append(str(markupsafe.escape(word)))
         result.append(" ".join(words))
         i += 1
 
     return "<br /><br />".join(result)
 
 
-def _get_next(paragraphs):
-    body = []
+def _get_next(paragraphs: deque[str]) -> list[str]:
+    body: list[str] = []
     while paragraphs and not body:
         body = paragraphs.popleft().split()
     if body and len(body) <= 3:
@@ -59,44 +67,46 @@ def _get_next(paragraphs):
     return body
 
 
-def _highlight_word(word, before, after, first, last):
+def _highlight_word(
+    word: str, before: bool, after: bool, first: bool, last: bool
+) -> str:
     if before and after:
-        # Word is in the middle of a highlighted block:
-        res = str(escape(word))
+        # Word is in the middle of a highlighted block
+        res = str(markupsafe.escape(word))
         if first:
             res = '<span class="cv-hl">' + res
         if last:
             res += "</span>"
     elif after:
-        # Word is the first in a highlighted block:
+        # Word is the first in a highlighted block
         res = '<span class="cv-hl">' + _fade_word(word, "in")
         if last:
             res += "</span>"
     elif before:
-        # Word is the last in a highlighted block:
+        # Word is the last in a highlighted block
         res = _fade_word(word, "out") + "</span>"
         if first:
             res = '<span class="cv-hl">' + res
     else:
-        res = str(escape(word))
+        res = str(markupsafe.escape(word))
     return res
 
 
-def _fade_word(word, dir):
+def _fade_word(word: str, dir: Literal["in", "out"]) -> str:
     if len(word) <= 4:
-        word = str(escape(word))
+        word = str(markupsafe.escape(word))
         return f'<span class="cv-hl-{dir}">{word}</span>'
     if dir == "out":
-        before, after = str(escape(word[:-4])), str(escape(word[-4:]))
-        base = '{0}<span class="cv-hl-out">{1}</span>'
-        return base.format(before, after)
+        before = str(markupsafe.escape(word[:-4]))
+        after = str(markupsafe.escape(word[-4:]))
+        return f'{before}<span class="cv-hl-out">{after}</span>'
     else:
-        before, after = str(escape(word[:4])), str(escape(word[4:]))
-        base = '<span class="cv-hl-in">{0}</span>{1}'
-        return base.format(before, after)
+        before = str(markupsafe.escape(word[:4]))
+        after = str(markupsafe.escape(word[4:]))
+        return f'<span class="cv-hl-in">{before}</span>{after}'
 
 
-def _strip_word(chain, word):
-    if word == chain.START or word == chain.END:
+def _strip_word(word: str | Sentinel) -> str | Sentinel:
+    if word == Sentinel.START or word == Sentinel.END:
         return word
-    return sub("[^\w\s-]", "", word.lower(), flags=UNICODE)
+    return re.sub(r"[^\w\s-]", "", word.lower())

@@ -144,6 +144,10 @@ def _perform_check(query, page, use_engine, use_links):
             _LOGGER.exception("Failed to retrieve cached results")
 
     if not query.result:
+        if use_engine and not query.requester_username and not query.api:
+            query.error = "not logged in"
+            return
+
         try:
             query.result = page.copyvio_check(
                 min_confidence=T_SUSPECT, max_queries=8, max_time=30,

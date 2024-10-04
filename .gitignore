@@ -7,3 +7,4 @@ __pycache__
 .earwigbot
 logs/*
 !logs/.gitinclude
+config.py

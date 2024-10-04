@@ -10,6 +10,8 @@ from .sites import update_sites
 __all__ = ["format_api_error", "handle_api_request"]
 
 _CHECK_ERRORS = {
+    "not logged in": "You are required to log in with your Wikipedia account "
+                     "to perform checks with the search engine",
     "no search method": "Either 'use_engine' or 'use_links' must be true",
     "bad oldid": "The revision ID is invalid",
     "no URL": "The parameter 'url' is required for URL comparisons",
@@ -116,6 +118,7 @@ _HOOKS = {
 
 def handle_api_request():
     query = Query()
+    query.api = True
     if query.version:
         try:
             query.version = int(query.version)

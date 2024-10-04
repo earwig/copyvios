@@ -5,7 +5,7 @@ import datetime
 from os.path import expanduser, join
 
 import apsw
-from flask import g, request
+from flask import g, request, session
 import oursql
 from sqlalchemy.pool import manage
 
@@ -19,6 +19,7 @@ class Query(object):
         data = request.form if method == "POST" else request.args
         for key in data:
             self.query[key] = data.getlist(key)[-1]
+        self.query["requester_username"] = session.get("username")
 
     def __getattr__(self, key):
         return self.query.get(key)

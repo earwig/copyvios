@@ -1,18 +1,19 @@
 #! /usr/bin/env python
 # -*- coding: utf-8  -*-
-
 from functools import wraps
 from hashlib import md5
 from json import dumps
 from logging import DEBUG, INFO, getLogger
 from logging.handlers import TimedRotatingFileHandler
+from multiprocessing import Value
 from os import path
 from time import asctime
 from traceback import format_exc
+from urllib import quote_plus, quote
 
 from earwigbot.bot import Bot
 from earwigbot.wiki.copyvios import globalize
-from flask import Flask, g, make_response, request
+from flask import Flask, g, make_response, request, redirect, session
 from flask_mako import MakoTemplates, render_template, TemplateError
 
 from copyvios.api import format_api_error, handle_api_request
@@ -21,12 +22,14 @@ from copyvios.cookies import parse_cookies
 from copyvios.misc import cache, get_notice
 from copyvios.settings import process_settings
 from copyvios.sites import update_sites
+from copyvios.auth import oauth_login_start, oauth_login_end, clear_login_session
 
 app = Flask(__name__)
 MakoTemplates(app)
 
 hand = TimedRotatingFileHandler("logs/app.log", when="midnight", backupCount=7)
 hand.setLevel(DEBUG)
+app.config.from_pyfile("config.py", True)
 app.logger.addHandler(hand)
 app.logger.info(u"Flask server started " + asctime())
 app._hash_cache = {}
@@ -51,6 +54,12 @@ def setup_app():
     cache.last_sites_update = 0
     cache.background_data = {}
     cache.last_background_updates = {}
+
+    oauth_config = cache.bot.config.wiki.get('copyvios', {}).get('oauth', {})
+    if oauth_config.get('consumer_token') is None:
+        raise ValueError("No OAuth consumer token is configured (config.wiki.copyvios.oauth.consumer_token).")
+    if oauth_config.get('consumer_secret') is None:
+        raise ValueError("No OAuth consumer secret is configured (config.wiki.copyvios.oauth.consumer_secret).")
 
     globalize(num_workers=8)
 
@@ -101,9 +110,49 @@ def index():
     notice = get_notice()
     update_sites()
     query = do_check()
+    if query.submitted and query.error == "not logged in":
+        return redirect("/login?next=" + quote("/?" + request.query_string), 302)
+
     return render_template(
         "index.mako", notice=notice, query=query, result=query.result,
         turnitin_result=query.turnitin_result)
+
+@app.route("/login", methods=["GET", "POST"])
+@catch_errors
+def login():
+    try:
+        redirect_url = oauth_login_start() if request.method == "POST" else None
+        if redirect_url:
+            return redirect(redirect_url, 302)
+    except Exception as e:
+        app.log_exception(e)
+        print e.message
+        kwargs = {"error": e.message}
+    else:
+        if session.get("username") is not None:
+            return redirect("/", 302)
+        kwargs = {"error": request.args.get("error")}
+    return render_template("login.mako", **kwargs)
+
+@app.route("/logout", methods=["GET", "POST"])
+@catch_errors
+def logout():
+    if request.method == "POST":
+        clear_login_session()
+        return redirect("/", 302)
+    else:
+        return render_template("logout.mako")
+
+@app.route("/oauth-callback")
+@catch_errors
+def oauth_callback():
+    try:
+        next_url = oauth_login_end()
+    except Exception as e:
+        app.log_exception(e)
+        return redirect("/login?error=" + quote_plus(e.message), 302)
+    else:
+        return redirect(next_url, 302)
 
 @app.route("/settings", methods=["GET", "POST"])
 @catch_errors

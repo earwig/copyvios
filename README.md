@@ -13,6 +13,7 @@ Dependencies
 * [flask-mako](https://pythonhosted.org/Flask-Mako/) >= 0.3
 * [mako](https://www.makotemplates.org/) >= 0.7.2
 * [mwparserfromhell](https://github.com/earwig/mwparserfromhell) >= 0.3
+* [mwoauth](https://github.com/mediawiki-utilities/python-mwoauth) == 0.3.8
 * [oursql](https://pythonhosted.org/oursql/) >= 0.9.3.1
 * [requests](https://requests.readthedocs.io/) >= 2.9.1
 * [SQLAlchemy](https://www.sqlalchemy.org/) >= 0.9.6

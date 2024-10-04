@@ -1,6 +1,6 @@
 <%page args="title, splash=False"/>\
 <%!
-    from flask import g, request, url_for
+    from flask import g, request, session, url_for
     from copyvios.background import set_background
 %>\
 <!DOCTYPE html>
@@ -25,6 +25,12 @@
         <div id="content">
             <header>
                 <h1><a href="/">Earwig&apos;s <strong>Copyvio Detector</strong></a></h1>
+                <% logged_in_user = session.get("username") %>\
+                % if logged_in_user:
+                    <a class="logout-link" href="/logout" title="Log out">${logged_in_user | h}</a>
+                % else:
+                    <a class="login-link" href="/login" title="Log in">Login</a>
+                % endif
                 <a id="settings-link" href="/settings">Settings</a>
             </header>
             <main>

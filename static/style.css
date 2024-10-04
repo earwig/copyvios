@@ -86,6 +86,21 @@ header h1 {
     }
 }
 
+header .login-link, header .logout-link {
+    margin-right: 1em;
+}
+
+header .login-link::before, header .logout-link::before {
+    content: ' ';
+    font-size: 0.85em;
+    color: black;
+    opacity: 0.6;
+    padding-left: 1.67em;
+    background-image: linear-gradient(transparent,transparent), url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%3E%3Ctitle%3Euser%20avatar%3C%2Ftitle%3E%3Cpath%20d%3D%22M10%2011c-5.92%200-8%203-8%205v3h16v-3c0-2-2.08-5-8-5%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%225.5%22%20r%3D%224.5%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
 #settings-link::before {
     content: ' ';
     font-size: 0.85em;

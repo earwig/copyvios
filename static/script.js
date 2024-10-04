@@ -148,5 +148,44 @@ $(document).ready(function() {
         });
     }
 
+    if ($(".login-link").length >= 0) {
+        $(".login-link").click(function(e) {
+            e.preventDefault();
+            var $loginForm = $("<form>")
+                .attr("action", "/login")
+                .attr("method", "POST");
+
+            // Tell `/login` where to go after logging in
+            $loginForm.append(
+                $("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "next")
+                    .attr("value", window.location.pathname + window.location.search)
+            )
+
+            $("body").after($loginForm);
+            $loginForm.trigger("submit");
+            $loginForm.remove();
+            return false;
+        });
+    }
+
+    if ($(".logout-link").length >= 0) {
+        $(".logout-link").click(function(e) {
+            e.preventDefault();
+            if (!confirm("Are you sure you want to log out?")) {
+                return;
+            }
+
+            var $logoutForm = $("<form>")
+                .attr("action", "/logout")
+                .attr("method", "POST");
+            $("body").after($logoutForm);
+            $logoutForm.trigger("submit");
+            $logoutForm.remove();
+            return false;
+        });
+    }
+
     install_notice();
 });

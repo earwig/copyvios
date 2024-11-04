@@ -1,0 +1,93 @@
+{% extends "support/base.html.jinja" %}
+{% block title %}
+    Settings - {{ super() }}
+{% endblock %}
+{% block content %}
+    {% if status %}
+        <div id="info-box" class="green-box">
+            <p>{{ status | safe }}</p>
+        </div>
+    {% endif %}
+    <h2>Settings</h2>
+    <p>This page contains some configurable options for the copyvio detector. Settings are saved as cookies.</p>
+    <form action="{{ request.script_root }}/settings" method="post">
+        <h3>Default site</h2>
+        <div class="oo-ui-layout oo-ui-labelElement oo-ui-fieldLayout oo-ui-fieldLayout-align-top">
+            <div class="oo-ui-fieldLayout-body">
+                <div class="oo-ui-fieldLayout-field">
+                    <div class="oo-ui-widget oo-ui-widget-enabled">
+                        <div class="oo-ui-layout oo-ui-horizontalLayout">
+                            <div class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-dropdownInputWidget oo-ui-dropdownInputWidget-php">
+                                <select name="lang" required="" class="oo-ui-inputWidget-input oo-ui-indicator-down">
+                                    {% set selected_lang = cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in cookies else default_site.lang %}
+                                    {% for lang in cache.langs %}
+                                        {% if lang.code == selected_lang %}
+                                            <option value="{{ lang.code | e }}" selected="selected">{{ lang.name | e }}</option>
+                                        {% else %}
+                                            <option value="{{ lang.code | e }}">{{ lang.name | e }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-dropdownInputWidget oo-ui-dropdownInputWidget-php">
+                                <select name="project" required="" class="oo-ui-inputWidget-input oo-ui-indicator-down">
+                                    {% set selected_project = cookies["CopyviosDefaultProject"].value if "CopyviosDefaultProject" in cookies else default_site.project %}
+                                    {% for project in cache.projects %}
+                                        {% if project.code == selected_project %}
+                                            <option value="{{ project.code | e }}" selected="selected">{{ project.name | e }}</option>
+                                        {% else %}
+                                            <option value="{{ project.code | e }}">{{ project.name | e }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3>Background</h2>
+        {% set background_options = [
+                ("list", 'Randomly select from <a href="https://commons.wikimedia.org/wiki/User:The_Earwig/POTD">a subset</a> of previous <a href="https://commons.wikimedia.org/">Wikimedia Commons</a> <a href="https://commons.wikimedia.org/wiki/Commons:Picture_of_the_day">Pictures of the Day</a> that work well as widescreen backgrounds, refreshed daily (default).'),
+                ("potd", 'Use the current Commons Picture of the Day, unfiltered. Certain POTDs may be unsuitable as backgrounds due to their aspect ratio or subject matter.'),
+                ("plain", "Use a plain background."),
+            ]
+        %}
+        <div class="oo-ui-layout oo-ui-labelElement oo-ui-fieldLayout oo-ui-fieldLayout-align-top">
+            <div class="oo-ui-fieldLayout-body">
+                <div class="oo-ui-fieldLayout-field">
+                    <div class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-radioSelectInputWidget">
+                        {% for value, desc in background_options %}
+                            <div class="oo-ui-layout oo-ui-labelElement oo-ui-fieldLayout oo-ui-fieldLayout-align-inline">
+                                <div class="oo-ui-fieldLayout-body">
+                                    <span class="oo-ui-fieldLayout-field">
+                                        <span class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-radioInputWidget">
+                                            <input id="background-{{ value | e }}" class="oo-ui-inputWidget-input" type="radio" name="background" value="{{ value | e }}" {{ 'checked="checked"' if value == selected else '' | safe }}><span></span>
+                                        </span>
+                                    </span>
+                                    <span class="oo-ui-fieldLayout-header">
+                                        <label for="background-{{ value | e }}" class="oo-ui-labelElement-label">{{ desc | safe }}</label>
+                                    </span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="action" value="set"/>
+        <div class="oo-ui-layout oo-ui-fieldLayout oo-ui-fieldLayout-align-left">
+            <div class="oo-ui-fieldLayout-body">
+                <span class="oo-ui-fieldLayout-field">
+                    <span class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive oo-ui-labelElement oo-ui-buttonInputWidget">
+                        <button type="submit" class="oo-ui-inputWidget-input oo-ui-buttonElement-button">
+                            <span class="oo-ui-labelElement-label">Save</span>
+                        </button>
+                    </span>
+                </span>
+            </div>
+        </div>
+    </form>
+{% endblock %}

@@ -13,7 +13,6 @@ from typing import Self
 
 from earwigbot import exceptions
 from earwigbot.wiki import Site
-from flask import g
 
 from .cache import cache
 from .cookies import get_cookies
@@ -79,16 +78,20 @@ def _get_fresh_from_potd() -> BackgroundInfo | None:
     site = _get_commons_site()
     date = datetime.now(UTC).strftime("%Y-%m-%d")
     page = site.get_page(f"Template:Potd/{date}")
-    regex = r"\{\{Potd filename\|(?:1=)?(.*?)\|.*?\}\}"
+    filename = None
     try:
-        match = re.search(regex, page.get())
+        code = page.parse()
+        for tmpl in code.ifilter_templates(
+            matches=lambda tmpl: tmpl.name.matches("Potd filename")
+        ):
+            filename = tmpl.get(1).value.strip_code().strip()
+            break
     except exceptions.EarwigBotError:
         logger.exception(f"Failed to load today's POTD from {page.title!r}")
         return None
-    if not match:
+    if not filename:
         logger.exception(f"Failed to extract POTD from {page.title!r}")
         return None
-    filename = match.group(1)
     return _load_file(site, filename)
 
 
@@ -144,7 +147,10 @@ def _get_background(selected: str) -> BackgroundInfo | None:
     return _BACKGROUND_CACHE[selected]
 
 
-def get_background(selected: str) -> str:
+def get_background(selected: str) -> tuple[str | None, str | None]:
+    if selected == "plain":
+        return None, None
+
     cookies = get_cookies()
     if "CopyviosScreenCache" in cookies:
         cookie = cookies["CopyviosScreenCache"].value
@@ -155,8 +161,6 @@ def get_background(selected: str) -> str:
     background = _get_background(selected)
     if background:
         bg_url = _build_url(screen, background)
-        g.descurl = background.descurl
+        return bg_url, background.descurl
     else:
-        bg_url = ""
-        g.descurl = None
-    return bg_url
+        return None, None

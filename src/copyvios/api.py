@@ -62,8 +62,8 @@ def _serialize_detail(result: CopyvioCheckResult) -> dict[str, Any] | None:
     if not result.best:
         return None
     source_chain, delta = result.best.chains
-    article = highlight_delta(None, result.article_chain, delta)
-    source = highlight_delta(None, source_chain, delta)
+    article = highlight_delta(result.article_chain, delta)
+    source = highlight_delta(source_chain, delta)
     return {"article": article, "source": source}
 
 
@@ -136,7 +136,11 @@ def _hook_check(query: APIQuery) -> dict[str, Any]:
 
 def _hook_sites(query: APIQuery) -> dict[str, Any]:
     update_sites()
-    return {"status": "ok", "langs": cache.langs, "projects": cache.projects}
+    return {
+        "status": "ok",
+        "langs": [[lang.code, lang.name] for lang in cache.langs],
+        "projects": [[project.code, project.name] for project in cache.projects],
+    }
 
 
 _HOOKS = {

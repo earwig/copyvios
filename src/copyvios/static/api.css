@@ -11,15 +11,6 @@ pre {
     max-width: 1200px;
 }
 
-.json {
-    font-family: monospace;
-}
-
-.indent {
-    display: inline-block;
-    padding-left: 2em;
-}
-
 .code {
     font-family: monospace;
 }

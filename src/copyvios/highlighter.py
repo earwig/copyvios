@@ -13,9 +13,7 @@ from earwigbot.wiki.copyvios.markov import (
 )
 
 
-def highlight_delta(
-    context, chain: MarkovChain, delta: MarkovChainIntersection | None
-) -> str:
+def highlight_delta(chain: MarkovChain, delta: MarkovChainIntersection | None) -> str:
     degree = chain.degree - 1
     highlights = [False] * degree
     block: deque[str | Sentinel] = deque([Sentinel.START] * degree)

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>API - Earwig's Copyvio Detector</title>
+        <link rel="stylesheet" href="{{ request.script_root }}{{ url_for('static', file='api.min.css') }}" type="text/css" />
+    </head>
+    <body>
+        <div id="result">
+            <p>You are using <span class="code">jsonfm</span> output mode, which renders JSON data as a formatted HTML document. This is intended for testing and debugging only.</p>
+            <pre>{{ dump_json(result, indent=4) | e }}</pre>
+        </div>
+    </body>
+</html>

@@ -3,54 +3,63 @@
 import functools
 import hashlib
 import json
-import logging
 import os
 import time
 import traceback
-from collections.abc import Callable
-from logging.handlers import TimedRotatingFileHandler
-from typing import Any, ParamSpec
+from typing import Any
 
 from earwigbot.wiki.copyvios import globalize
-from flask import Flask, Response, make_response, request
-from flask_mako import MakoTemplates, TemplateError, render_template
+from flask import Response, make_response, render_template, request
 
+from copyvios import app
 from copyvios.api import format_api_error, handle_api_request
+from copyvios.attribution import get_attribution_info
+from copyvios.background import get_background
 from copyvios.cache import cache
-from copyvios.checker import CopyvioCheckError, do_check
-from copyvios.cookies import get_new_cookies
-from copyvios.misc import get_notice
+from copyvios.checker import (
+    T_POSSIBLE,
+    T_SUSPECT,
+    CopyvioCheckError,
+    ErrorCode,
+    do_check,
+)
+from copyvios.cookies import get_cookies, get_new_cookies
+from copyvios.highlighter import highlight_delta
+from copyvios.misc import get_notice, get_permalink
 from copyvios.query import CheckQuery
 from copyvios.settings import process_settings
 from copyvios.sites import update_sites
 
-app = Flask(__name__)
-MakoTemplates(app)
+AnyResponse = Response | str | bytes
 
-hand = TimedRotatingFileHandler("logs/app.log", when="midnight", backupCount=7)
-hand.setLevel(logging.DEBUG)
-app.logger.addHandler(hand)
 app.logger.info(f"Flask server started {time.asctime()}")
 
 globalize(num_workers=8)
 
-AnyResponse = Response | str | bytes
-P = ParamSpec("P")
+
+@app.errorhandler(Exception)
+def handle_errors(exc: Exception) -> AnyResponse:
+    if app.debug:
+        raise  # Use built-in debugger
+    app.logger.exception("Caught exception:")
+    return render_template("error.html.jinja", traceback=traceback.format_exc())
 
 
-def catch_errors(func: Callable[P, AnyResponse]) -> Callable[P, AnyResponse]:
-    @functools.wraps(func)
-    def inner(*args: P.args, **kwargs: P.kwargs) -> AnyResponse:
-        try:
-            return func(*args, **kwargs)
-        except TemplateError as exc:
-            app.logger.error(f"Caught exception:\n{exc.text}")
-            return render_template("error.mako", traceback=exc.text)
-        except Exception:
-            app.logger.exception("Caught exception:")
-            return render_template("error.mako", traceback=traceback.format_exc())
-
-    return inner
+@app.context_processor
+def setup_context() -> dict[str, Any]:
+    return {
+        "T_POSSIBLE": T_POSSIBLE,
+        "T_SUSPECT": T_SUSPECT,
+        "ErrorCode": ErrorCode,
+        "cache": cache,
+        "dump_json": json.dumps,
+        "get_attribution_info": get_attribution_info,
+        "get_background": get_background,
+        "get_cookies": get_cookies,
+        "get_notice": get_notice,
+        "get_permalink": get_permalink,
+        "highlight_delta": highlight_delta,
+    }
 
 
 @app.after_request
@@ -92,51 +101,47 @@ app.url_build_error_handlers.append(external_url_handler)
 
 
 @app.route("/")
-@catch_errors
 def index() -> AnyResponse:
-    notice = get_notice()
     update_sites()
     query = CheckQuery.from_get_args()
     try:
         result = do_check(query)
         error = None
     except CopyvioCheckError as exc:
+        app.logger.exception(f"Copyvio check failed on {query}")
         result = None
         error = exc
+
     return render_template(
-        "index.mako",
-        notice=notice,
+        "index.html.jinja",
         query=query,
         result=result,
         error=error,
+        splash=not result,
     )
 
 
 @app.route("/settings", methods=["GET", "POST"])
-@catch_errors
 def settings() -> AnyResponse:
     status = process_settings() if request.method == "POST" else None
     update_sites()
-    default = cache.bot.wiki.get_site()
-    kwargs = {
-        "status": status,
-        "default_lang": default.lang,
-        "default_project": default.project,
-    }
-    return render_template("settings.mako", **kwargs)
+    return render_template(
+        "settings.html.jinja",
+        status=status,
+        default_site=cache.bot.wiki.get_site(),
+        splash=True,
+    )
 
 
 @app.route("/api")
-@catch_errors
 def api() -> AnyResponse:
-    return render_template("api.mako", help=True)
+    return render_template("api_help.html.jinja")
 
 
 @app.route("/api.json")
-@catch_errors
 def api_json() -> AnyResponse:
     if not request.args:
-        return render_template("api.mako", help=True)
+        return render_template("api_help.html.jinja")
 
     format = request.args.get("format", "json")
     if format in ["json", "jsonfm"]:
@@ -144,17 +149,25 @@ def api_json() -> AnyResponse:
         try:
             result = handle_api_request()
         except Exception as exc:
+            app.logger.exception("API request failed")
             result = format_api_error("unhandled_exception", exc)
     else:
         errmsg = f"Unknown format: {format!r}"
         result = format_api_error("unknown_format", errmsg)
 
     if format == "jsonfm":
-        return render_template("api.mako", help=False, result=result)
+        return render_template("api_result.html.jinja", result=result)
     resp = make_response(json.dumps(result))
     resp.mimetype = "application/json"
     resp.headers["Access-Control-Allow-Origin"] = "*"
     return resp
+
+
+if app.debug:
+    # Silence browser 404s when testing
+    @app.route("/favicon.ico")
+    def favicon() -> AnyResponse:
+        return app.send_static_file("favicon.ico")
 
 
 if __name__ == "__main__":

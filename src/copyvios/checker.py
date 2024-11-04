@@ -101,8 +101,7 @@ def _get_results(
             result = _perform_check(query, page, conn)
         finally:
             conn.close()
-        if turnitin_result:
-            result.metadata.turnitin_result = turnitin_result
+        result.metadata.turnitin_result = turnitin_result
 
     elif query.action == "compare":
         if not query.url:
@@ -229,7 +228,7 @@ def _get_cached_results(
     )
     data = cursor.fetchall()
 
-    if not data:  # TODO: do something less hacky for this edge case
+    if not data:  # TODO: Do something less hacky for this edge case
         article_chain = CopyvioChecker(page).article_chain
         result = CopyvioCheckResult(
             False, [], queries, check_time, article_chain, possible_miss

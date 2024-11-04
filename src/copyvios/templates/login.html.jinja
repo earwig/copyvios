@@ -1,0 +1,37 @@
+{% extends "support/base.html.jinja" %}
+{% block title %}
+    Login - {{ super() }}
+{% endblock %}
+{% block content %}
+    {% if error %}
+        <div id="info-box" class="red-box">
+            <p>Error trying to log in: {{ error | safe }}</p>
+        </div>
+    {% endif %}
+    <h2>Login</h2>
+    <p>You are required to log in with your Wikimedia account to perform checks with the search engine.</p>
+    {% if request.args.get("next") %}
+        <p>
+            After logging in,
+            {% if is_search %}
+                your check will be run.
+            {% else %}
+                you will be redirected to: {{ request.args["next"] | safe }}
+            {% endif %}
+        </p>
+    {% endif %}
+    <form action="{{ request.script_root }}/login" method="post">
+        <input type="hidden" name="next" value="{{ request.args.get('next', '/') | safe }}" />
+        <div class="oo-ui-layout oo-ui-fieldLayout oo-ui-fieldLayout-align-left">
+            <div class="oo-ui-fieldLayout-body">
+                <span class="oo-ui-fieldLayout-field">
+                    <span class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive oo-ui-labelElement oo-ui-buttonInputWidget">
+                        <button type="submit" class="oo-ui-inputWidget-input oo-ui-buttonElement-button">
+                            <span class="oo-ui-labelElement-label">Login</span>
+                        </button>
+                    </span>
+                </span>
+            </div>
+        </div>
+    </form>
+{% endblock %}

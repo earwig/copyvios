@@ -32,10 +32,14 @@ Installation
   In `.earwigbot/config.yml`, fill out the connection info for the database by
   adding the following to the `wiki` section:
 
-        copyvios:
-            engine: mysql
-            host: <hostname of database server>
-            db: <name of database>
+      copyvios:
+        oauth:
+          consumer_token: <oauth consumer token>
+          consumer_secret: <oauth consumer secret>
+        sql:
+          engine: mysql
+          host: <hostname of database server>
+          db: <name of database>
 
 Running
 =======

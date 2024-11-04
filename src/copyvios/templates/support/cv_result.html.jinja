@@ -1,0 +1,147 @@
+<div id="generation-time">
+    Results
+    {% if result.metadata.cached %}
+        <a id="cv-cached" href="#">cached<span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URLs of the checked sources, but neither their content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span></a> from <abbr title="{{ result.metadata.cache_time }}">{{ result.metadata.cache_age }} ago</abbr>. Originally
+    {% endif %}
+    generated in <span class="mono">{{ result.time | round(3) }}</span>
+    {% if query.action == "search" %}
+        seconds using <span class="mono">{{ result.queries }}</span> quer{{ "y" if result.queries == 1 else "ies" }}.
+    {% else %}
+        seconds.
+    {% endif %}
+    <a href="{{ get_permalink(query) | e }}">Permalink.</a>
+</div>
+
+<div id="cv-result" class="{{ 'red' if result.confidence >= T_SUSPECT else 'yellow' if result.confidence >= T_POSSIBLE else 'green' }}-box">
+    <table id="cv-result-head-table">
+        <colgroup>
+            <col>
+            <col>
+            <col>
+        </colgroup>
+        <tr>
+            <td>
+                <a href="{{ g.page.url | e }}">{{ g.page.title | e }}</a>
+                {% if query.oldid %}
+                    @<a href="https://{{ g.site.domain | e }}/w/index.php?oldid={{ query.oldid | e }}">{{ query.oldid | e }}</a>
+                {% endif %}
+                {% if query.redirected_from %}
+                    <br />
+                    <span id="redirected-from">Redirected from <a href="https://{{ g.site.domain | e }}/w/index.php?title={{ result.metadata.redirected_from.title | e }}&amp;redirect=no">{{ result.metadata.redirected_from.title | e }}</a>. <a href="{{ request.url | httpsfix | e }}&amp;noredirect=1">Check original.</a></span>
+                {% endif %}
+            </td>
+            <td>
+                <div>
+                    {% if result.confidence >= T_SUSPECT %}
+                        Violation suspected
+                    {% elif result.confidence >= T_POSSIBLE %}
+                        Violation possible
+                    {% elif result.sources %}
+                        Violation unlikely
+                    {% else %}
+                        No violation
+                    {% endif %}
+                </div>
+                <div>{{ (result.confidence * 100) | round(1) }}%</div>
+                <div>similarity</div>
+            </td>
+            <td>
+                {% if result.url %}
+                    <a href="{{ result.url | e }}">{{ result.url | urlstrip | e }}</a>
+                {% else %}
+                    <span id="result-head-no-sources">No matches found.</span>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+</div>
+
+{% set attrib = get_attribution_info(g.site, g.page) %}
+{% if attrib %}
+    <div id="attribution-warning" class="yellow-box">
+        This article contains an attribution template: <code>{{ '{{' }}<a href="{{ attrib[1] | e }}">{{ attrib[0] | e }}</a>{{ '}}' }}</code>. Please verify that any potential copyvios are not from properly attributed sources.
+    </div>
+{% endif %}
+
+{% if result.metadata.turnitin_result %}
+    <div id="turnitin-container" class="{{ 'red' if result.metadata.turnitin_result.reports else 'green' }}-box">
+        <div id="turnitin-title">Turnitin Results</div>
+        {% if result.metadata.turnitin_result.reports %}
+            <table id="turnitin-table"><tbody>
+            {% for report in turnitin_result.reports %}
+                <tr><td class="turnitin-table-cell"><a href="https://eranbot.toolforge.org/ithenticate.py?rid={{ report.reportid }}">Report {{ report.reportid }}</a> for text added at <a href="https://{{ query.lang | e }}.wikipedia.org/w/index.php?title={{ query.title | e }}&amp;diff={{ report.diffid }}"> {{ report.time_posted.strftime("%H:%M, %d %B %Y (UTC)") }}</a>:
+                <ul>
+                {% for source in report.sources %}
+                    <li>{{ source['percent'] }}% of revision text ({{ source['words'] }} words) found at <a href="{{ source['url'] | e }}">{{ source['url'] | e }}</a></li>
+                {% endfor %}
+                </ul></td></tr>
+            {% endfor %}
+            </tbody></table>
+        {% else %}
+            <div id="turnitin-summary">No matching sources found.</div>
+        {% endif %}
+    </div>
+{% endif %}
+
+{% if query.action == "search" %}
+    {% set skips = False %}
+    <div id="sources-container">
+        <div id="sources-title">Checked Sources</div>
+        {% if result.sources %}
+            <table id="cv-result-sources">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <tr>
+                    <th>URL</th>
+                    <th>Similarity</th>
+                    <th>Compare</th>
+                </tr>
+                {% for i, source in enumerate(result.sources) %}
+                    <tr {{ 'class="source-default-hidden"' if i >= 10 else 'id="source-row-selected"' if i == 0 else "" }}>
+                        <td><a {{ 'id="source-selected"' if i == 0 else "" }} class="source-url" href="{{ source.url | e }}">{{ source.url | e }}</a></td>
+                        <td>
+                            {% if source.excluded %}
+                                <span class="source-excluded">Excluded</span>
+                            {% elif source.skipped %}
+                                {% set skips = True %}
+                                <span class="source-skipped">Skipped</span>
+                            {% else %}
+                                <span class="source-similarity {{ "source-suspect" if source.confidence >= T_SUSPECT else "source-possible" if source.confidence >= T_POSSIBLE else "source-novio" }}">{{ source.confidence * 100 | round(1) }}%</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ request.script_root | e }}/?lang={{ query.lang | e }}&amp;project={{ query.project | e }}&amp;oldid={{ query.oldid or g.page.lastrevid | e }}&amp;action=compare&amp;url={{ source.url | e }}">Compare</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <div class="cv-source-footer">
+                No sources checked.
+            </div>
+        {% endif %}
+        {% if len(result.sources) > 10 %}
+            <div id="cv-additional" class="cv-source-footer">
+                {{ len(result.sources) - 10 }} URL{{ "s" if len(result.sources) > 11 else "" }} with lower similarity hidden. <a id="show-additional-sources" href="#">Show them.</a>
+            </div>
+        {% endif %}
+        {% if skips or result.possible_miss %}
+            <div class="cv-source-footer">
+                The search ended early because a match was found with high similarity. <a href="{{ request.url | httpsfix | e }}&amp;noskip=1">Do a complete check.</a>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}
+<table id="cv-chain-table">
+    <tr>
+        <td class="cv-chain-cell">Article: <div class="cv-chain-detail">
+            <p>{{ highlight_delta(result.article_chain, result.best.chains[1] if result.best else None) }}</p>
+        </div></td>
+        <td class="cv-chain-cell">Source: <div class="cv-chain-detail">
+            <p>{{ highlight_delta(result.best.chains[0], result.best.chains[1]) if result.best else "" }}</p>
+        </div></td>
+    </tr>
+</table>

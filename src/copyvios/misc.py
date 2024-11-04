@@ -10,11 +10,15 @@ __all__ = [
 import datetime
 import os
 import sqlite3
+import urllib.parse
 from typing import TypeVar
 
 import pymysql
+from flask import g, request
 
+from . import app
 from .cache import cache
+from .query import CheckQuery
 
 T = TypeVar("T")
 
@@ -50,17 +54,34 @@ def get_notice() -> str | None:
         return None
 
 
-def httpsfix(context, url: str) -> str:
-    if url.startswith("http://"):
-        url = url[len("http:") :]
-    return url
+def get_permalink(query: CheckQuery) -> str:
+    params = {
+        "lang": query.orig_lang,
+        "project": query.project,
+        "oldid": query.oldid or g.page.lastrevid,
+        "action": query.action,
+    }
+    if query.action == "search":
+        params["use_engine"] = int(query.use_engine)
+        params["use_links"] = int(query.use_links)
+    elif query.action == "compare":
+        params["url"] = query.url
+    return f"{request.script_root}/?{urllib.parse.urlencode(params)}"
 
 
 def parse_wiki_timestamp(timestamp: str) -> datetime.datetime:
     return datetime.datetime.strptime(timestamp, "%Y%m%d%H%M%S")
 
 
-def urlstrip(context, url: str) -> str:
+@app.template_filter()
+def httpsfix(url: str) -> str:
+    if url.startswith("http://"):
+        url = url[len("http:") :]
+    return url
+
+
+@app.template_filter()
+def urlstrip(url: str) -> str:
     if url.startswith("http://"):
         url = url[7:]
     if url.startswith("https://"):

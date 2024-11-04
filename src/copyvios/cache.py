@@ -38,7 +38,7 @@ def setup_connection(dbapi_connection: Any, connection_record: Any) -> None:
 
 
 def _get_engine(bot: Bot) -> sqlalchemy.Engine:
-    args = bot.config.wiki["copyvios"].copy()
+    args = bot.config.wiki.get("copyvios", {}).get("sql", {}).copy()
     engine_name = args.pop("engine", "mysql").lower()
 
     if engine_name == "mysql":

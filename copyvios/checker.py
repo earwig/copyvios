@@ -7,6 +7,7 @@ import re
 from urlparse import urlparse
 
 from earwigbot import exceptions
+from earwigbot.wiki.copyvios import workers
 from earwigbot.wiki.copyvios.markov import EMPTY, MarkovChain
 from earwigbot.wiki.copyvios.parsers import ArticleTextParser
 from earwigbot.wiki.copyvios.result import CopyvioSource, CopyvioCheckResult
@@ -19,6 +20,10 @@ __all__ = ["do_check", "T_POSSIBLE", "T_SUSPECT"]
 
 T_POSSIBLE = 0.4
 T_SUSPECT = 0.75
+
+# TODO: Disable multi-source logic when calculating unified confidence until the
+# frontend can display that info properly
+workers.INCLUDE_THRESHOLD = 1.1
 
 _LOGGER = getLogger("copyvios.checker")
 

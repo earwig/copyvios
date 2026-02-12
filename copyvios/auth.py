@@ -39,8 +39,10 @@ def oauth_login_end():
         consumer_token,
         access_token)
 
+    session.clear()
     session["access_token"] = dict(zip(access_token._fields, access_token))
     session["username"] = identity["username"]
+    session.permanent = True
 
     return session.get("next", "/")
 

@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8  -*-
+import datetime
 from functools import wraps
 from hashlib import md5
 from json import dumps
@@ -27,9 +28,13 @@ from copyvios.auth import oauth_login_start, oauth_login_end, clear_login_sessio
 app = Flask(__name__)
 MakoTemplates(app)
 
+app.config.from_pyfile("config.py", True)
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = "Lax"
+app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
+
 hand = TimedRotatingFileHandler("logs/app.log", when="midnight", backupCount=7)
 hand.setLevel(DEBUG)
-app.config.from_pyfile("config.py", True)
 app.logger.addHandler(hand)
 app.logger.info(u"Flask server started " + asctime())
 app._hash_cache = {}

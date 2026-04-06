@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 from json import loads
+import bisect
 import random
 import re
 import urllib
@@ -50,6 +51,9 @@ def _build_url(screen, filename, url, imgwidth, imgheight):
     width = screen["width"]
     if float(imgwidth) / imgheight > float(screen["width"]) / screen["height"]:
         width = int(float(imgwidth) / imgheight * screen["height"])
+    thumb_sizes = [20, 40, 60, 120, 250, 330, 500, 960, 1280, 1920, 3840]
+    i = bisect.bisect_right(thumb_sizes, width)
+    width = thumb_sizes[i] if i < len(thumb_sizes) else imgwidth
     if width >= imgwidth:
         return url
     url = url.replace("/commons/", "/commons/thumb/")

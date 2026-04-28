@@ -1,24 +1,26 @@
 MAKEJS  := uglifyjs --compress
 MAKECSS := postcss -u cssnano --no-map
 
+STATIC_DIR := src/copyvios/static
+
 .PHONY: all js css
 
-.INTERMEDIATE: static/style.tmp.css
+.INTERMEDIATE: $(STATIC_DIR)/style.tmp.css
 
 all: js css
 
-js: static/script.min.js
+js: $(STATIC_DIR)/script.min.js
 
-css: static/style.min.css static/api.min.css
+css: $(STATIC_DIR)/style.min.css $(STATIC_DIR)/api.min.css
 
-static/script.min.js: static/script.js
+$(STATIC_DIR)/script.min.js: $(STATIC_DIR)/script.js
 	$(MAKEJS) -o $@ -- $^
 
-static/style.tmp.css: static/css/*.css
+$(STATIC_DIR)/style.tmp.css: $(STATIC_DIR)/css/*.css
 	cat $^ > $@
 
-static/style.min.css: static/style.tmp.css
+$(STATIC_DIR)/style.min.css: $(STATIC_DIR)/style.tmp.css
 	$(MAKECSS) -o $@ $^
 
-static/api.min.css: static/api.css
+$(STATIC_DIR)/api.min.css: $(STATIC_DIR)/api.css
 	$(MAKECSS) -o $@ $^

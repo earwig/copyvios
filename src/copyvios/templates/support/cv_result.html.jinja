@@ -99,9 +99,9 @@
                     <th>Similarity</th>
                     <th>Compare</th>
                 </tr>
-                {% for i, source in enumerate(result.sources) %}
-                    <tr {{ 'class="source-default-hidden"' if i >= 10 else 'id="source-row-selected"' if i == 0 else "" }}>
-                        <td><a {{ 'id="source-selected"' if i == 0 else "" }} class="source-url" href="{{ source.url | e }}">{{ source.url | e }}</a></td>
+                {% for source in result.sources %}
+                    <tr {{ 'class="source-default-hidden"' if loop.index0 >= 10 else 'id="source-row-selected"' if loop.index0 == 0 else "" }}>
+                        <td><a {{ 'id="source-selected"' if loop.index0 == 0 else "" }} class="source-url" href="{{ source.url | e }}">{{ source.url | e }}</a></td>
                         <td>
                             {% if source.excluded %}
                                 <span class="source-excluded">Excluded</span>

@@ -11,7 +11,6 @@ import datetime
 import os
 import sqlite3
 import urllib.parse
-from typing import TypeVar
 
 import pymysql
 from flask import g, request
@@ -19,8 +18,6 @@ from flask import g, request
 from . import app
 from .cache import cache
 from .query import CheckQuery
-
-T = TypeVar("T")
 
 
 def get_sql_error() -> type[Exception]:
@@ -33,7 +30,7 @@ def get_sql_error() -> type[Exception]:
             raise ValueError(f"Unknown engine: {dialect}")
 
 
-def sql_dialect(mysql: T, sqlite: T) -> T:
+def sql_dialect[T](mysql: T, sqlite: T) -> T:
     match cache.engine.dialect.name:
         case "mysql":
             return mysql

@@ -109,7 +109,7 @@
                                 {% set skips = True %}
                                 <span class="source-skipped">Skipped</span>
                             {% else %}
-                                <span class="source-similarity {{ "source-suspect" if source.confidence >= T_SUSPECT else "source-possible" if source.confidence >= T_POSSIBLE else "source-novio" }}">{{ source.confidence * 100 | round(1) }}%</span>
+                                <span class="source-similarity {{ "source-suspect" if source.confidence >= T_SUSPECT else "source-possible" if source.confidence >= T_POSSIBLE else "source-novio" }}">{{ (source.confidence * 100) | round(1) }}%</span>
                             {% endif %}
                         </td>
                         <td>

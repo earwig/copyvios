@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-import datetime
 import functools
 import hashlib
 import json
@@ -35,11 +34,6 @@ from copyvios.settings import process_settings
 from copyvios.sites import update_sites
 
 AnyResponse = Response | str | bytes
-
-app.config.from_pyfile("config.py", True)
-app.config["SESSION_COOKIE_SECURE"] = True
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-app.config["PERMANENT_SESSION_LIFETIME"] = datetime.timedelta(days=365)
 
 app.logger.info(f"Flask server started {time.asctime()}")
 

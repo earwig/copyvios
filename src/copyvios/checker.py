@@ -107,6 +107,7 @@ def _get_results(
         finally:
             conn.close()
         result.metadata.turnitin_result = turnitin_result
+        return result
 
     elif query.action == "compare":
         if not query.url:

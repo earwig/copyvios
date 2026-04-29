@@ -63,7 +63,7 @@ def _get_engine(bot: Bot) -> sqlalchemy.Engine:
 def _make_cache() -> AppCache:
     bot = Bot(".earwigbot", 100)
 
-    oauth_config = cache.bot.config.wiki.get("copyvios", {}).get("oauth", {})
+    oauth_config = bot.config.wiki.get("copyvios", {}).get("oauth", {})
     if oauth_config.get("consumer_token") is None:
         raise ValueError(
             "No OAuth consumer token is configured (config.wiki.copyvios.oauth.consumer_token)"

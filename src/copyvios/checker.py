@@ -203,15 +203,20 @@ def _get_cache_id(page: Page, mode: str) -> bytes:
     return hashlib.sha256((mode + page.get()).encode("utf8")).digest()
 
 
+def _sql_param() -> str:
+    # This is terrible!
+    return sql_dialect(mysql="%s", sqlite="?")
+
+
 def _get_cached_results(
     page: Page, conn: PoolProxiedConnection, mode: str, noskip: bool
 ) -> CopyvioCheckResult | None:
     cache_id = _get_cache_id(page, mode)
     cursor = conn.cursor()
     cursor.execute(
-        """SELECT cache_time, cache_queries, cache_process_time, cache_possible_miss
+        f"""SELECT cache_time, cache_queries, cache_process_time, cache_possible_miss
         FROM cache
-        WHERE cache_id = ?""",
+        WHERE cache_id = {_sql_param()}""",
         (cache_id,),
     )
     results = cursor.fetchall()
@@ -230,9 +235,9 @@ def _get_cached_results(
         return None
 
     cursor.execute(
-        """SELECT cdata_url, cdata_confidence, cdata_skipped, cdata_excluded
+        f"""SELECT cdata_url, cdata_confidence, cdata_skipped, cdata_excluded
         FROM cache_data
-        WHERE cdata_cache_id = ?""",
+        WHERE cdata_cache_id = {_sql_param()}""",
         (cache_id,),
     )
     data = cursor.fetchall()
@@ -307,19 +312,19 @@ def _cache_result(
     # TODO: Switch to proper SQLAlchemy
     cur = conn.cursor()
     try:
-        cur.execute("DELETE FROM cache WHERE cache_id = ?", (cache_id,))
+        cur.execute(f"DELETE FROM cache WHERE cache_id = {_sql_param()}", (cache_id,))
         cur.execute(f"DELETE FROM cache WHERE cache_time < {expiry}")
         cur.execute(
-            """INSERT INTO cache (
+            f"""INSERT INTO cache (
                 cache_id, cache_queries, cache_process_time, cache_possible_miss
-            ) VALUES (?, ?, ?, ?)""",
+            ) VALUES ({_sql_param()}, {_sql_param()}, {_sql_param()}, {_sql_param()})""",
             (cache_id, result.queries, result.time, result.possible_miss),
         )
         cur.executemany(
-            """INSERT INTO cache_data (
+            f"""INSERT INTO cache_data (
                 cdata_cache_id, cdata_url, cdata_confidence, cdata_skipped,
                 cdata_excluded
-            ) VALUES (?, ?, ?, ?, ?)""",
+            ) VALUES ({_sql_param()}, {_sql_param()}, {_sql_param()}, {_sql_param()}, {_sql_param()})""",
             data,
         )
     except Exception:

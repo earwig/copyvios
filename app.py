@@ -12,6 +12,7 @@ from typing import Any
 from earwigbot.wiki.copyvios import globalize
 from flask import make_response, redirect, render_template, request, session
 from werkzeug import Response
+from werkzeug.exceptions import HTTPException
 
 from copyvios import app
 from copyvios.api import format_api_error, handle_api_request
@@ -46,11 +47,14 @@ globalize(num_workers=8)
 
 
 @app.errorhandler(Exception)
-def handle_errors(exc: Exception) -> AnyResponse:
+def handle_errors(exc: Exception) -> AnyResponse | HTTPException:
+    if isinstance(exc, HTTPException):
+        return exc
     if app.debug:
         raise  # Use built-in debugger
     app.logger.exception("Caught exception:")
-    return render_template("error.html.jinja", traceback=traceback.format_exc())
+    error_page = render_template("error.html.jinja", traceback=traceback.format_exc())
+    return make_response(error_page, 500)
 
 
 @app.context_processor

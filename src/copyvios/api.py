@@ -129,7 +129,7 @@ def _hook_check(query: APIQuery) -> dict[str, Any]:
     }
     if result.metadata.cached:
         data["meta"]["cache_time"] = result.metadata.cache_time
-    if result.metadata.redirected_from:
+    if hasattr(result.metadata, "redirected_from") and result.metadata.redirected_from:
         data["original_page"] = _serialize_page(result.metadata.redirected_from)
     data["best"] = _serialize_source(result.best, show_skip=False)
     data["sources"] = [_serialize_source(source) for source in result.sources]

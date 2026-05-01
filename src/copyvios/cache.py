@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import sqlalchemy
+import sqlalchemy.event
 from earwigbot.bot import Bot
 
 

@@ -229,7 +229,11 @@ def _get_cached_results(
         return None
 
     if not isinstance(cache_time, datetime):
-        cache_time = datetime.fromtimestamp(cache_time, tz=UTC)
+        if isinstance(cache_time, (int, float)):
+            cache_time = datetime.fromtimestamp(cache_time, tz=UTC)
+        else:
+            # Y-M-D H:M:S
+            cache_time = datetime.strptime(cache_time, "%Y-%m-%d %H:%M:%S").replace(tzinfo=UTC)
     elif cache_time.tzinfo is None:
         cache_time = cache_time.replace(tzinfo=UTC)
     if datetime.now(UTC) - cache_time > timedelta(days=3):

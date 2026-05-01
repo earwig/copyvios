@@ -47,12 +47,13 @@ def oauth_login_end():
         "https://meta.wikimedia.org/w/index.php", consumer_token, access_token
     )
 
+    next_url = session.get("next", "/")
     session.clear()
     session["access_token"] = dict(zip(access_token._fields, access_token))
     session["username"] = identity["username"]
     session.permanent = True
 
-    return session.get("next", "/")
+    return next_url
 
 
 def clear_login_session():

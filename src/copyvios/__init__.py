@@ -3,7 +3,7 @@ import logging
 import os
 from logging.handlers import TimedRotatingFileHandler
 
-from flask import Flask, request
+from flask import Flask, Response, request
 
 
 class CopyviosFlask(Flask):
@@ -11,6 +11,11 @@ class CopyviosFlask(Flask):
         if request.args.get("v"):
             return 365 * 24 * 60 * 60
         return super().get_send_file_max_age(filename)
+
+    def send_static_file(self, filename: str) -> Response:
+        response = super().send_static_file(filename)
+        response.headers.pop("Set-Cookie", None)
+        return response
 
 
 app = CopyviosFlask(

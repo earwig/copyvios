@@ -3,19 +3,24 @@ import logging
 import os
 from logging.handlers import TimedRotatingFileHandler
 
-from flask import Flask, Response, request
+from flask import Flask, request
+from flask.sessions import SecureCookieSessionInterface, SessionMixin
+
+
+class CopyviosSessionInterface(SecureCookieSessionInterface):
+    def should_set_cookie(self, app: Flask, session: SessionMixin) -> bool:
+        if request.endpoint == "static" and request.args.get("v"):
+            return False
+        return super().should_set_cookie(app, session)
 
 
 class CopyviosFlask(Flask):
+    session_interface = CopyviosSessionInterface()
+
     def get_send_file_max_age(self, filename: str | None) -> int | None:
         if request.args.get("v"):
             return 365 * 24 * 60 * 60
         return super().get_send_file_max_age(filename)
-
-    def send_static_file(self, filename: str) -> Response:
-        response = super().send_static_file(filename)
-        response.headers.pop("Set-Cookie", None)
-        return response
 
 
 app = CopyviosFlask(

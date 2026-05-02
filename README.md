@@ -16,10 +16,10 @@ Installation
 
 - Create a virtual environment and install the dependencies. On Toolforge,
   this should be in `~/www/python/venv`, otherwise it can be in a subdirectory
-  of the git project named `venv`:
+  of the git project named `.venv`:
 
-      python3 -m venv venv
-      . venv/bin/activate
+      python3 -m venv .venv
+      . .venv/bin/activate
       pip install -e .
 
 - If you intend to modify CSS or JS, install the frontend dependencies:

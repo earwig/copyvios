@@ -3,7 +3,7 @@
 *.egg-info
 .DS_Store
 __pycache__
-venv
+.venv
 .earwigbot
 logs/*
 !logs/.gitinclude

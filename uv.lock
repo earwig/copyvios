@@ -147,7 +147,7 @@ requires-dist = [
 
 [[package]]
 name = "earwigbot"
-version = "0.4"
+version = "0.4.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "mwparserfromhell" },
@@ -155,9 +155,9 @@ dependencies = [
     { name = "requests" },
     { name = "requests-oauthlib" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ef/1a/5758c3b68c022d52afd2669ab5109d7c5c6e0e27622b4857bc1ad49bd38f/earwigbot-0.4.tar.gz", hash = "sha256:a7fff9066ef80a7199063e2bd3693c3ae688dc3f48e13eac0fe4c8d183ace456", size = 122834, upload-time = "2024-08-29T03:49:09.178Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ed/fa/d1338821f86dccaeb2d600fb1401397b1c488e9a1490f06029c131a31882/earwigbot-0.4.1.tar.gz", hash = "sha256:6436c878c84e3f580510499e0a37638f62e34e351372bc93d10f1ed44b44d46a", size = 123249, upload-time = "2026-05-02T01:54:11.057Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3f/09/a76fe9aaa16e97eca0958c6a1db4644d142f3ab84adb50ffa2877496b9a4/earwigbot-0.4-py3-none-any.whl", hash = "sha256:cca2a851a16dc0df966ad4da3a68d4fc4fdae07630bb87ab6bfb13c9a8748d5d", size = 174260, upload-time = "2024-08-29T03:49:07.951Z" },
+    { url = "https://files.pythonhosted.org/packages/54/1b/d3a76d41e30b5eeb84e1f423299cd8273ecad6cc87f7e1d6f2446544ab0a/earwigbot-0.4.1-py3-none-any.whl", hash = "sha256:8e588270ccd05384dd756adc284ed439e3bb08b3a647c29fff3f0ac6151add8f", size = 174659, upload-time = "2026-05-02T01:54:09.608Z" },
 ]
 
 [package.optional-dependencies]

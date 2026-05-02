@@ -3,9 +3,17 @@ import logging
 import os
 from logging.handlers import TimedRotatingFileHandler
 
-from flask import Flask
+from flask import Flask, request
 
-app = Flask(
+
+class CopyviosFlask(Flask):
+    def get_send_file_max_age(self, filename: str | None) -> int | None:
+        if request.args.get("v"):
+            return 365 * 24 * 60 * 60
+        return super().get_send_file_max_age(filename)
+
+
+app = CopyviosFlask(
     "copyvios",
     instance_path=os.getcwd(),
     instance_relative_config=True,

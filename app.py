@@ -86,7 +86,7 @@ def write_access_log(response: Response) -> Response:
 
 @functools.lru_cache
 def _get_hash(path: str, mtime: float) -> str:
-    # mtime is used as part of the cache key
+    del mtime  # mtime is used as part of the cache key
     with open(path, "rb") as fp:
         return hashlib.sha1(fp.read()).hexdigest()
 

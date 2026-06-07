@@ -21,7 +21,6 @@ from .cache import cache
 from .misc import get_sql_error, sql_dialect
 from .query import APIQuery, CheckQuery
 from .sites import get_site
-from .turnitin import search_turnitin
 
 T_POSSIBLE = 0.4
 T_SUSPECT = 0.75
@@ -91,14 +90,15 @@ def _get_results(
         query.action = "compare" if query.url else "search"
 
     if query.action == "search":
-        if not query.use_engine and not query.use_links and not query.turnitin:
+        if not query.use_engine and not query.use_links:
             raise CopyvioCheckError(ErrorCode.NO_SEARCH_METHOD)
 
         # Handle the Turnitin check
         turnitin_result = None
-        if query.turnitin:
-            assert query.lang
-            turnitin_result = search_turnitin(page.title, query.lang)
+        # 2026-06-07: Disabled, API doesn't work
+        # if query.turnitin:
+        #     assert query.lang
+        #     turnitin_result = search_turnitin(page.title, query.lang)
 
         # Handle the copyvio check
         conn = cache.engine.raw_connection()

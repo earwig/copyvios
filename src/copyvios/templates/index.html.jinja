@@ -13,7 +13,7 @@
                 {% if error.code == ErrorCode.BAD_ACTION %}
                     Unknown action: <b><span class="mono">{{ query.action | e }}</span></b>.
                 {% elif error.code == ErrorCode.NO_SEARCH_METHOD %}
-                    No copyvio search methods were selected. A check can only be made using the search engine, links present in the page, Turnitin, or some combination of these.
+                    No copyvio search methods were selected. A check can only be made using the search engine, links present in the page, or some combination of these.
                 {% elif error.code == ErrorCode.BAD_OLDID %}
                     The revision ID <code>{{ query.oldid | e }}</code> is invalid. It should be an integer.
                 {% elif error.code == ErrorCode.NO_URL %}

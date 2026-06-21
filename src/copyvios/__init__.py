@@ -36,7 +36,7 @@ app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["PERMANENT_SESSION_LIFETIME"] = datetime.timedelta(days=365)
 
 set_user_agent(
-    "Copyvios/1.0 (https://github.com/earwig/copyvios; tools.copyvios@toolforge.org)"
+    "Copyvios/1.0 (https://github.com/earwig/copyvios; wikipedia.earwig@gmail.com)"
 )
 i18n = ToolforgeI18n(app)
 

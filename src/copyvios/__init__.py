@@ -3,8 +3,9 @@ import logging
 import os
 from logging.handlers import TimedRotatingFileHandler
 
-from flask import Flask, request
+from flask import Flask, g, request
 from flask.sessions import SecureCookieSessionInterface, SessionMixin
+from toolforge_i18n import ToolforgeI18n, set_user_agent
 
 
 class CopyviosSessionInterface(SecureCookieSessionInterface):
@@ -33,6 +34,9 @@ app.config.from_pyfile("config.py")
 app.config["SESSION_COOKIE_SECURE"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["PERMANENT_SESSION_LIFETIME"] = datetime.timedelta(days=365)
+
+set_user_agent("Copyvios/1.0 (https://github.com/earwig/copyvios; tools.copyvios@toolforge.org)")
+i18n = ToolforgeI18n(app)
 
 app.jinja_options["trim_blocks"] = True
 app.jinja_options["lstrip_blocks"] = True

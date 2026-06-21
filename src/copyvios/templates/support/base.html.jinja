@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html {{ push_html_lang(g.interface_language_code) }}>
 <head>
     <meta charset="utf-8">
-    <title>{% block title %}Earwig's Copyvio Detector{% endblock %}</title>
+    <title>{% block title %}{{ message('site-title') | striptags }}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/oojs-ui/0.41.3/oojs-ui-core-wikimediaui.min.css" integrity="sha512-xL+tTXAo7a4IAwNrNqBcOGWSqJF6ip0jg4SEda2mapAUxPzfOZQ7inazR4TvSCblHQjwtTOkUDIFtnpaSrg3xg==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/oojs-ui/0.41.3/oojs-ui-images-wikimediaui.min.css" integrity="sha512-A0LSCuOGH1+SyLhOs4eSKGbNgIEGXgIGh4ytb0GRj9GSUsjmmK6LFzB/E0o9ymRUvD+q7bZyv74XpboQt5qFvQ==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
@@ -21,14 +21,14 @@
     <div id="container"{{' class="splash"' if splash else ''}}>
         <div id="content">
             <header>
-                <h1><a href="/">Earwig&apos;s <strong>Copyvio Detector</strong></a></h1>
+                <h1><a href="/">{{ message('site-header-title') }}</a></h1>
                 {% set logged_in_user = session.get("username") %}
                 {% if logged_in_user %}
-                    <a class="logout-link" href="/logout" title="Log out">{{ logged_in_user | safe }}</a>
+                    <a class="logout-link" href="/logout" title="{{ message('log-out') | striptags | e }}">{{ logged_in_user | safe }}</a>
                 {% else %}
-                    <a class="login-link" href="/login" title="Log in">Login</a>
+                    <a class="login-link" href="/login" title="{{ message('log-in') | striptags | e }}">{{ message('log-in') }}</a>
                 {% endif %}
-                <a id="settings-link" href="/settings">Settings</a>
+                <a id="settings-link" href="/settings">{{ message('settings') }}</a>
             </header>
             <main>
                 {% set notice = get_notice() %}
@@ -44,13 +44,13 @@
     </div>
     <footer>
         <ul>
-            <li>Maintained by <a href="https://en.wikipedia.org/wiki/User:The_Earwig">Ben Kurtovic</a></li>
-            <li><a href="{{ request.script_root }}/api">API</a></li>
-            <li><a href="https://github.com/earwig/copyvios">Source code</a></li>
+            <li>{{ message('maintained-by', author_url='<a href="https://en.wikipedia.org/wiki/User:The_Earwig">Ben Kurtovic</a>' | safe) }}</li>
+            <li><a href="{{ request.script_root }}/api">{{ message('api') }}</a></li>
+            <li><a href="https://github.com/earwig/copyvios">{{ message('source-code') }}</a></li>
             {% if desc_url %}
-                <li><a href="{{ desc_url | e }}">Background image</a></li>
+                <li><a href="{{ desc_url | e }}">{{ message('background-image') }}</a></li>
             {% endif %}
         </ul>
     </footer>
 </body>
-</html>
+</html{{ pop_html_lang(g.interface_language_code) }}>

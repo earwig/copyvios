@@ -18,6 +18,9 @@ dependencies = [
     "toolforge_i18n[Flask] >= 0.1",
 ]
 
+[project.optional-dependencies]
+dev = ["pytest"]
+
 [project.urls]
 Homepage = "https://github.com/earwig/copyvios"
 Issues = "https://github.com/earwig/copyvios/issues"

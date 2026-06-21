@@ -11,14 +11,11 @@
     <h2>{{ message('login-heading') }}</h2>
     <p>{{ message('login-required') }}</p>
     {% if request.args.get("next") %}
-        <p>
-            {{ message('after-logging-in') }}
-            {% if is_search %}
-                {{ message('check-will-be-run') }}
-            {% else %}
-                {{ message('will-be-redirected-to') }} {{ request.args["next"] | safe }}
-            {% endif %}
-        </p>
+        {% if is_search %}
+            <p>{{ message('after-login-search') }}</p>
+        {% else %}
+            <p>{{ message('after-login-redirect', redirect_url=request.args["next"]) }}</p>
+        {% endif %}
     {% endif %}
     <form action="{{ request.script_root }}/login" method="post">
         <input type="hidden" name="next" value="{{ request.args.get('next', '/') | safe }}" />

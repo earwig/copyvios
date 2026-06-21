@@ -32,6 +32,7 @@ config = TranslationsConfig(
         "intro-paragraph-3": ["exclusions_url"],
         "intro-paragraph-1": ["copyright_url"],
         "intro-paragraph-1-copyvio-url": [],
+        "after-login-redirect": ["redirect_url"],
         "settings-background-list": ["potd_subset_url", "commons_url", "potd_url"],
     },
     allowed_html_elements={

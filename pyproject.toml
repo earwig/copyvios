@@ -15,6 +15,7 @@ dependencies = [
     "pydantic >= 2.9.2",
     "SQLAlchemy >= 2.0.32",
     "mwoauth >= 0.4.0",
+    "toolforge_i18n[Flask] >= 0.1",
 ]
 
 [project.urls]

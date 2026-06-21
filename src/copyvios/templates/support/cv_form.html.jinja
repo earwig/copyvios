@@ -1,8 +1,8 @@
 <form id="cv-form" action="{{ request.script_root }}/" method="get">
     <div class="oo-ui-layout oo-ui-horizontalLayout">
-        <label class="site oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">Site</label>
+        <label class="site oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">{{ message('form-site') }}</label>
         <div class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-dropdownInputWidget oo-ui-dropdownInputWidget-php">
-            <select name="lang" required="" class="oo-ui-inputWidget-input oo-ui-indicator-down" title="Language">
+            <select name="lang" required="" class="oo-ui-inputWidget-input oo-ui-indicator-down" title="{{ message('form-language') | striptags | e }}">
                 {% set selected_lang = query.orig_lang if query.orig_lang else cookies["CopyviosDefaultLang"].value if "CopyviosDefaultLang" in cookies else cache.bot.wiki.get_site().lang %}
                 {% for lang in cache.langs %}
                     {% if lang.code == selected_lang %}
@@ -14,7 +14,7 @@
             </select>
         </div>
         <div class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-dropdownInputWidget oo-ui-dropdownInputWidget-php">
-            <select name="project" required="" class="oo-ui-inputWidget-input oo-ui-indicator-down" title="Project">
+            <select name="project" required="" class="oo-ui-inputWidget-input oo-ui-indicator-down" title="{{ message('form-project') | striptags | e }}">
                 {% set selected_project = query.project if query.project else cookies["CopyviosDefaultProject"].value if "CopyviosDefaultProject" in cookies else cache.bot.wiki.get_site().project %}
                 {% for project in cache.projects %}
                     {% if project.code == selected_project %}
@@ -27,17 +27,17 @@
         </div>
     </div>
     <div class="oo-ui-layout oo-ui-horizontalLayout">
-        <label for="cv-title" class="page oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">Page</label>
+        <label for="cv-title" class="page oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">{{ message('form-page') }}</label>
         <div class="page-title oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-textInputWidget oo-ui-textInputWidget-type-text oo-ui-textInputWidget-php">
-            <input id="cv-title" type="text" class="oo-ui-inputWidget-input" name="title" placeholder="Title" title="Page title"
+            <input id="cv-title" type="text" class="oo-ui-inputWidget-input" name="title" placeholder="{{ message('form-title-placeholder') | striptags | e }}" title="{{ message('form-title-tooltip') | striptags | e }}"
                 {% if query.title %}
                     value="{{ g.page.title if g.page else query.title | e}}"
                 {% endif %}
             >
         </div>
-        <label class="oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">or</label>
+        <label class="oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">{{ message('form-or') }}</label>
         <div class="page-oldid oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-textInputWidget oo-ui-textInputWidget-type-text oo-ui-textInputWidget-php">
-            <input id="cv-oldid" type="text" class="oo-ui-inputWidget-input" name="oldid" placeholder="Revision ID" title="Revision ID"
+            <input id="cv-oldid" type="text" class="oo-ui-inputWidget-input" name="oldid" placeholder="{{ message('form-revision-id-placeholder') | striptags | e }}" title="{{ message('form-revision-id-tooltip') | striptags | e }}"
                 {% if query.oldid %}
                     value="{{ query.oldid | e }}"
                 {% endif %}
@@ -49,7 +49,7 @@
             <span class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-radioInputWidget">
                 <input id="action-search" class="oo-ui-inputWidget-input" type="radio" name="action" value="search" {{ 'checked="checked"' if (query.action == "search" or not query.action) else "" }}><span></span>
             </span>
-            <label for="action-search" class="action oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">Copyvio search</label>
+            <label for="action-search" class="action oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">{{ message('form-copyvio-search') }}</label>
         </span>
 
         <input type="hidden" name="use_engine" value="0">
@@ -58,7 +58,7 @@
                 <input id="cv-cb-engine" class="cv-search oo-ui-inputWidget-input" type="checkbox" name="use_engine" value="1" {{ 'checked="checked"' if query.use_engine else "" }}>
                 <span class="oo-ui-checkboxInputWidget-checkIcon oo-ui-widget oo-ui-widget-enabled oo-ui-iconElement-icon oo-ui-icon-check oo-ui-iconElement oo-ui-labelElement-invisible oo-ui-iconWidget oo-ui-image-invert"></span>
             </span>
-            <label for="cv-cb-engine" class="oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">Use search engine</label>
+            <label for="cv-cb-engine" class="oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">{{ message('form-use-search-engine') }}</label>
         </span>
 
         <input type="hidden" name="use_links" value="0">
@@ -67,7 +67,7 @@
                 <input id="cv-cb-links" class="cv-search oo-ui-inputWidget-input" type="checkbox" name="use_links" value="1" {{ 'checked="checked"' if query.use_links else "" }}>
                 <span class="oo-ui-checkboxInputWidget-checkIcon oo-ui-widget oo-ui-widget-enabled oo-ui-iconElement-icon oo-ui-icon-check oo-ui-iconElement oo-ui-labelElement-invisible oo-ui-iconWidget oo-ui-image-invert"></span>
             </span>
-            <label for="cv-cb-links" class="oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">Use links in page</label>
+            <label for="cv-cb-links" class="oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">{{ message('form-use-links') }}</label>
         </span>
 
         <!-- 2026-06-07: Turnitin disabled, API does not work
@@ -77,7 +77,7 @@
                 <input id="cv-cb-turnitin" class="cv-search oo-ui-inputWidget-input" type="checkbox" name="turnitin" value="1" {{ 'checked="checked"' if query.turnitin else "" }}>
                 <span class="oo-ui-checkboxInputWidget-checkIcon oo-ui-widget oo-ui-widget-enabled oo-ui-iconElement-icon oo-ui-icon-check oo-ui-iconElement oo-ui-labelElement-invisible oo-ui-iconWidget oo-ui-image-invert"></span>
             </span>
-            <label for="cv-cb-turnitin" class="oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">Use Turnitin</label>
+            <label for="cv-cb-turnitin" class="oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">{{ message('form-use-turnitin') }}</label>
         </span>
         -->
     </div>
@@ -86,10 +86,10 @@
             <span class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-radioInputWidget">
                 <input id="action-compare" class="oo-ui-inputWidget-input" type="radio" name="action" value="compare" {{ 'checked="checked"' if query.action == "compare" else "" }}><span></span>
             </span>
-            <label for="action-compare" class="action oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">Copyvio compare</label>
+            <label for="action-compare" class="action oo-ui-widget oo-ui-widget-enabled oo-ui-labelElement-label oo-ui-labelElement oo-ui-labelWidget">{{ message('form-copyvio-compare') }}</label>
         </span>
         <div class="compare-url cv-compare-oo-ui oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-textInputWidget oo-ui-textInputWidget-type-text oo-ui-textInputWidget-php">
-            <input type="text" class="cv-compare oo-ui-inputWidget-input" name="url" placeholder="URL" title="URL to compare"
+            <input type="text" class="cv-compare oo-ui-inputWidget-input" name="url" placeholder="{{ message('form-url-placeholder') | striptags | e }}" title="{{ message('form-url-tooltip') | striptags | e }}"
                 {% if query.url %}
                     value="{{ query.url | e }}"
                 {% endif %}
@@ -102,13 +102,13 @@
                 <input id="cb-nocache" class="oo-ui-inputWidget-input" type="checkbox" name="nocache" value="1" {{ 'checked="checked"' if query.nocache else "" }}>
                 <span class="oo-ui-checkboxInputWidget-checkIcon oo-ui-widget oo-ui-widget-enabled oo-ui-iconElement-icon oo-ui-icon-check oo-ui-iconElement oo-ui-labelElement-invisible oo-ui-iconWidget oo-ui-image-invert"></span>
             </span>
-            <label for="cb-nocache">Bypass cache</label>
+            <label for="cb-nocache">{{ message('form-bypass-cache') }}</label>
         </div>
     {% endif %}
     <div class="oo-ui-layout oo-ui-horizontalLayout">
         <span class="oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive oo-ui-buttonWidget">
             <button type="submit" class="oo-ui-inputWidget-input oo-ui-buttonElement-button">
-                <span class="oo-ui-labelElement-label">Submit</span>
+                <span class="oo-ui-labelElement-label">{{ message('form-submit') }}</span>
             </button>
         </span>
     </div>

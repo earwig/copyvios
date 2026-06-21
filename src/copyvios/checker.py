@@ -14,8 +14,9 @@ from earwigbot.wiki.copyvios import CopyvioChecker, workers
 from earwigbot.wiki.copyvios.markov import DEFAULT_DEGREE, EMPTY
 from earwigbot.wiki.copyvios.result import CopyvioCheckResult, CopyvioSource
 from earwigbot.wiki.copyvios.workers import CopyvioWorkspace
-from flask import g, session
+from flask import current_app, g, session
 from sqlalchemy import PoolProxiedConnection
+from toolforge_i18n._flask import message as _i18n_message
 
 from .cache import cache
 from .misc import get_sql_error, sql_dialect
@@ -53,7 +54,13 @@ class CopyvioCheckError(Exception):
 def do_check(query: CheckQuery) -> CopyvioCheckResult | None:
     if query.submitted:
         is_logged_in = _get_username() is not None
-        if query.use_engine and not is_logged_in and not isinstance(query, APIQuery):
+        bypass = current_app.config.get("COPYVIOS_BYPASS_LOGIN", False)
+        if (
+            query.use_engine
+            and not is_logged_in
+            and not isinstance(query, APIQuery)
+            and not bypass
+        ):
             raise CopyvioCheckError(ErrorCode.NOT_LOGGED_IN)
 
         site = get_site(query)
@@ -299,16 +306,13 @@ def _get_cached_results(
 
 
 def _format_date(cache_time: datetime) -> str:
-    def formatter(val: float, unit: str):
-        return f"{int(val)} {unit}{'' if val == 1 else 's'}"
-
     diff = datetime.now(UTC) - cache_time
     total_seconds = diff.days * 86400 + diff.seconds
-    if total_seconds > 3600:
-        return formatter(total_seconds / 3600, "hour")
-    if total_seconds > 60:
-        return formatter(total_seconds / 60, "minute")
-    return formatter(total_seconds, "second")
+    if total_seconds >= 3600:
+        return _i18n_message("ago-hours", num=int(total_seconds / 3600))
+    if total_seconds >= 60:
+        return _i18n_message("ago-minutes", num=int(total_seconds / 60))
+    return str(_i18n_message("ago-seconds", num=total_seconds))
 
 
 def _cache_result(

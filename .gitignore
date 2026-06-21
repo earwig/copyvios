@@ -8,3 +8,4 @@ __pycache__
 logs/*
 !logs/.gitinclude
 config.py
+node_modules/

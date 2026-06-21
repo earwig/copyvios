@@ -1,6 +1,6 @@
 {% extends "support/base.html.jinja" %}
 {% block title %}
-    Settings - {{ super() }}
+    {{ message('page-title-settings') | striptags }} - {{ super() }}
 {% endblock %}
 {% block content %}
     {% if status %}
@@ -8,10 +8,10 @@
             <p>{{ status | safe }}</p>
         </div>
     {% endif %}
-    <h2>Settings</h2>
-    <p>This page contains some configurable options for the copyvio detector. Settings are saved as cookies.</p>
+    <h2>{{ message('settings-heading') }}</h2>
+    <p>{{ message('settings-description') }}</p>
     <form action="{{ request.script_root }}/settings" method="post">
-        <h3>Default site</h2>
+        <h3>{{ message('settings-default-site') }}</h2>
         <div class="oo-ui-layout oo-ui-labelElement oo-ui-fieldLayout oo-ui-fieldLayout-align-top">
             <div class="oo-ui-fieldLayout-body">
                 <div class="oo-ui-fieldLayout-field">
@@ -47,17 +47,16 @@
             </div>
         </div>
 
-        <h3>Background</h2>
-        {% set background_options = [
-                ("list", 'Randomly select from <a href="https://commons.wikimedia.org/wiki/User:The_Earwig/POTD">a subset</a> of previous <a href="https://commons.wikimedia.org/">Wikimedia Commons</a> <a href="https://commons.wikimedia.org/wiki/Commons:Picture_of_the_day">Pictures of the Day</a> that work well as widescreen backgrounds, refreshed daily (default).'),
-                ("potd", 'Use the current Commons Picture of the Day, unfiltered. Certain POTDs may be unsuitable as backgrounds due to their aspect ratio or subject matter.'),
-                ("plain", "Use a plain background."),
-            ]
-        %}
+        <h3>{{ message('settings-background') }}</h2>
         <div class="oo-ui-layout oo-ui-labelElement oo-ui-fieldLayout oo-ui-fieldLayout-align-top">
             <div class="oo-ui-fieldLayout-body">
                 <div class="oo-ui-fieldLayout-field">
                     <div class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-radioSelectInputWidget">
+                        {% set background_options = [
+                            ("list", message('settings-background-list', potd_subset_url='https://commons.wikimedia.org/wiki/User:The_Earwig/POTD', commons_url='https://commons.wikimedia.org/', potd_url='https://commons.wikimedia.org/wiki/Commons:Picture_of_the_day')),
+                            ("potd", message('settings-background-potd')),
+                            ("plain", message('settings-background-plain')),
+                        ] %}
                         {% for value, desc in background_options %}
                             <div class="oo-ui-layout oo-ui-labelElement oo-ui-fieldLayout oo-ui-fieldLayout-align-inline">
                                 <div class="oo-ui-fieldLayout-body">
@@ -67,7 +66,7 @@
                                         </span>
                                     </span>
                                     <span class="oo-ui-fieldLayout-header">
-                                        <label for="background-{{ value | e }}" class="oo-ui-labelElement-label">{{ desc | safe }}</label>
+                                        <label for="background-{{ value | e }}" class="oo-ui-labelElement-label">{{ desc }}</label>
                                     </span>
                                 </div>
                             </div>
@@ -83,7 +82,7 @@
                 <span class="oo-ui-fieldLayout-field">
                     <span class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive oo-ui-labelElement oo-ui-buttonInputWidget">
                         <button type="submit" class="oo-ui-inputWidget-input oo-ui-buttonElement-button">
-                            <span class="oo-ui-labelElement-label">Save</span>
+                            <span class="oo-ui-labelElement-label">{{ message('settings-save') }}</span>
                         </button>
                     </span>
                 </span>

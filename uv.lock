@@ -255,7 +255,7 @@ dependencies = [
     { name = "toolforge-i18n", extra = ["flask"] },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "pytest" },
 ]
@@ -267,12 +267,13 @@ requires-dist = [
     { name = "mwoauth", specifier = ">=0.4.0" },
     { name = "mwparserfromhell", specifier = ">=0.7" },
     { name = "pydantic", specifier = ">=2.9.2" },
-    { name = "pytest", marker = "extra == 'dev'" },
     { name = "requests", specifier = ">=2.32.3" },
     { name = "sqlalchemy", specifier = ">=2.0.32" },
     { name = "toolforge-i18n", extras = ["flask"], specifier = ">=0.1" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest" }]
 
 [[package]]
 name = "earwigbot"

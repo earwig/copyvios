@@ -179,7 +179,12 @@ def _perform_check(
     if not result:
         is_logged_in = session.get("username")
         bypass = current_app.config.get("COPYVIOS_BYPASS_LOGIN", False)
-        if query.use_engine and not is_logged_in and not isinstance(query, APIQuery) and not bypass:
+        if (
+            query.use_engine
+            and not is_logged_in
+            and not isinstance(query, APIQuery)
+            and not bypass
+        ):
             raise CopyvioCheckError(ErrorCode.NOT_LOGGED_IN)
 
         try:

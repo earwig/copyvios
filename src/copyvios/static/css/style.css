@@ -301,25 +301,6 @@ h2 {
     font-weight: bold;
 }
 
-#cv-cached {
-    position: relative;
-}
-
-#cv-cached span {
-    display: none;
-    position: absolute;
-    top: 1.5em;
-    left: -5em;
-    width: 30em;
-    padding: 1em;
-    z-index: 1;
-    background: #f3f3f3;
-    border: 1px solid #aaa;
-    color: black;
-    font-style: normal;
-    text-align: left;
-}
-
 .green-box {
     background-color: #efe;
     border: 1px solid #7f7;
@@ -428,10 +409,6 @@ header a:link, header a:visited, header a:hover {
 header a:active {
     color: #333;
 }
-
-#cv-cached:active     { color: #040; text-decoration: none; }
-#cv-cached:hover      { text-decoration: none; }
-#cv-cached:hover span { display: block; }
 
 .source-url:link    { color: #357; }
 .source-url:visited { color: #357; }

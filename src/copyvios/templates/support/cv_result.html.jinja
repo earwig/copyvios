@@ -1,15 +1,17 @@
 <div id="generation-time">
-    Results
     {% if result.metadata.cached %}
-        <a id="cv-cached" href="#">cached<span>To save time (and money), this tool will retain the results of checks for up to 72 hours. This includes the URLs of the checked sources, but neither their content nor the content of the article. Future checks on the same page (assuming it remains unchanged) will not involve additional search queries, but a fresh comparison against the source URL will be made. If the page is modified, a new check will be run.</span></a> from <abbr title="{{ result.metadata.cache_time }}">{{ result.metadata.cache_age }} ago</abbr>. Originally
-    {% endif %}
-    generated in <span class="mono">{{ result.time | round(3) }}</span>
-    {% if query.action == "search" %}
-        seconds using <span class="mono">{{ result.queries }}</span> quer{{ "y" if result.queries == 1 else "ies" }}.
+        {% set time_abbr = '<abbr title="' ~ (result.metadata.cache_time | e) ~ '">' ~ (result.metadata.cache_age | striptags) ~ '</abbr>' %}
+        {% if query.action == "search" %}
+            {{ message('cached-line-search', tooltip_text=(message('cached-tooltip') | striptags | e), time_abbr=time_abbr | safe, gen_time=result.time | round(3), num_queries=result.queries) }}
+        {% else %}
+            {{ message('cached-line', tooltip_text=(message('cached-tooltip') | striptags | e), time_abbr=time_abbr | safe, gen_time=result.time | round(3)) }}
+        {% endif %}
+    {% elif query.action == "search" %}
+        {{ message('check-results-time-search', time=result.time | round(3), num_queries=result.queries) }}
     {% else %}
-        seconds.
+        {{ message('check-results-time', time=result.time | round(3)) }}
     {% endif %}
-    <a href="{{ get_permalink(query) | e }}">Permalink.</a>
+    <a href="{{ get_permalink(query) | e }}">{{ message('permalink') }}</a>
 </div>
 
 <div id="cv-result" class="{{ 'red' if result.confidence >= T_SUSPECT else 'yellow' if result.confidence >= T_POSSIBLE else 'green' }}-box">
@@ -27,29 +29,31 @@
                 {% endif %}
                 {% if query.redirected_from %}
                     <br />
-                    <span id="redirected-from">Redirected from <a href="https://{{ g.site.domain | e }}/w/index.php?title={{ result.metadata.redirected_from.title | e }}&amp;redirect=no">{{ result.metadata.redirected_from.title | e }}</a>. <a href="{{ request.url | httpsfix | e }}&amp;noredirect=1">Check original.</a></span>
+                    {% set redirect_link = '<a href="https://' ~ (g.site.domain | e) ~ '/w/index.php?title=' ~ (result.metadata.redirected_from.title | urlencode) ~ '&redirect=no">' ~ (result.metadata.redirected_from.title | e) ~ '</a>' %}
+                    {% set check_orig_link = '<a href="' ~ ((request.url | httpsfix) ~ '&noredirect=1' | e) ~ '">' ~ (message('redirected-from-check-original') | striptags) ~ '</a>' %}
+                    <span id="redirected-from">{{ message('redirected-from', redirect_page_url=redirect_link | safe, check_original_url=check_orig_link | safe) }}</span>
                 {% endif %}
             </td>
             <td>
                 <div>
                     {% if result.confidence >= T_SUSPECT %}
-                        Violation suspected
+                        {{ message('violation-suspected') }}
                     {% elif result.confidence >= T_POSSIBLE %}
-                        Violation possible
+                        {{ message('violation-possible') }}
                     {% elif result.sources %}
-                        Violation unlikely
+                        {{ message('violation-unlikely') }}
                     {% else %}
-                        No violation
+                        {{ message('no-violation') }}
                     {% endif %}
                 </div>
                 <div>{{ (result.confidence * 100) | round(1) }}%</div>
-                <div>similarity</div>
+                <div>{{ message('similarity') }}</div>
             </td>
             <td>
                 {% if result.url %}
                     <a href="{{ result.url | e }}">{{ result.url | urlstrip | e }}</a>
                 {% else %}
-                    <span id="result-head-no-sources">No matches found.</span>
+                    <span id="result-head-no-sources">{{ message('no-matches-found') }}</span>
                 {% endif %}
             </td>
         </tr>
@@ -58,27 +62,28 @@
 
 {% set attrib = get_attribution_info(g.site, g.page) %}
 {% if attrib %}
+    {% set template_link = '<a href="' ~ (attrib[1] | e) ~ '">' ~ (attrib[0] | e) ~ '</a>' %}
     <div id="attribution-warning" class="yellow-box">
-        This article contains an attribution template: <code>{{ '{{' }}<a href="{{ attrib[1] | e }}">{{ attrib[0] | e }}</a>{{ '}}' }}</code>. Please verify that any potential copyvios are not from properly attributed sources.
+        {{ message('attribution-warning', template_url=template_link | safe) }}
     </div>
 {% endif %}
 
 {% if result.metadata.turnitin_result %}
     <div id="turnitin-container" class="{{ 'red' if result.metadata.turnitin_result.reports else 'green' }}-box">
-        <div id="turnitin-title">Turnitin Results</div>
+        <div id="turnitin-title">{{ message('turnitin-results') }}</div>
         {% if result.metadata.turnitin_result.reports %}
             <table id="turnitin-table"><tbody>
             {% for report in turnitin_result.reports %}
-                <tr><td class="turnitin-table-cell"><a href="https://eranbot.toolforge.org/ithenticate.py?rid={{ report.reportid }}">Report {{ report.reportid }}</a> for text added at <a href="https://{{ query.lang | e }}.wikipedia.org/w/index.php?title={{ query.title | e }}&amp;diff={{ report.diffid }}"> {{ report.time_posted.strftime("%H:%M, %d %B %Y (UTC)") }}</a>:
+                <tr><td class="turnitin-table-cell"><a href="https://eranbot.toolforge.org/ithenticate.py?rid={{ report.reportid }}">{{ message('turnitin-report', report_id=report.reportid) }}</a> for text added at <a href="https://{{ query.lang | e }}.wikipedia.org/w/index.php?title={{ query.title | e }}&amp;diff={{ report.diffid }}"> {{ report.time_posted.strftime("%H:%M, %d %B %Y (UTC)") }}</a>:
                 <ul>
                 {% for source in report.sources %}
-                    <li>{{ source['percent'] }}% of revision text ({{ source['words'] }} words) found at <a href="{{ source['url'] | e }}">{{ source['url'] | e }}</a></li>
+                    <li>{{ message('turnitin-source', percent=source['percent'], word_count=source['words'], source_url=('<a href="' ~ (source['url'] | e) ~ '">' ~ (source['url'] | e) ~ '</a>') | safe) }}</li>
                 {% endfor %}
                 </ul></td></tr>
             {% endfor %}
             </tbody></table>
         {% else %}
-            <div id="turnitin-summary">No matching sources found.</div>
+            <div id="turnitin-summary">{{ message('turnitin-no-matches') }}</div>
         {% endif %}
     </div>
 {% endif %}
@@ -86,7 +91,7 @@
 {% if query.action == "search" %}
     {% set skips = False %}
     <div id="sources-container">
-        <div id="sources-title">Checked Sources</div>
+        <div id="sources-title">{{ message('checked-sources') }}</div>
         {% if result.sources %}
             <table id="cv-result-sources">
                 <colgroup>
@@ -95,52 +100,54 @@
                     <col>
                 </colgroup>
                 <tr>
-                    <th>URL</th>
-                    <th>Similarity</th>
-                    <th>Compare</th>
+                    <th>{{ message('table-url') }}</th>
+                    <th>{{ message('table-similarity') }}</th>
+                    <th>{{ message('table-compare') }}</th>
                 </tr>
                 {% for source in result.sources %}
                     <tr {{ 'class="source-default-hidden"' if loop.index0 >= 10 else 'id="source-row-selected"' if loop.index0 == 0 else "" }}>
                         <td><a {{ 'id="source-selected"' if loop.index0 == 0 else "" }} class="source-url" href="{{ source.url | e }}">{{ source.url | e }}</a></td>
                         <td>
                             {% if source.excluded %}
-                                <span class="source-excluded">Excluded</span>
+                                <span class="source-excluded">{{ message('source-excluded') }}</span>
                             {% elif source.skipped %}
                                 {% set skips = True %}
-                                <span class="source-skipped">Skipped</span>
+                                <span class="source-skipped">{{ message('source-skipped') }}</span>
                             {% else %}
                                 <span class="source-similarity {{ "source-suspect" if source.confidence >= T_SUSPECT else "source-possible" if source.confidence >= T_POSSIBLE else "source-novio" }}">{{ (source.confidence * 100) | round(1) }}%</span>
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{{ request.script_root | e }}/?lang={{ query.lang | e }}&amp;project={{ query.project | e }}&amp;oldid={{ query.oldid or g.page.lastrevid | e }}&amp;action=compare&amp;url={{ source.url | e }}">Compare</a>
+                            <a href="{{ request.script_root | e }}/?lang={{ query.lang | e }}&amp;project={{ query.project | e }}&amp;oldid={{ query.oldid or g.page.lastrevid | e }}&amp;action=compare&amp;url={{ source.url | e }}">{{ message('compare-action') }}</a>
                         </td>
                     </tr>
                 {% endfor %}
             </table>
         {% else %}
             <div class="cv-source-footer">
-                No sources checked.
+                {{ message('no-sources-checked') }}
             </div>
         {% endif %}
         {% if result.sources | length > 10 %}
             <div id="cv-additional" class="cv-source-footer">
-                {{ result.sources | length - 10 }} URL{{ "s" if result.sources | length > 11 else "" }} with lower similarity hidden. <a id="show-additional-sources" href="#">Show them.</a>
+                {{ message('urls-hidden', num_urls=result.sources | length - 10) }}
+                <a href="#" id="show-additional-sources">{{ message('urls-hidden-show') }}</a>
             </div>
         {% endif %}
         {% if skips or result.possible_miss %}
             <div class="cv-source-footer">
-                The search ended early because a match was found with high similarity. <a href="{{ request.url | httpsfix | e }}&amp;noskip=1">Do a complete check.</a>
+                {% set retry_link = '<a href="' ~ ((request.url | httpsfix) ~ '&noskip=1' | e) ~ '">' ~ (message('search-ended-early-retry') | striptags) ~ '</a>' %}
+                {{ message('search-ended-early', retry_url=retry_link | safe) }}
             </div>
         {% endif %}
     </div>
 {% endif %}
 <table id="cv-chain-table">
     <tr>
-        <td class="cv-chain-cell">Article: <div class="cv-chain-detail">
+        <td class="cv-chain-cell">{{ message('article-label') }} <div class="cv-chain-detail">
             <p>{{ highlight_delta(result.article_chain, result.best.chains[1] if result.best else None) }}</p>
         </div></td>
-        <td class="cv-chain-cell">Source: <div class="cv-chain-detail">
+        <td class="cv-chain-cell">{{ message('source-label') }} <div class="cv-chain-detail">
             <p>{{ highlight_delta(result.best.chains[0], result.best.chains[1]) if result.best else "" }}</p>
         </div></td>
     </tr>

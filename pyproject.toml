@@ -15,7 +15,11 @@ dependencies = [
     "pydantic >= 2.9.2",
     "SQLAlchemy >= 2.0.32",
     "mwoauth >= 0.4.0",
+    "toolforge_i18n[Flask] >= 0.1",
 ]
+
+[dependency-groups]
+dev = ["pytest"]
 
 [project.urls]
 Homepage = "https://github.com/earwig/copyvios"
@@ -29,6 +33,8 @@ build-backend = "setuptools.build_meta"
 pythonVersion = "3.13"
 venvPath = "."
 venv = ".venv"
+# toolforge_i18n doesn't define __all__, so pyright flags its public API as private
+reportPrivateImportUsage = false
 
 [tool.ruff]
 target-version = "py313"

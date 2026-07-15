@@ -1,24 +1,21 @@
 {% extends "support/base.html.jinja" %}
 {% block title %}
-    Login - {{ super() }}
+    {{ message('page-title-login') | striptags }} - {{ super() }}
 {% endblock %}
 {% block content %}
     {% if error %}
         <div id="info-box" class="red-box">
-            <p>Error trying to log in: {{ error | safe }}</p>
+            <p>{{ message('login-error', error_text=error) }}</p>
         </div>
     {% endif %}
-    <h2>Login</h2>
-    <p>You are required to log in with your Wikimedia account to perform checks with the search engine.</p>
+    <h2>{{ message('login-heading') }}</h2>
+    <p>{{ message('login-required') }}</p>
     {% if request.args.get("next") %}
-        <p>
-            After logging in,
-            {% if is_search %}
-                your check will be run.
-            {% else %}
-                you will be redirected to: {{ request.args["next"] | safe }}
-            {% endif %}
-        </p>
+        {% if is_search %}
+            <p>{{ message('after-login-search') }}</p>
+        {% else %}
+            <p>{{ message('after-login-redirect', redirect_url=request.args["next"]) }}</p>
+        {% endif %}
     {% endif %}
     <form action="{{ request.script_root }}/login" method="post">
         <input type="hidden" name="next" value="{{ request.args.get('next', '/') | safe }}" />
@@ -27,7 +24,7 @@
                 <span class="oo-ui-fieldLayout-field">
                     <span class="oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive oo-ui-labelElement oo-ui-buttonInputWidget">
                         <button type="submit" class="oo-ui-inputWidget-input oo-ui-buttonElement-button">
-                            <span class="oo-ui-labelElement-label">Login</span>
+                            <span class="oo-ui-labelElement-label">{{ message('login-button') }}</span>
                         </button>
                     </span>
                 </span>

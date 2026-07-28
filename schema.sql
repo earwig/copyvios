@@ -3,10 +3,10 @@ CREATE TABLE cache (
     cache_site VARCHAR(1024) NOT NULL,
     cache_page_title VARCHAR(1024) NOT NULL,
     cache_time TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+    cache_user VARCHAR(1024) DEFAULT NULL,
     cache_queries INT(4) NOT NULL DEFAULT 0,
     cache_process_time DOUBLE NOT NULL DEFAULT 0,
     cache_possible_miss BOOLEAN NOT NULL DEFAULT 0,
-    cache_user VARCHAR(1024) DEFAULT NULL,
     PRIMARY KEY (cache_id),
     KEY cache_time_idx (cache_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;

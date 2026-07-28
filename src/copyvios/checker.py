@@ -176,7 +176,7 @@ def _perform_check(
             _LOGGER.exception("Failed to retrieve cached results")
 
     if not result:
-        is_logged_in = session.get("username")
+        is_logged_in = _get_username() is not None
         if query.use_engine and not is_logged_in and not isinstance(query, APIQuery):
             raise CopyvioCheckError(ErrorCode.NOT_LOGGED_IN)
 
@@ -200,8 +200,18 @@ def _perform_check(
     return result
 
 
-def _get_cache_id(page: Page, mode: str) -> bytes:
-    return hashlib.sha256((mode + page.get()).encode("utf8")).digest()
+def _get_username() -> str | None:
+    username = session.get("username")
+    if username is None:
+        return None
+    if not isinstance(username, str):
+        _LOGGER.warning(f"Unexpected type for username in session: {username!r}")
+        return None
+    return username
+
+
+def _get_cache_id(page: Page, mode: str) -> str:
+    return hashlib.blake2b((mode + page.get()).encode("utf8")).hexdigest()[:32]
 
 
 def _sql_param() -> str:
@@ -215,9 +225,11 @@ def _get_cached_results(
     cache_id = _get_cache_id(page, mode)
     cursor = conn.cursor()
     cursor.execute(
-        f"""SELECT cache_time, cache_queries, cache_process_time, cache_possible_miss
+        f"""
+        SELECT cache_time, cache_queries, cache_process_time, cache_possible_miss
         FROM cache
-        WHERE cache_id = {_sql_param()}""",
+        WHERE cache_id = {_sql_param()}
+        """,
         (cache_id,),
     )
     results = cursor.fetchall()
@@ -242,9 +254,11 @@ def _get_cached_results(
         return None
 
     cursor.execute(
-        f"""SELECT cdata_url, cdata_confidence, cdata_skipped, cdata_excluded
+        f"""
+        SELECT cdata_url, cdata_confidence, cdata_skipped, cdata_excluded
         FROM cache_data
-        WHERE cdata_cache_id = {_sql_param()}""",
+        WHERE cdata_cache_id = {_sql_param()}
+        """,
         (cache_id,),
     )
     data = cursor.fetchall()
@@ -317,21 +331,43 @@ def _cache_result(
     ]
 
     # TODO: Switch to proper SQLAlchemy
+    q = _sql_param()
     cur = conn.cursor()
     try:
-        cur.execute(f"DELETE FROM cache WHERE cache_id = {_sql_param()}", (cache_id,))
+        cur.execute(f"DELETE FROM cache WHERE cache_id = {q}", (cache_id,))
         cur.execute(f"DELETE FROM cache WHERE cache_time < {expiry}")
         cur.execute(
-            f"""INSERT INTO cache (
-                cache_id, cache_queries, cache_process_time, cache_possible_miss
-            ) VALUES ({_sql_param()}, {_sql_param()}, {_sql_param()}, {_sql_param()})""",
-            (cache_id, result.queries, result.time, result.possible_miss),
+            f"""
+            INSERT INTO cache (
+                cache_id,
+                cache_site,
+                cache_page_title,
+                cache_user,
+                cache_queries,
+                cache_process_time,
+                cache_possible_miss
+            ) VALUES ({q}, {q}, {q}, {q}, {q}, {q}, {q})
+            """,
+            (
+                cache_id,
+                page.site.name,
+                page.title,
+                _get_username(),
+                result.queries,
+                result.time,
+                result.possible_miss,
+            ),
         )
         cur.executemany(
-            f"""INSERT INTO cache_data (
-                cdata_cache_id, cdata_url, cdata_confidence, cdata_skipped,
+            f"""
+            INSERT INTO cache_data (
+                cdata_cache_id,
+                cdata_url,
+                cdata_confidence,
+                cdata_skipped,
                 cdata_excluded
-            ) VALUES ({_sql_param()}, {_sql_param()}, {_sql_param()}, {_sql_param()}, {_sql_param()})""",
+            ) VALUES ({q}, {q}, {q}, {q}, {q})
+            """,
             data,
         )
     except Exception:

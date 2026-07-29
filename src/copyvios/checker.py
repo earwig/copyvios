@@ -396,7 +396,7 @@ def _cache_result(
                 cache_id,
                 page.site.name,
                 page.title,
-                bool(query.oldid),
+                query.oldid if query.oldid else None,
                 _get_username(),
                 result.url,
                 result.confidence,

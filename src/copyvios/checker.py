@@ -52,6 +52,10 @@ class CopyvioCheckError(Exception):
 
 def do_check(query: CheckQuery) -> CopyvioCheckResult | None:
     if query.submitted:
+        is_logged_in = _get_username() is not None
+        if query.use_engine and not is_logged_in and not isinstance(query, APIQuery):
+            raise CopyvioCheckError(ErrorCode.NOT_LOGGED_IN)
+
         site = get_site(query)
         if site:
             return _get_results(query, site, follow=not query.noredirect)
@@ -176,10 +180,6 @@ def _perform_check(
             _LOGGER.exception("Failed to retrieve cached results")
 
     if not result:
-        is_logged_in = _get_username() is not None
-        if query.use_engine and not is_logged_in and not isinstance(query, APIQuery):
-            raise CopyvioCheckError(ErrorCode.NOT_LOGGED_IN)
-
         try:
             result = page.copyvio_check(
                 min_confidence=T_SUSPECT,
@@ -193,7 +193,7 @@ def _perform_check(
             raise CopyvioCheckError(ErrorCode.SEARCH_ERROR) from exc
         result.metadata.cached = False
         try:
-            _cache_result(page, result, conn, mode)
+            _cache_result(query, page, result, conn, mode)
         except sql_error:
             _LOGGER.exception("Failed to cache results")
 
@@ -312,7 +312,11 @@ def _format_date(cache_time: datetime) -> str:
 
 
 def _cache_result(
-    page: Page, result: CopyvioCheckResult, conn: PoolProxiedConnection, mode: str
+    query: CheckQuery,
+    page: Page,
+    result: CopyvioCheckResult,
+    conn: PoolProxiedConnection,
+    mode: str,
 ) -> None:
     expiry = sql_dialect(
         mysql="DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 3 DAY)",
@@ -370,6 +374,35 @@ def _cache_result(
             """,
             data,
         )
+        cur.execute(
+            f"""
+            INSERT INTO history (
+                hist_cache_id,
+                hist_site,
+                hist_page_title,
+                hist_user,
+                hist_best_url,
+                hist_best_confidence,
+                hist_num_queries,
+                hist_process_time,
+                hist_did_short_circuit,
+                hist_via_api
+            ) VALUES ({q}, {q}, {q}, {q}, {q}, {q}, {q}, {q})
+            """,
+            (
+                cache_id,
+                page.site.name,
+                page.title,
+                _get_username(),
+                result.url,
+                result.confidence,
+                result.queries,
+                result.time,
+                result.possible_miss,
+                isinstance(query, APIQuery),
+            ),
+        )
+
     except Exception:
         conn.rollback()
         raise

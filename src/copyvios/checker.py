@@ -387,7 +387,7 @@ def _cache_result(
                 hist_process_time,
                 hist_did_short_circuit,
                 hist_via_api
-            ) VALUES ({q}, {q}, {q}, {q}, {q}, {q}, {q}, {q})
+            ) VALUES ({q}, {q}, {q}, {q}, {q}, {q}, {q}, {q}, {q}, {q})
             """,
             (
                 cache_id,

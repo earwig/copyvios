@@ -52,7 +52,7 @@ def _do_delete(query: SettingsQuery) -> str | None:
     cookie = query.cookie
     if cookie and cookie in cookies:
         delete_cookie(cookie)
-        return f'Deleted cookie <b><span class="mono">{markupsafe.escape(cookie)}</span></b>.'
+        return f"Deleted cookie <b><code>{markupsafe.escape(cookie)}</code></b>."
     elif query.all:
         number = len(cookies)
         for cookie in list(cookies.values()):

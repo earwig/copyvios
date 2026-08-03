@@ -19,44 +19,37 @@
                 {% elif error.code == ErrorCode.NO_URL %}
                     {{ message('error-no-url') }}
                 {% elif error.code == ErrorCode.BAD_URI %}
-                    {% set url_link = '<a href="' ~ (query.url | e) ~ '">' ~ (query.url | e) ~ '</a>' %}
-                    {{ message('error-unsupported-uri', target_url=url_link | safe) }}
+                    {{ message('error-unsupported-uri', url_target=query.url | e, target_title=query.url | e) }}
                 {% elif error.code == ErrorCode.NO_DATA %}
-                    {% set url_link = '<a href="' ~ (query.url | e) ~ '">' ~ (query.url | e) ~ '</a>' %}
-                    {{ message('error-no-data', target_url=url_link | safe) }}
+                    {{ message('error-no-data', url_target=query.url | e, target_title=query.url | e) }}
                 {% elif error.code == ErrorCode.TIMEOUT %}
-                    {% set url_link = '<a href="' ~ (query.url | e) ~ '">' ~ (query.url | e) ~ '</a>' %}
-                    {{ message('error-timeout', target_url=url_link | safe) }}
+                    {{ message('error-timeout', url_target=query.url | e, target_title=query.url | e) }}
                 {% elif error.code == ErrorCode.SEARCH_ERROR %}
-                    {% set retry_url = ((request.url | httpsfix) + '&use_engine=0') | e %}
-                    {% set retry_link = '<a href="' ~ retry_url ~ '">' ~ (message('search-error-retry') | striptags) ~ '</a>' %}
-                    {{ message('error-search-error', error_cause=error.__cause__, no_engine_url=retry_link | safe) }}
+                    {{ message('error-search-error', error_cause=error.__cause__, url_no_engine=((request.url | httpsfix) + '&use_engine=0') | e) }}
                 {% else %}
                     {{ message('error-unknown') }}
                 {% endif %}
             </p></div>
         {% elif not g.site %}
             <div id="info-box" class="red-box">
-                {% set site_confirm_link = '<a href="https://' ~ (query.lang | e) ~ '.' ~ (query.project | e) ~ '.org/">' ~ (message('error-bad-site-confirm') | striptags) ~ '</a>' %}
-                <p>{{ message('error-bad-site', project=query.project, lang=query.lang, site_url=site_confirm_link | safe) }}</p>
+                {% set bad_site_url = "https://" ~ query.lang ~ "." ~ query.project ~ ".org/" %}
+                <p>{{ message('error-bad-site', project=query.project, lang=query.lang, url_site=bad_site_url | e) }}</p>
             </div>
         {% elif query.oldid and not result %}
             <div id="info-box" class="red-box">
-                {% set rev_link = '<a href="https://' ~ (g.site.domain | e) ~ '/w/index.php?oldid=' ~ (query.oldid | e) ~ '">' ~ (query.oldid | e) ~ '</a>' %}
-                <p>{{ message('error-revision-not-found', revision_url=rev_link | safe) }}</p>
+                {% set rev_url = "https://" ~ g.site.domain ~ "/w/index.php?oldid=" ~ query.oldid %}
+                <p>{{ message('error-revision-not-found', url_revision=rev_url | e, revision_id=query.oldid | e) }}</p>
             </div>
         {% elif query.title and not result %}
             <div id="info-box" class="red-box">
-                {% set page_link = '<a href="' ~ (g.page.url | e) ~ '">' ~ (g.page.title | e) ~ '</a>' %}
-                <p>{{ message('error-page-not-found', page_url=page_link | safe) }}</p>
+                <p>{{ message('error-page-not-found', url_page=g.page.url | e, page_title=g.page.title | e) }}</p>
             </div>
         {% endif %}
     {% endif %}
     {% set ui_lang = query.lang or g.lang_code or 'en' %}
-    <p>{{ message('intro-paragraph-1',
-        copyright_url=('<a href="' ~ (message('intro-paragraph-1-copyvio-url') | e) ~ '">' ~ (message('intro-copyright-violations') | striptags) ~ '</a>') | safe) }}</p>
+    <p>{{ message('intro-paragraph-1', url_copyright=(message('intro-paragraph-1-copyvio-url') | e), url_dupdet='https://dupdet.toolforge.org') }}</p>
     <p>{{ message('intro-paragraph-2') }}</p>
-    <p>{{ message('intro-paragraph-3', exclusions_url=('<a href="https://en.wikipedia.org/wiki/User:EarwigBot/Copyvios/Exclusions">' ~ (message('intro-exclusions-list') | striptags) ~ '</a>') | safe) }}</p>
+    <p>{{ message('intro-paragraph-3', url_exclusions='https://en.wikipedia.org/wiki/User:EarwigBot/Copyvios/Exclusions') }}</p>
     {% include "support/cv_form.html.jinja" %}
     {% if result %}
         {% include "support/cv_result.html.jinja" %}

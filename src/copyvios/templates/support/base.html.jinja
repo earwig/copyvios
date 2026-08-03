@@ -24,7 +24,7 @@
                 <h1><a href="/">{{ message('site-header-title') }}</a></h1>
                 {% set logged_in_user = session.get("username") %}
                 {% if logged_in_user %}
-                    <a class="logout-link" href="/logout" title="{{ message('log-out') | striptags | e }}">{{ logged_in_user | safe }}</a>
+                    <a class="logout-link" href="/logout" title="{{ message('log-out') | striptags | e }}">{{ logged_in_user | e }}</a>
                 {% else %}
                     <a class="login-link" href="/login" title="{{ message('log-in') | striptags | e }}">{{ message('log-in') }}</a>
                 {% endif %}
@@ -44,7 +44,7 @@
     </div>
     <footer>
         <ul>
-            <li>{{ message('maintained-by', author_url='<a href="https://en.wikipedia.org/wiki/User:The_Earwig">Ben Kurtovic</a>' | safe) }}</li>
+            <li>{{ message('maintained-by', url_author='https://en.wikipedia.org/wiki/User:The_Earwig') }}</li>
             <li><a href="{{ request.script_root }}/api">{{ message('api') }}</a></li>
             <li><a href="https://github.com/earwig/copyvios">{{ message('source-code') }}</a></li>
             {% if desc_url %}

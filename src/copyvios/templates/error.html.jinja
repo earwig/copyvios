@@ -4,7 +4,7 @@
 {% endblock %}
 {% block content %}
     <h2>{{ message('error-heading') }}</h2>
-    <p>{{ message('error-description', issues_url='https://github.com/earwig/copyvios/issues', new_issue_url='https://github.com/earwig/copyvios/issues/new', email_url='mailto:wikipedia.earwig@gmail.com') }}</p>
+    <p>{{ message('error-description', url_issues='https://github.com/earwig/copyvios/issues', url_new_issue='https://github.com/earwig/copyvios/issues/new', url_email='mailto:wikipedia.earwig@gmail.com') }}</p>
     <div id="info-box" class="red-box">
         <pre>{{ traceback | trim | e }}</pre>
     </div>

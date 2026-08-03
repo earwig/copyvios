@@ -14,11 +14,11 @@
         {% if is_search %}
             <p>{{ message('after-login-search') }}</p>
         {% else %}
-            <p>{{ message('after-login-redirect', redirect_url=request.args["next"]) }}</p>
+            <p>{{ message('after-login-redirect', redirect_url=request.args["next"] | e) }}</p>
         {% endif %}
     {% endif %}
     <form action="{{ request.script_root }}/login" method="post">
-        <input type="hidden" name="next" value="{{ request.args.get('next', '/') | safe }}" />
+        <input type="hidden" name="next" value="{{ request.args.get('next', '/') | e }}" />
         <div class="oo-ui-layout oo-ui-fieldLayout oo-ui-fieldLayout-align-left">
             <div class="oo-ui-fieldLayout-body">
                 <span class="oo-ui-fieldLayout-field">

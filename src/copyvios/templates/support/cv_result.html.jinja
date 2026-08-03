@@ -29,9 +29,9 @@
                 {% endif %}
                 {% if query.redirected_from %}
                     <br />
-                    {% set redirect_link = '<a href="https://' ~ (g.site.domain | e) ~ '/w/index.php?title=' ~ (result.metadata.redirected_from.title | urlencode) ~ '&redirect=no">' ~ (result.metadata.redirected_from.title | e) ~ '</a>' %}
-                    {% set check_orig_link = '<a href="' ~ ((request.url | httpsfix) ~ '&noredirect=1' | e) ~ '">' ~ (message('redirected-from-check-original') | striptags) ~ '</a>' %}
-                    <span id="redirected-from">{{ message('redirected-from', redirect_page_url=redirect_link | safe, check_original_url=check_orig_link | safe) }}</span>
+                    {% set redirected_from_url = "https://" ~ g.site.domain ~ "/w/index.php?title=" ~ (result.metadata.redirected_from.title | urlencode) ~ "&redirect=no" %}
+                    {% set check_original_url = (request.url | httpsfix) ~ "&noredirect=1" %}
+                    <span id="redirected-from">{{ message('redirected-from', url_redirected_from=redirected_from_url | e, redirected_from_title=result.metadata.redirected_from.title | e,  url_check_original=check_original_url | e) }}</span>
                 {% endif %}
             </td>
             <td>
@@ -62,9 +62,8 @@
 
 {% set attrib = get_attribution_info(g.site, g.page) %}
 {% if attrib %}
-    {% set template_link = '<a href="' ~ (attrib[1] | e) ~ '">' ~ (attrib[0] | e) ~ '</a>' %}
     <div id="attribution-warning" class="yellow-box">
-        {{ message('attribution-warning', template_url=template_link | safe) }}
+        {{ message('attribution-warning', url_template=attrib[1] | e, template_title=attrib[0] | e) }}
     </div>
 {% endif %}
 
@@ -74,10 +73,12 @@
         {% if result.metadata.turnitin_result.reports %}
             <table id="turnitin-table"><tbody>
             {% for report in turnitin_result.reports %}
-                <tr><td class="turnitin-table-cell"><a href="https://eranbot.toolforge.org/ithenticate.py?rid={{ report.reportid }}">{{ message('turnitin-report', report_id=report.reportid) }}</a> for text added at <a href="https://{{ query.lang | e }}.wikipedia.org/w/index.php?title={{ query.title | e }}&amp;diff={{ report.diffid }}"> {{ report.time_posted.strftime("%H:%M, %d %B %Y (UTC)") }}</a>:
+                {% set report_url = "https://eranbot.toolforge.org/ithenticate.py?rid=" ~ report.reportid %}
+                {% set diff_url = "https://" ~ query.lang ~ ".wikipedia.org/w/index.php?title=" ~ query.title ~ "&diff=" ~ report.diffid %}
+                <tr><td class="turnitin-table-cell">{{ message('turnitin-report', url_report=report_url | e, report_id=report.reportid | e, url_diff=diff_url | e, report_time=report.time_posted.strftime("%H:%M, %d %B %Y (UTC)")) }}:
                 <ul>
                 {% for source in report.sources %}
-                    <li>{{ message('turnitin-source', percent=source['percent'], word_count=source['words'], source_url=('<a href="' ~ (source['url'] | e) ~ '">' ~ (source['url'] | e) ~ '</a>') | safe) }}</li>
+                    <li>{{ message('turnitin-source', percent=source['percent'], word_count=source['words'], url_source=source['url'] | e, source_title=source['url'] | e }}</li>
                 {% endfor %}
                 </ul></td></tr>
             {% endfor %}
@@ -136,8 +137,8 @@
         {% endif %}
         {% if skips or result.possible_miss %}
             <div class="cv-source-footer">
-                {% set retry_link = '<a href="' ~ ((request.url | httpsfix) ~ '&noskip=1' | e) ~ '">' ~ (message('search-ended-early-retry') | striptags) ~ '</a>' %}
-                {{ message('search-ended-early', retry_url=retry_link | safe) }}
+                {% set retry_url = (request.url | httpsfix) ~ "&noskip=1" %}
+                {{ message('search-ended-early', url_retry=retry_url | e) }}
             </div>
         {% endif %}
     </div>

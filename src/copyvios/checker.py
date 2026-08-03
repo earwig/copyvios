@@ -8,6 +8,7 @@ import urllib.parse
 from datetime import UTC, datetime, timedelta
 from enum import Enum
 
+import toolforge_i18n
 from earwigbot import exceptions
 from earwigbot.wiki import Page, Site
 from earwigbot.wiki.copyvios import CopyvioChecker, workers
@@ -16,7 +17,6 @@ from earwigbot.wiki.copyvios.result import CopyvioCheckResult, CopyvioSource
 from earwigbot.wiki.copyvios.workers import CopyvioWorkspace
 from flask import current_app, g, session
 from sqlalchemy import PoolProxiedConnection
-from toolforge_i18n._flask import message as _i18n_message
 
 from .cache import cache
 from .misc import get_sql_error, sql_dialect
@@ -54,12 +54,12 @@ class CopyvioCheckError(Exception):
 def do_check(query: CheckQuery) -> CopyvioCheckResult | None:
     if query.submitted:
         is_logged_in = _get_username() is not None
-        bypass = current_app.config.get("COPYVIOS_BYPASS_LOGIN", False)
+        config_bypass = current_app.config.get("COPYVIOS_BYPASS_LOGIN", False)
         if (
             query.use_engine
             and not is_logged_in
             and not isinstance(query, APIQuery)
-            and not bypass
+            and not config_bypass
         ):
             raise CopyvioCheckError(ErrorCode.NOT_LOGGED_IN)
 
@@ -309,10 +309,10 @@ def _format_date(cache_time: datetime) -> str:
     diff = datetime.now(UTC) - cache_time
     total_seconds = diff.days * 86400 + diff.seconds
     if total_seconds >= 3600:
-        return _i18n_message("ago-hours", num=int(total_seconds / 3600))
+        return toolforge_i18n.message("ago-hours", num=int(total_seconds / 3600))  # pyright: ignore[reportPrivateImportUsage]
     if total_seconds >= 60:
-        return _i18n_message("ago-minutes", num=int(total_seconds / 60))
-    return str(_i18n_message("ago-seconds", num=total_seconds))
+        return toolforge_i18n.message("ago-minutes", num=int(total_seconds / 60))  # pyright: ignore[reportPrivateImportUsage]
+    return str(toolforge_i18n.message("ago-seconds", num=total_seconds))  # pyright: ignore[reportPrivateImportUsage]
 
 
 def _cache_result(

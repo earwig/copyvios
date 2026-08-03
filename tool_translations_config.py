@@ -1,4 +1,6 @@
-from toolforge_i18n import TranslationsConfig
+from toolforge_i18n import (
+    TranslationsConfig,  # pyright: ignore[reportPrivateImportUsage]
+)
 
 config = TranslationsConfig(
     variables={

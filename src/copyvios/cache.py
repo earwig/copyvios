@@ -9,6 +9,8 @@ import sqlalchemy
 import sqlalchemy.event
 from earwigbot.bot import Bot
 
+from . import bot
+
 
 @dataclass(frozen=True, order=True)
 class Lang:
@@ -62,8 +64,6 @@ def _get_engine(bot: Bot) -> sqlalchemy.Engine:
 
 
 def _make_cache() -> AppCache:
-    bot = Bot(".earwigbot", 100)
-
     oauth_config = bot.config.wiki.get("copyvios", {}).get("oauth", {})
     if oauth_config.get("consumer_token") is None:
         raise ValueError(

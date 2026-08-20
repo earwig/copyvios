@@ -1,0 +1,36 @@
+{
+	"@metadata": {
+		"authors": [
+			"Volvox"
+		]
+	},
+	"log-out": "Ausloggen",
+	"settings": "Astellungen",
+	"api": "API",
+	"source-code": "Quellcode",
+	"background-image": "Hannergrondbild",
+	"page-title-compare": "Vergläichen",
+	"page-title-settings": "Astellungen",
+	"page-title-error": "Feeler",
+	"error-heading": "Feeler!",
+	"settings-heading": "Astellungen",
+	"settings-background": "Hannergrond",
+	"settings-save": "Späicheren",
+	"form-language": "Sprooch",
+	"form-project": "Projet",
+	"form-page": "Säit",
+	"form-title-placeholder": "Titel",
+	"form-or": "oder",
+	"form-revision-id-placeholder": "Versiouns-ID",
+	"form-revision-id-tooltip": "Versiouns-ID",
+	"form-url-placeholder": "URL",
+	"error-bad-action": "Onbekannt Aktioun: <b><code>$1</code></b>.",
+	"error-unknown": "Et ass en onbekannte Feller geschitt.",
+	"table-url": "URL",
+	"table-compare": "Vergläichen",
+	"article-label": "Artikel:",
+	"compare-action": "Vergläichen",
+	"ago-seconds": "Viru(n) {{PLURAL:$1|$1 Sekonn|$1 Sekonnen}}",
+	"ago-minutes": "Viru(n) {{PLURAL:$1|$1 Minutt|$1 Minutten}}",
+	"ago-hours": "Viru(n) {{PLURAL:$1|$1 Stonn|$1 Stonnen}}"
+}

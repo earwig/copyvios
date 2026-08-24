@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Hedda"
+			"Hedda",
+			"Nemoralis"
 		]
 	},
 	"site-title": "Earwig’in Telif İhlali Tespit Aracı",
@@ -74,7 +75,7 @@
 	"intro-paragraph-2": "Diğer web siteleri yavaşsa veya araç yoğun bir şekilde kullanılıyorsa tam kontrolün tamamlanması bir dakikaya kadar sürebilir. Lütfen sabırlı olun. Zaman aşımı hatası alırsanız bir süre bekleyin ve sayfayı yenileyin.",
 	"intro-paragraph-3": "Diğer web sitelerinin Vikipedi'den içerik kopyalayabileceğini unutmayın; bu nedenle, özellikle eski veya kapsamlı maddeler söz konusu olduğunda sonuçları dikkatlice kontrol edin. Belirli web sitelerini [$1 hariç tutulan URL listesine] ekleyerek bu sitelerin sonuçlarda görünmemesini sağlayabilirsiniz.",
 	"cached-line": "Sonuçlar $2 <abbr title=\"$1\">önbelleğe alındı</abbr>. İlk oluşturma $3 saniye sürdü.",
-	"cached-line-search": "<abbr title=\"$1\">Önbelleğe</abbr> alınmış sonuçlar $2 kaynağından getirildi. Bu sonuçlar ilk olarak $3 saniyede oluşturuldu ve bunun için  {{PLURAL:$4$4 sorgu}} kullanıldı.",
+	"cached-line-search": "<abbr title=\"$1\">Önbelleğe</abbr> alınmış sonuçlar $2 kaynağından getirildi. Bu sonuçlar ilk olarak $3 saniyede oluşturuldu ve bunun için  {{PLURAL:$4|$4 sorgu}} kullanıldı.",
 	"cached-tooltip": "Zamandan (ve paradan) tasarruf etmek amacıyla bu araç, kontrol sonuçlarını en fazla 72 saat boyunca saklayacaktır. Bu, kontrol edilen kaynakların URL'lerini içerir ancak ne bu kaynakların içeriği ne de maddenin içeriği saklanmaz. Aynı sayfaya yönelik ileride yapılacak kontroller (sayfanın değişmediği varsayıldığında), ek arama sorguları gerektirmeyecek, bunun yerine kaynak URL'siyle yeni bir karşılaştırma yapılacaktır. Sayfa değiştirilirse, yeni bir kontrol gerçekleştirilecektir.",
 	"check-results-time": "Sonuçlar $1 saniye içinde elde edildi.",
 	"check-results-time-search": "{{PLURAL:$2|$2 sorgu}} kullanılarak $1 saniye içinde elde edilen sonuçlar.",

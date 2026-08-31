@@ -1,0 +1,34 @@
+{
+	"@metadata": {
+		"authors": [
+			"Borichèt"
+		]
+	},
+	"site-title": "Arlevator ëd violassion dij drit d'autor d'Earwig",
+	"site-header-title": "<strong>Arlevator ëd violassion dij drit d'autor</strong> d'Earwig",
+	"log-in": "Intré ant ël sistema",
+	"log-out": "Seurte dal sistema",
+	"settings": "Paràmeter",
+	"maintained-by": "Mantnù da [$1 Ben Kurtovic]",
+	"api": "API",
+	"source-code": "Còdes sorgiss",
+	"background-image": "Plancia dë sfond",
+	"page-title-search": "Arserché",
+	"page-title-compare": "Confronté",
+	"page-title-settings": "Paràmeter",
+	"page-title-login": "Intré ant ël sistema",
+	"page-title-logout": "Seurte dal sistema",
+	"page-title-error": "Eror",
+	"login-required": "A dev intré ant ël sistema con sò cont Wikimedia për fé dle verìfiche con ël motor d'arserca.",
+	"login-error": "Eror an rintrand ant ël sistema: $1",
+	"login-heading": "Intré ant ël sistema",
+	"after-login-search": "Na vira intrà ant ël sistema, soa verìfica a sarà fàita.",
+	"after-login-redirect": "Na vira intrà ant ël sistema, a sarà dirigiù vers: $1",
+	"login-button": "Intré ant ël sistema",
+	"logout-heading": "Seurte dal sistema",
+	"logout-message": "An surtend dal sistema a podrà nen fé dle verìfiche con ël motor d'arserca.",
+	"logout-button": "Seurte dal sistema",
+	"error-heading": "Eror!",
+	"error-description": "A-i é staje n'eror. S'a l'é ancor nen ëstàit signalà ([$1 ch'a preuva a controlé]), për piasì [$2 ch'a signala un problema] o [$3 ch'a më scriva]. Ch'a ancluda j'anformassion sì-dapress:",
+	"settings-heading": "Paràmeter"
+}

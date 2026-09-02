@@ -1,6 +1,17 @@
+import toolforge_i18n
 from toolforge_i18n import (
     TranslationsConfig,  # pyright: ignore[reportPrivateImportUsage]
 )
+
+
+def language_code_to_babel(code: str) -> str:
+    mediawiki_to_babel = {
+        "pms": "it",  # 2026-09-01: Piedmontese, not supported
+    }
+    if code in mediawiki_to_babel:
+        return mediawiki_to_babel[code]
+    return toolforge_i18n.language_code_to_babel(code)  # pyright: ignore[reportPrivateImportUsage]
+
 
 config = TranslationsConfig(
     variables={
@@ -48,4 +59,5 @@ config = TranslationsConfig(
         "strong": set(),
         "em": set(),
     },
+    language_code_to_babel=language_code_to_babel,
 )

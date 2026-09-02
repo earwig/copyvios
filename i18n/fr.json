@@ -24,7 +24,7 @@
 	"form-submit": "Soumettre",
 	"intro-paragraph-1-copyvio-url": "https://fr.wikipedia.org/wiki/Aide:Copyvio",
 	"intro-paragraph-2": "L'exécution d'une vérification complète peut prendre jusqu'à une minute si d'autres sites web sont lents ou si l'outil est fortement sollicité. Veuillez patienter. En cas de délai d'attente dépassé, patientez quelques instants et actualisez la page.",
-	"intro-paragraph-3": "Rappelez-vous que d'autres sites web peuvent copier le contenu de Wikipédia ; vérifiez donc attentivement les résultats, en particulier pour les articles anciens ou bien développés. Vous pouvez exclure certains sites web en les ajoutant à la liste des URL exclues [$1].",
+	"intro-paragraph-3": "Rappelez-vous que d'autres sites web peuvent copier le contenu de Wikipédia ; vérifiez donc attentivement les résultats, en particulier pour les articles anciens ou bien développés. Vous pouvez exclure certains sites web en les ajoutant à [$1 la liste des URL exclues].",
 	"cached-tooltip": "Pour gagner du temps (et de l'argent), cet outil conserve les résultats des vérifications pendant 72 heures maximum. Cela inclut les URL des sources vérifiées, mais ni leur contenu ni celui de l'article. Les vérifications ultérieures sur la même page (à condition qu'elle reste inchangée) n'entraîneront pas de nouvelles requêtes de recherche, mais une nouvelle comparaison avec l'URL source sera effectuée. Si la page est modifiée, une nouvelle vérification sera lancée.",
 	"violation-suspected": "Violation présumée",
 	"violation-possible": "Violation possible",

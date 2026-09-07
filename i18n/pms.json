@@ -30,5 +30,9 @@
 	"logout-button": "Seurte dal sistema",
 	"error-heading": "Eror!",
 	"error-description": "A-i é staje n'eror. S'a l'é ancor nen ëstàit signalà ([$1 ch'a preuva a controlé]), për piasì [$2 ch'a signala un problema] o [$3 ch'a më scriva]. Ch'a ancluda j'anformassion sì-dapress:",
-	"settings-heading": "Paràmeter"
+	"settings-heading": "Paràmeter",
+	"settings-description": "Costa pàgina a conten chèiche opsion configuràbij për l'arlevator ëd violassion dij drit d'autor. Ij paràmeter a son argistrà tanme bëscotin.",
+	"settings-default-site": "Sit dë stàndard",
+	"settings-background": "Sfond",
+	"settings-background-list": "Selessioné a l'ancàpit da [$1 un sot-ansem] ëd [$3 fòto dël di] ëd [$2 Wikimedia Commons] ch'a marcio bin coma sfond dë scren largh, arnovà tuti ij di (stàndard)."
 }

@@ -56,7 +56,8 @@ def do_check(query: CheckQuery) -> CopyvioCheckResult | None:
         is_logged_in = _get_username() is not None
         config_bypass = current_app.config.get("COPYVIOS_BYPASS_LOGIN", False)
         if (
-            query.use_engine
+            query.action == "search"
+            and query.use_engine
             and not is_logged_in
             and not isinstance(query, APIQuery)
             and not config_bypass

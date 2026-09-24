@@ -53,6 +53,9 @@ class CopyvioCheckError(Exception):
 
 def do_check(query: CheckQuery) -> CopyvioCheckResult | None:
     if query.submitted:
+        if not query.action:
+            query.action = "compare" if query.url else "search"
+
         is_logged_in = _get_username() is not None
         config_bypass = current_app.config.get("COPYVIOS_BYPASS_LOGIN", False)
         if (
@@ -97,9 +100,6 @@ def _get_results(
                 if result:
                     result.metadata.redirected_from = page
                 return result
-
-    if not query.action:
-        query.action = "compare" if query.url else "search"
 
     if query.action == "search":
         if not query.use_engine and not query.use_links:
